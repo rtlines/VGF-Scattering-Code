@@ -48,6 +48,9 @@ C****  real function dd(alpha,i,beta,k)                                *
 C****  subroutine ROT(RRR, alpha, beta, gamma)                         *
 C****  subroutine MV(M,V,U)                                            *
 C***********************************************************************
+C
+C     the roundom number generator routine seems very broken.  I might
+C     have messed it up  2020-06-4    
 C**** Declarations                                                  ****
       implicit none
 C *** Set the value of NMAX via an included file                     ***
@@ -660,7 +663,7 @@ C****  Variables
        if (alpha.eq.beta) delta=1.0
       return
       end
- C***********************************************************************
+C***********************************************************************
 C*-------------------------------------------------------------------
       real function dd(alpha,i,beta, j)                               
 C*-------------------------------------------------------------------

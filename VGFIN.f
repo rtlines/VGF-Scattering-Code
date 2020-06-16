@@ -1,7 +1,7 @@
 C***********************************************************************
       program VGFIN
 C***********************************************************************
-C**** Program to set up a particle dipole array for the VGF code.      *
+C**** Prog to set up a particle dipole array for the VGF code.      *
 C****   A particle (sphere, oblate or prolate spheroid, cubical box or *
 C****   spheroidal shell) is split into a cubic array of dipole cells  *
 C****   (cubic cells with a dipole at the center).  A coarse array of  *
@@ -45,6 +45,10 @@ C***********************************************************************
 C**** Variable Definitions                                          ****
       implicit none
       include 'nmax.inc'          
+C     integer NMAX
+C     parameter (NMAX = 3000)       
+C     integer KNMAX
+C     parameter (KNMAX = 200)  
 C *** Indices     
       integer G, H, I, IX, IY, IZ
 C *** Counters   
@@ -176,7 +180,7 @@ C**** DONE! Write out the cubic array and data to file              ****
       close(10)
 100   format(4(1x, 1e12.4))
       end
- C***********************************************************************
+C***********************************************************************
 C*-------------------------------------------------------------------
       logical function ISINSIDE(RAD, RF, AR, SD, SDN, IHP,IC)
 C*-------------------------------------------------------------------
@@ -195,7 +199,7 @@ C**** VAriables                                                     ****
       integer IHP, IC  
 C *** If the particle is a cubical box, then just return             ***
       If (IC .eq. 1) then 
-         if ((RF(3).le.RAD/AR).and(RF(3).ge.-RAD/AR)) then
+         if ((RF(3).le.RAD/AR).and.(RF(3).ge.-RAD/AR)) then
             ISINSIDE = .TRUE.
          end if  
          return
@@ -233,8 +237,8 @@ C***********************************************************************
 C******************************************************************************
 C*    Include file for maximum array size parameter.
 C******************************************************************************
-      integer NMAX
-      parameter (NMAX = 3000)       
-      integer KNMAX
-      parameter (KNMAX = 200)  
+C     integer NMAX
+C     parameter (NMAX = 3000)       
+C     integer KNMAX
+C     parameter (KNMAX = 200)  
 C******************************************************************************
