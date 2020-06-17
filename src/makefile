@@ -1,0 +1,81 @@
+#
+#
+f77=gfortran
+#
+#NEW_OBJ=icamax.o zgefa.o dzasum.o zdscal.o \
+#        zgesl.o zgeco.o zdotc.o zaxpy.o zscal.o \
+#        ran1.o izamax.o dcabs1.o
+#
+NEW_OBJ=icamax.o cgefa.o scacum.o csscal.o \
+        cgesl.o cgeco.o cdotc.o caxpy.o cscal.o \
+        ran0.o ran1.o ran2.o ran3.o izamax.o dcabs1.o
+
+
+
+all:	vgffmc vgfphz vgfin vgfkv 
+
+vgffmco: vgffmc.f
+	f77 -c -o vgffmc.o vgffmc.f
+
+vgffmc:	vgffmc.o $(NEW_OBJ) 
+	f77 -o vgffmc vgffmc.o $(NEW_OBJ)
+ 
+vgfin:	vgfin.o  
+	f77 -o vgfin vgfin.o 
+ 
+vgfphz:	vgfphz.o  
+	f77  -o vgfphz vgfphz.o 
+ 
+vgfkv:	vgfkv.o 
+	f77  -o vgfkv vgfkv.o 
+ 
+vgffmc.o: vgffmc.f nmax.inc
+	f77   vgffmc.f
+
+icamax: icamax.f
+	f77 -c -o icamax.o icamax.f
+
+cgefa: cgefa.f
+	f77 -c -o cgefa.o cgefa.f
+
+scacum: scacum.f
+	f77 -c -o scacum.o scacum.f
+
+csscal: csscal.f
+	f77 -c -o csscal.o csscal.f
+
+cgesl: cgesl.f
+	f77 -c -o cgesl.o cgesl.f
+
+cgeco: cgeco.f
+	f77 -c -o cgeco.o cgeco.f
+
+cdotc: cdotc.f
+	f77 -c -o cdotc.o cdotc.f
+
+caxpy: caxpy.f
+	f77 -c -o caxpy.o caxpy.f
+
+cscal: cscal.f
+	f77 -c -o cscal.o cscal.f
+
+ran0: ran0.f
+	f77 -c -o ran0.o ran0.f
+
+ran1: ran1.f
+	f77 -c -o ran1.o ran1.f
+
+ran2: ran2.f
+	f77 -c -o ran2.o ran2.f
+
+ran3: ran3.f
+	f77 -c -o ran3.o ran3.f
+
+izamax: izamax.f
+	f77 -c -o izamax.o izamax.f
+
+dcabs: dcabs.f
+	f77 -c -o dcabs.o dcabs.f
+
+
+
