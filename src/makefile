@@ -2,17 +2,17 @@
 #
 f77=gfortran
 #
-#NEW_OBJ=icamax.o zgefa.o dzasum.o zdscal.o \
-#        zgesl.o zgeco.o zdotc.o zaxpy.o zscal.o \
-#        ran1.o izamax.o dcabs1.o
-#
-NEW_OBJ=icamax.o cgefa.o scacum.o csscal.o \
-        cgesl.o cgeco.o cdotc.o caxpy.o cscal.o \
+
+NEW_OBJ=icamax.o cgefa.o scacum.o csscal.o cgesl.o\
+        cgeco.o cdotc.o caxpy.o cscal.o \
         ran0.o ran1.o ran2.o ran3.o izamax.o dcabs1.o
 
+NEW_OBJ_make=icamax cgefa scacum csscal cgesl \
+        cgeco cdotc caxpy cscal \
+        ran0 ran1 ran2 ran3 izamax dcabs1
 
 
-all:	vgffmc vgfphz vgfin vgfkv 
+all:	vgffmc vgfphz vgfin vgfkv vgffmco $(NEW_OBJ_make) 
 
 vgffmco: vgffmc.f
 	f77 -c -o vgffmc.o vgffmc.f
@@ -74,8 +74,8 @@ ran3: ran3.f
 izamax: izamax.f
 	f77 -c -o izamax.o izamax.f
 
-dcabs: dcabs.f
-	f77 -c -o dcabs.o dcabs.f
+dcabs1: dcabs1.f
+	f77 -c -o dcabs1.o dcabs1.f
 
 
 
