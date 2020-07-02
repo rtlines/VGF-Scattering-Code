@@ -1,5 +1,4 @@
 #
-#
 f77=gfortran
 #
 
@@ -12,7 +11,7 @@ NEW_OBJ_make=icamax cgefa scacum csscal cgesl \
         ran0 ran1 ran2 ran3 izamax dcabs1
 
 
-all:	vgffmc vgfphz vgfin vgfkv vgffmco $(NEW_OBJ_make) 
+all:	$(NEW_OBJ) vgffmco vgffmc vgfphz vgfin vgfkv   
 
 vgffmco: vgffmc.f
 	f77 -c -o vgffmc.o vgffmc.f
@@ -20,18 +19,15 @@ vgffmco: vgffmc.f
 vgffmc:	vgffmc.o $(NEW_OBJ) 
 	f77 -o vgffmc vgffmc.o $(NEW_OBJ)
  
-vgfin:	vgfin.o  
-	f77 -o vgfin vgfin.o 
+vgfin:	vgfin.f  
+	f77 -o vgfin vgfin.f 
  
-vgfphz:	vgfphz.o  
-	f77  -o vgfphz vgfphz.o 
+vgfphz:	vgfphz.f  
+	f77  -o vgfphz vgfphz.f 
  
-vgfkv:	vgfkv.o 
-	f77  -o vgfkv vgfkv.o 
+vgfkv:	vgfkv.f 
+	f77  -o vgfkv vgfkv.f 
  
-vgffmc.o: vgffmc.f nmax.inc
-	f77   vgffmc.f
-
 icamax: icamax.f
 	f77 -c -o icamax.o icamax.f
 
@@ -77,5 +73,8 @@ izamax: izamax.f
 dcabs1: dcabs1.f
 	f77 -c -o dcabs1.o dcabs1.f
 
+cleano: 
+	rm $(NEW_OBJ) vgffmc.o vgfphz.o vgfin.o  
 
-
+clean: 
+	rm $(NEW_OBJ) vgffmc.o vgfphz.o vgfin.o vgffmc vgfphz vgfin vgfkv  
