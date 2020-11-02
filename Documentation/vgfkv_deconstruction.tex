@@ -1,0 +1,131 @@
+
+\documentclass{article}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amssymb}
+
+%TCIDATA{OutputFilter=LATEX.DLL}
+%TCIDATA{Version=5.50.0.2960}
+%TCIDATA{<META NAME="SaveForMode" CONTENT="1">}
+%TCIDATA{BibliographyScheme=Manual}
+%TCIDATA{Created=Wednesday, July 01, 2020 17:46:22}
+%TCIDATA{LastRevised=Thursday, October 29, 2020 12:27:09}
+%TCIDATA{<META NAME="GraphicsSave" CONTENT="32">}
+%TCIDATA{<META NAME="DocumentShell" CONTENT="Scientific Notebook\Blank Document">}
+%TCIDATA{Language=American English}
+%TCIDATA{CSTFile=Math with theorems suppressed.cst}
+%TCIDATA{PageSetup=72,72,72,72,0}
+%TCIDATA{AllPages=
+%F=36,\PARA{038<p type="texpara" tag="Body Text" >\hfill \thepage}
+%}
+
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+\newenvironment{proof}[1][Proof]{\noindent\textbf{#1.} }{\ \rule{0.5em}{0.5em}}
+\input{tcilatex}
+\begin{document}
+
+
+\section{VGFKV}
+
+This code sets up a series of unit vectors in the direction of the outgoing
+plane waves.
+
+\section{Why we need this}
+
+For VGFFMC We want to find the scattered field from a particle being hit by
+a plane wave. The code sould find $\mathbf{E}$
+
+In the dissertation we defined 
+\begin{equation}
+\mathbf{F}(\mathbf{r})\equiv \mathbf{E}(\mathbf{r})(1+\frac{4\pi }{3}\chi 
+\mathbf{(r}))  \tag{38}  \label{EtoF}
+\end{equation}%
+We want the electric field so we want%
+\[
+\mathbf{E}(\mathbf{r})=\frac{\mathbf{F}(\mathbf{r})}{(1+\frac{4\pi }{3}\chi 
+\mathbf{(r}))} 
+\]
+
+so we ned to calculate $\mathbf{F}(\mathbf{r})$ and $\chi \mathbf{(r})$
+
+\begin{equation}
+\tilde{F}_{\beta j}\mathbf{=}\sum_{N=1}^{N_{k}}a_{Nj}\Psi _{\beta N}
+\label{CPSI}
+\end{equation}
+
+The $\Psi _{\beta N}$ are a series of plane waves%
+\begin{equation}
+\Psi _{\beta N}=e^{imk\mathbf{\hat{k}}_{N}\mathbf{\cdot r}_{\beta }}
+\end{equation}%
+and the $a_{Nj}$ is a set of coefficients. So our $E$ field comes out as a
+series expansion where our explansion funcitons are $\Psi _{\beta N}$. We
+need the $a_{Nj}$
+
+The $a_{Nj}$ come from a matrix inversion 
+\begin{equation}
+\left( \mathbf{a}\right) =\left( \mathbf{H}\right) ^{-1}\left( \mathbf{Y}%
+\right)  \label{aHY}
+\end{equation}%
+where $\mathbf{H}$ and $\mathbf{Y}$ are given by 
+\begin{eqnarray}
+H_{MlNj} &=&\Psi _{\gamma M}^{\ast }\left( 1_{\alpha i\gamma l}\mathbf{-}%
+W_{\beta }^{\ast }G_{\alpha i\gamma l}^{\ast }\right) \left( 1_{\alpha
+i\beta j}\mathbf{-}W_{\beta }G_{\alpha i\beta j}\right) \Psi _{\beta N} 
+\nonumber \\
+Y_{Nj} &=&\left( 1_{\alpha i\beta j}\mathbf{-}W_{\beta }G_{\alpha i\beta
+j}\right) ^{\ast }E_{\alpha i}^{o}\Psi _{\beta N}^{\ast }
+\end{eqnarray}
+
+or more compactlyl (and how it is done in the code) 
+\begin{equation}
+T_{\alpha iNj}=\sum_{\beta }\left( 1_{\alpha i\beta j}\mathbf{-}G_{\alpha
+i\beta j}W_{\beta }\right) \Psi _{\beta N}
+\end{equation}%
+Using $T_{\alpha iNj},$ $H_{MlNj}$ and $Y_{Nj}$ can be expressed as
+
+\begin{eqnarray}
+H_{MlNj} &=&\sum_{\alpha }\sum_{i}T_{\alpha iMl}^{\ast }T_{\alpha iNj}
+\label{HTYT} \\
+Y_{Nj} &=&\sum_{\alpha }\sum_{i}T_{\alpha iNj}^{\ast }E_{\alpha i}^{o} 
+\nonumber
+\end{eqnarray}
+
+The $T_{\alpha iNj}$ depend on
+
+\begin{equation}
+\Psi _{\beta N}=e^{imk\mathbf{\hat{k}}_{N}\mathbf{\cdot r}_{\beta }}
+\end{equation}%
+which depend on the $\mathbf{\hat{k}}_{N}$
+
+These are read in from a file. That file is created by vgfkv.f. And it looks
+like it makes a $k_{N}$ in equally spaced increments in the $\theta $ and $%
+\phi $ directions. \FRAME{ftbpF}{1.5238in}{1.4183in}{0pt}{}{}{Figure}{%
+\special{language "Scientific Word";type "GRAPHIC";maintain-aspect-ratio
+TRUE;display "USEDEF";valid_file "T";width 1.5238in;height 1.4183in;depth
+0pt;original-width 3.9418in;original-height 3.6668in;cropleft "0";croptop
+"1";cropright "1";cropbottom "0";tempfilename
+'QIZ08401.wmf';tempfile-properties "XPR";}}So we have what looks like a set
+of arrows in a spherical shape pointing away from the particle. Maybe we
+could experiment with non-uniform distributions of these? 
+
+\end{document}
