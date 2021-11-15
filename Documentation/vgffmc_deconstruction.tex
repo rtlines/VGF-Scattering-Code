@@ -8,7 +8,7 @@
 %TCIDATA{<META NAME="SaveForMode" CONTENT="1">}
 %TCIDATA{BibliographyScheme=Manual}
 %TCIDATA{Created=Wednesday, July 01, 2020 17:46:22}
-%TCIDATA{LastRevised=Thursday, October 29, 2020 09:55:01}
+%TCIDATA{LastRevised=Monday, June 07, 2021 13:24:47}
 %TCIDATA{<META NAME="GraphicsSave" CONTENT="32">}
 %TCIDATA{<META NAME="DocumentShell" CONTENT="Scientific Notebook\Blank Document">}
 %TCIDATA{Language=American English}
@@ -106,6 +106,367 @@ subroutine ROT(RRR, alpha, beta, gamma) *
 
 subroutine MV(M,V,U) subroutine to multiply a 3x3 matrix by a vector with
 three components
+
+\subsection{Algorithm}
+
+We will assume a field with complex time dependance.%
+\begin{equation}
+\mathbf{E}\left( \mathbf{r},t\right) =\mathbf{E(r})\exp (-i\omega t)+c.c.
+\label{Field}
+\end{equation}%
+and with a Green's function solution 
+\begin{equation}
+\mathbf{E}(\mathbf{r})(1+\frac{4\pi }{3}\chi )=\mathbf{E}^{e}(\mathbf{r)+}%
+\int d^{3}\mathbf{r}^{\prime }\mathbf{G}\left( \mathbf{r},\mathbf{r}^{\prime
+}\right) \cdot \chi \mathbf{(r}^{\prime })\mathbf{E(r}^{\prime })
+\label{E-field}
+\end{equation}%
+We define the term%
+\begin{equation}
+W\left( \mathbf{r}\right) =\frac{\chi \mathbf{(r})}{(1+\frac{4\pi }{3}\chi 
+\mathbf{(r}))}  \label{W1}
+\end{equation}%
+then letting 
+\[
+\mathbf{F}(\mathbf{r})=\mathbf{E}(\mathbf{r})(1+\frac{4\pi }{3}\chi ) 
+\]%
+and the $F$-field 
+\begin{equation}
+\mathbf{F}(\mathbf{r})=\mathbf{E}^{e}(\mathbf{r)+}\int d^{3}\mathbf{r}%
+^{\prime }\mathbf{G}\left( \mathbf{r},\mathbf{r}^{\prime }\right) \cdot
+W\left( \mathbf{r}^{\prime }\right) \mathbf{F(r}^{\prime })  \label{F-field}
+\end{equation}
+to make our calculations more compact.
+
+We can write the F-field as%
+\begin{equation}
+F_{\mu i}=E_{\mu i}^{in}\mathbf{+}\sum\limits_{\nu }G_{\mu i\nu j}W_{\nu
+}F_{\nu j}  \label{AlgF}
+\end{equation}%
+where, for convenience, the cell dimension $d_{\mu }^{3}$ is included in the 
+$W$ term. 
+\begin{equation}
+W_{\nu }=Wd_{\nu }^{3}
+\end{equation}%
+Symbolically, this may be written as 
+\begin{equation}
+\mathbf{F}=\mathbf{E}^{in}+\mathbf{GWF}
+\end{equation}
+
+Proceeding directly to a numerical solution at this point would be
+equivalent to the DGF. Instead, we are going to try a variational solution.
+First, an error term $\mathbf{\varepsilon }$ is defined such that 
+\begin{equation}
+\mathbf{\varepsilon }=\mathbf{F}-\mathbf{E}^{in}-\mathbf{GWF}
+\end{equation}%
+Writing components yields 
+\begin{equation}
+\varepsilon _{\alpha i}\mathbf{=}\sum_{\beta }\sum_{j}\left( 1_{\alpha
+i\beta j}\mathbf{-}G_{\alpha i\beta j}W_{\beta }\right) F_{\beta j}\mathbf{-}%
+E_{\alpha i}^{in}
+\end{equation}%
+Here the factor 
+\begin{equation}
+F_{\alpha i}^{st}=-W_{\alpha }G_{\alpha i\alpha j}F_{\alpha j}  \label{AST}
+\end{equation}%
+is the specially defined self term discussed below as the \textquotedblleft
+self term.\textquotedblright\ Note that 
+\begin{equation}
+1_{\alpha i\beta j}=\delta _{\alpha \beta }\delta _{ij}
+\end{equation}%
+Equation (\ref{ST}), gives a definition of the diagonal elements of the
+dyadic Green function taken from the self term, 
+\begin{equation}
+F_{\alpha i}^{st}=\delta _{\alpha \beta }\left( \frac{4\pi }{3}\Gamma
+_{\alpha }\right) W_{\alpha }F_{\alpha i}
+\end{equation}%
+Equation (\ref{Guiui}) gives a discretized form of the dyadic Green function
+diagonal terms. 
+\begin{equation}
+G_{\alpha i\alpha j}=\frac{4\pi }{3d_{\alpha }^{3}}\Gamma _{\alpha }\delta
+_{ij}
+\end{equation}%
+Now, for convenience, define the quantity 
+\begin{equation}
+M_{\alpha i\beta j}=\left( 1_{\alpha i\beta j}\mathbf{-}W_{\beta }G_{\alpha
+i\beta j}\right)
+\end{equation}%
+where the $\alpha ,$ $i,$ $\beta ,$and $j$ are not summed over. Then 
+\begin{equation}
+\varepsilon _{\alpha i}\mathbf{=}M_{\alpha i\beta j}F_{\beta j}\mathbf{-}%
+E_{\alpha i}^{o}  \label{M}
+\end{equation}%
+where in equation (\ref{M}) the summation convention has been employed
+throughout, on both Latin and Greek indices.
+
+The function $\Phi $ to extremize is defined as the squared magnitude of the
+error $\mathbf{\varepsilon },$%
+\begin{equation}
+\Phi =\mathbf{\varepsilon }_{\alpha i}\mathbf{\varepsilon }_{\alpha i}^{\ast
+}=F_{\beta j}M_{\beta j\alpha i}^{T}M_{\alpha i\gamma l}^{\ast }F_{\gamma
+l}^{\ast }-E_{\alpha i}^{o\ast }M_{\alpha i\beta j}F_{\beta j}-E_{\alpha
+i}^{o}M_{\alpha i\beta j}^{\ast }F_{\beta j}^{\ast }+E_{\alpha
+i}^{o}E_{\alpha i}^{o\ast }  \label{PHI}
+\end{equation}%
+Again for convenience two additional quantities are defined which will
+shorten the notation 
+\begin{eqnarray}
+K_{\gamma l\beta j} &=&M_{\gamma l\alpha i}^{\ast T}M_{\alpha i\beta j} \\
+X_{\beta j}^{\ast } &=&E_{\alpha i}^{o\ast }M_{\alpha i\beta j}
+\end{eqnarray}%
+Then equation (\ref{PHI}) can be written compactly as 
+\begin{equation}
+\Phi =F_{\gamma l}^{\ast }K_{\gamma l\beta j}F_{\beta j}-\left[ X_{\beta
+j}^{\ast }F_{\beta j}+X_{\beta j}F_{\beta j}^{\ast }\right] +E_{\alpha
+i}^{o}E_{\alpha i}^{o\ast }
+\end{equation}%
+Because the form of $\mathbf{F}$ is not known, a trial function $\mathbf{%
+\tilde{F}}$ can be used which is an expansion in some basis function set $%
+\Psi _{\beta N}.$ We define the trial function $\mathbf{\tilde{F}}$ by 
+\begin{equation}
+\tilde{F}_{\beta j}\mathbf{=}\sum_{N=1}^{N_{k}}a_{Nj}\Psi _{\beta N}
+\end{equation}%
+where the sum has been written explicitly. The function $\mathbf{\tilde{F}}$
+is substituted for $\mathbf{F.}$ The functions $\Psi _{\beta N}$ we will
+assume to be of the form
+
+\begin{equation}
+\Psi _{\beta N}=e^{imk\mathbf{\hat{k}}_{N}\mathbf{\cdot r}_{\beta }}
+\end{equation}%
+which depend on the $\mathbf{\hat{k}}_{N}$
+
+These are read in from a file. That file is created by vgfkv.f. And it looks
+like it makes a $k_{N}$ in equally spaced increments in the $\theta $ and $%
+\phi $ directions. \FRAME{ftbpF}{2.904in}{2.7043in}{0pt}{}{}{Figure}{\special%
+{language "Scientific Word";type "GRAPHIC";maintain-aspect-ratio
+TRUE;display "USEDEF";valid_file "T";width 2.904in;height 2.7043in;depth
+0pt;original-width 3.9418in;original-height 3.6668in;cropleft "0";croptop
+"1";cropright "1";cropbottom "0";tempfilename
+'QSLJDD00.wmf';tempfile-properties "XPR";}}Then equation (\ref{PHI}) is
+approximately given by 
+\begin{equation}
+\Phi =\Psi _{\gamma M}^{\ast }a_{Ml}^{\ast }K_{\gamma l\beta j}a_{Nj}\Psi
+_{\beta N}-\left[ X_{\beta j}^{\ast }\Psi _{\beta N}a_{Nj}+X_{\beta j}\Psi
+_{\beta N}^{\ast }a_{Nj}^{\ast }\right] +E_{\alpha i}^{o}E_{\alpha i}^{o\ast
+}
+\end{equation}%
+Now the notation can again be simplified by defining two functions 
+\begin{eqnarray}
+H_{MlNj} &=&\Psi _{\gamma M}^{\ast }K_{\gamma l\beta j}\Psi _{\beta N} \\
+Y_{Nj}^{\ast } &=&\Psi _{N\beta }^{T}X_{\beta j}^{\ast }
+\end{eqnarray}%
+Then the final form of equation (\ref{PHI}) is 
+\begin{equation}
+\Phi =a_{Ml}^{\ast }H_{MlNj}a_{Nj}-\left[ Y_{Nj}^{\ast
+}a_{Nj}+Y_{Nj}a_{Nj}^{\ast }\right] +E_{\alpha i}^{o}E_{\alpha i}^{o\ast }
+\label{PhiSimp}
+\end{equation}%
+To extremize $\Phi ,$ equation (\ref{PhiSimp}) is differentiated with
+respect to $a_{Li}^{\ast },$ yielding 
+\begin{equation}
+\frac{\partial \Phi }{\partial a_{Li}^{\ast }}=H_{LiNj}a_{Nj}-Y_{Li}
+\label{DerPhi}
+\end{equation}%
+The result is set equal to zero. Equation (\ref{DerPhi}) can be written in
+matrix form as 
+\begin{equation}
+\left( \mathbf{H}\right) \left( \mathbf{a}\right) =\left( \mathbf{Y}\right)
+\label{HaY}
+\end{equation}%
+The solution for $\left( \mathbf{a}\right) $ is given by 
+\begin{equation}
+\left( \mathbf{a}\right) =\left( \mathbf{H}\right) ^{-1}\left( \mathbf{Y}%
+\right)  \label{aHY1}
+\end{equation}
+
+Writing out the $\left( \mathbf{H}\right) $and $(\mathbf{Y})$ matrix
+explicitly in components we have 
+\begin{eqnarray}
+H_{MlNj} &=&\Psi _{\gamma M}^{\ast }\left( 1_{\alpha i\gamma l}\mathbf{-}%
+W_{\beta }^{\ast }G_{\alpha i\gamma l}^{\ast }\right) \left( 1_{\alpha
+i\beta j}\mathbf{-}W_{\beta }G_{\alpha i\beta j}\right) \Psi _{\beta N} 
+\nonumber \\
+Y_{Nj} &=&\left( 1_{\alpha i\beta j}\mathbf{-}W_{\beta }G_{\alpha i\beta
+j}\right) ^{\ast }E_{\alpha i}^{o}\Psi _{\beta N}^{\ast }
+\end{eqnarray}%
+The functions $\Psi _{\beta N}$ could be any set of functions. A simple
+choice for larger particles with refractive indices that are not very
+different from unity is a set of plane waves: 
+\begin{equation}
+\Psi _{\beta N}=e^{imk\mathbf{\hat{k}}_{N}\mathbf{\cdot r}_{\beta }}
+\end{equation}%
+where as before $m$ is the complex refractive index of the particle. These
+functions obey the correct wave equation inside the particle. The trial
+functions $\tilde{F}_{\beta j}$ are given by 
+\begin{equation}
+\tilde{F}_{\beta j}\mathbf{=}\sum_{N=1}^{N_{k}}a_{Nj}e^{imk\mathbf{\hat{k}}%
+_{N}\mathbf{\cdot r}_{\beta }}  \label{Ftilde}
+\end{equation}%
+Again, the summation has been written explicitly. The $\mathbf{\hat{k}}_{N}$
+or \textquotedblleft $k$-vectors\textquotedblright\ must be chosen to
+represent the internal wave well. A \textquotedblleft goodness of
+choice\textquotedblright\ criterion for the number and direction of the $%
+\mathbf{\hat{k}}_{N}$ vectors results from evaluating $\Phi $ explicitly.
+Observing the values of the $a_{Nj}$ can determine which of the $k$-vectors
+are not contributing well. If the magnitude of an $a_{N}$ is small, then the 
+$\mathbf{\hat{k}}_{N}$ is not well placed or may not be needed.
+
+For the sake of computation, a temporary variable is employed in the
+calculations that follow. 
+\begin{equation}
+T_{\alpha iNj}=\sum_{\beta }\left( 1_{\alpha i\beta j}\mathbf{-}G_{\alpha
+i\beta j}W_{\beta }\right) \Psi _{\beta N}
+\end{equation}
+Using $T_{\alpha iNj},$ $H_{MlNj}$ and $Y_{Nj}$ can be expressed as
+
+\begin{eqnarray}
+H_{MlNj} &=&\sum_{\alpha }\sum_{i}T_{\alpha iMl}^{\ast }T_{\alpha iNj} \\
+Y_{Nj} &=&\sum_{\alpha }\sum_{i}T_{\alpha iNj}^{\ast }E_{\alpha i}^{o} 
+\nonumber
+\end{eqnarray}%
+This is the form of the quantities used in the actual algorithms.
+
+Then since we foudn the $a_{Nj}$ with the matrix inversion we can calculate
+the 
+\begin{equation}
+\tilde{F}_{\beta j}\mathbf{=}\sum_{N=1}^{N_{k}}a_{Nj}e^{imk\mathbf{\hat{k}}%
+_{N}\mathbf{\cdot r}_{\beta }}
+\end{equation}%
+and these are related to the electric field like this
+
+\[
+\mathbf{F}(\mathbf{r})=\mathbf{E}(\mathbf{r})(1+\frac{4\pi }{3}\chi ) 
+\]%
+so 
+\[
+\frac{\mathbf{F}(\mathbf{r})}{(1+\frac{4\pi }{3}\chi )}=\mathbf{E}(\mathbf{r}%
+) 
+\]%
+and we have our electric field.
+
+This is what the code is supposed to do.
+
+\subsection{Self Term}
+
+Equation (\ref{AlgF}) can be written as a sum where the infinitesimal volume 
+$d^{3}r^{\prime }$ is now a finite volume $d_{\nu }^{3}$:
+
+\begin{eqnarray}
+F_{i}(\mathbf{r}_{\mu }) &=&E_{i}^{in}\left( \mathbf{r}_{\mu }\right) 
+\mathbf{+}\sum\limits_{\nu \neq \mu }d_{\nu }^{3}G_{ij}\left( \mathbf{r}%
+_{\mu \nu }\right) WF_{j}\mathbf{(r}_{\nu }^{\prime })+I_{i}(\mathbf{r}_{\mu
+}) \\
+&=&E_{\mu ,i}^{in}\mathbf{+}W\sum\limits_{\nu \neq \mu }d_{\nu }^{3}G_{\mu
+i\nu j}F_{\nu j}+I_{\mu i}  \nonumber
+\end{eqnarray}%
+Here $I_{\mu i}$ is the self term, and Greek indices run and sum over dipole
+cell number and the Latin indices run and sum over vector components. Also, $%
+\mathbf{r}_{\mu }$ is at the center of cell number $\mu .$ Of course, this
+only works well if $d_{\mu }^{3}$ is small. Experience shows that $%
+\left\vert m\right\vert kd<1$ should be used, where $m$ is the complex
+refractive index of the homogenous particle.
+
+The Green's function is discretized as 
+\begin{equation}
+G_{\mu i\nu j}=\exp (ikR_{\mu \nu })\left[ \frac{k^{2}}{R_{\mu \nu }}\left(
+\delta _{ij}-\widehat{R_{\mu \nu i}}\widehat{R_{\mu \nu j}}\right) +\left( 
+\frac{ik}{R_{\mu \nu }^{2}}-\frac{1}{R_{\mu \nu }^{3}}\right) \left( \delta
+_{ij}-3\widehat{R_{\mu \nu i}}\widehat{R_{\mu \nu j}}\right) \right]
+\end{equation}
+where $\mathbf{R}_{\mu \nu }=\mathbf{r}_{\mu }-\mathbf{r}_{\nu }.$ This
+equation is very similar to that used by Goedecke and O'Brien.\cite%
+{Goedecke88}
+
+But a problem occurs when the summation index $\nu $ is equal to $\mu :$
+Terms with $R_{\mu \mu }$ in the denominator would diverge (blow up to
+infinity). Thus in equation (\ref{F1}) these terms have been separated.
+Because such a term results from the action of the cell field on itself, it
+is known as the self-term. The self-term results from letting $\mathbf{r}=%
+\mathbf{r}_{\mu },$ and $\mathbf{r}^{\prime }=\mathbf{r}_{\mu }+\mathbf{\xi }
+$, in equation (\ref{F-field}) , and taking $\chi \left( \mathbf{r}^{\prime
+}\right) \mathbf{F}_{j}\left( \mathbf{r}^{\prime }\right) =\chi \left( 
+\mathbf{r}_{\mu }\right) \mathbf{F}_{j}\left( \mathbf{r}_{\mu }\right) .$
+One gets 
+\begin{equation}
+I_{\mu ,i}=\left[ \int_{\Box }d^{3}\xi G_{ij}\left( \mathbf{\xi }\right) %
+\right] WF_{j}\mathbf{(r}_{\mu })
+\end{equation}
+
+The $\Box $ indicates that the integral is over the small dipole cell, of
+volume $d_{\mu }^{3}.$ The integral in brackets in equation (\ref{SelfTerm})
+can be written as 
+\begin{equation}
+\int_{\Box }d^{3}\xi G_{ij}\left( \mathbf{\xi }\right) =\int_{\Box }d^{3}\xi
+e^{ik\xi }\left[ \frac{k^{2}}{\xi }\left( \delta _{ij}-\hat{\xi}_{i}\hat{\xi}%
+_{j}\right) +\left( \frac{ik}{\xi ^{2}}-\frac{1}{\xi ^{3}}\right) \left(
+\delta _{ij}-3\hat{\xi}_{i}\hat{\xi}_{j}\right) \right]
+\end{equation}
+Employing the identity 
+\begin{equation}
+\int_{\Box }d\Omega _{\xi }\hat{\xi}_{i}\hat{\xi}_{j}=\delta _{ij}\frac{1}{3}%
+\int_{\Box }d\Omega _{\xi }
+\end{equation}
+the last term vanishes due to symmetry of cubical cells. Also, the remaining
+terms can be combined to yield 
+\begin{equation}
+\int_{\Box }d^{3}\xi G_{ij}\left( \mathbf{\xi }\right) =\delta _{ij}\frac{%
+2k^{2}}{3}\int_{\Box }d^{3}\xi \frac{k^{2}e^{ik\xi }}{\xi }
+\end{equation}
+
+A series expansion of the integrand on the right hand side yields
+
+\begin{equation}
+\frac{\exp (ikx)}{x}=\left[ \frac{1}{x}+ik-\frac{1}{2}k^{2}x-\frac{1}{6}%
+ik^{3}x^{2}+\frac{1}{24}k^{4}x^{3}+Ox^{4}\right]
+\end{equation}%
+which can be substituted into the previous expression to yield 
+\begin{eqnarray}
+\int_{\Box }d^{3}\xi G_{ij}\left( \mathbf{\xi }\right) &=&\delta _{ij}\frac{%
+2k^{2}}{3}\int_{\Box }d^{3}\xi \left( \frac{1}{\xi }+ik-\frac{1}{2}k^{2}\xi -%
+\frac{1}{6}ik^{3}\xi ^{2}+\frac{1}{24}k^{4}\xi ^{3}+O\left( \xi ^{4}\right)
+\right)  \nonumber \\
+&\equiv &\delta _{ij}\frac{4\pi }{3}\Gamma
+\end{eqnarray}%
+where this equation defines $\Gamma $ as 
+\begin{equation}
+\Gamma =\left( \left( ka\right) ^{2}+\allowbreak \frac{2}{3}\allowbreak
+i\left( ka\right) ^{3}-\frac{1}{4}\left( ka\right) ^{4}-\frac{1}{15}i\left(
+ka\right) ^{5}+O\left( ka\right) ^{6}\right)
+\end{equation}%
+and the integral has been done by using an equivalent volume sphere with
+radius $a_{\mu }$ 
+\begin{equation}
+a_{\mu }=d_{\mu }\left( \frac{3}{4\pi }\right) ^{\frac{1}{3}}
+\end{equation}%
+thus 
+\begin{eqnarray}
+\Gamma _{\mu } &=&\left( \frac{3}{4\pi }\right) ^{\frac{2}{3}}\left( kd_{\mu
+}\right) ^{2}+\allowbreak \allowbreak \left( \frac{\allowbreak \allowbreak i%
+}{2\pi }\right) \left( kd_{\mu }\right) ^{3}-\frac{1}{4}\left( \frac{3}{4\pi 
+}\right) ^{\frac{4}{3}}\left( kd_{\mu }\right) ^{4}  \label{Gamma1} \\
+&&-\frac{1}{15}i\left( \frac{3}{4\pi }\right) ^{\frac{5}{3}}\left( kd_{\mu
+}\right) ^{5}+O\left( \left( kd_{\mu }\right) ^{6}\right)  \nonumber
+\end{eqnarray}%
+The expression for $I_{\mu i}$ can then be written as
+
+\begin{equation}
+I_{\mu i}=\delta _{ij}\frac{4\pi }{3}W\Gamma _{\mu }F_{\mu j}=\frac{4\pi }{3}%
+W\Gamma _{\mu }F_{\mu i}  \label{ST1}
+\end{equation}
+
+The first two terms in $\Gamma _{\mu }$ were used by Goedecke and O'Brien in
+their formulation of the DGF scattering code \cite{Goedecke88}. Draine and
+Goodman obtained a somewhat different expression for $\Gamma _{\mu }$ for
+placement of the dipole cells on a cubic lattice\cite{Draine93}, i.e. the
+coefficients of the various powers of $kd_{\mu }$ are different than in
+equation(\ref{Gamma}). However, for ease in comparison with the DGF method,
+the form given by Goedecke and O'Brien is used here. The corrections of
+order $\left( kd_{\mu }\right) ^{4}$and higher are insignificant; and even
+the term in $\left( kd_{\mu }\right) ^{2}$ is not important if $kd_{\mu }\ll
+1.$ But, as shown by Goedecke and O'Brien, the lowest order imaginary term
+proportional to $\left( kd_{\mu }\right) ^{3}$ is essential for agreement
+with the optical theorem, and this term is the same in the Draine and
+Goodman expression.
 
 \subsection{Initialized variables}
 
@@ -263,23 +624,24 @@ i $ in line $86,$ it defines the particle permittivity $\epsilon $ in line
 107, the complex index of refraction $mm$ in line $108,$ and the complex
 suseptability $\chi $ in line 109.
 
-It inputs the positions and weights for our dipoles in lines $110$ to 116.
+It inputs the positions and weights for our dipoles in lines 110 to 116.
 
 It then find the wave number, $k$ in line 119 and it rotates the direction
-of the incident electric field into the position we asked for in vgfin.
+of the incident electric field into the position we asked for in vgfin in
+lines 125-135.
 
-It then calculates the $W$ factor 
+It then calculates the $W$ factor (137) 
 \[
 W\left( \nu \right) =\frac{\chi }{1+\frac{4\pi }{3}\chi } 
 \]%
-and the incident feild 
+and the incident feild (147) 
 \[
 E_{o}\left( r\right) =e^{-ik\mathbf{r}\cdot \mathbf{\hat{k}}} 
 \]%
 for every $r$ where we have placed a dipole.
 
 The program then calls a subroutine to bring in our direction angles for
-each of the $k-vectors.$
+each of the $k-vectors.$ (152)
 
 The program then calles kvector3 to turn the $k$-vector direction angles
 into the components of the $\hat{k}$ vectors.
@@ -293,7 +655,19 @@ where
 \[
 \psi =e^{(i\ast k\ast khatN.R(b))} 
 \]%
-equation (183)%
+equation 183
+
+We want to find the $a_{Nj}$ in 
+\begin{equation}
+\tilde{F}_{\beta j}\mathbf{=}\sum_{N=1}^{N_{k}}a_{Nj}\Psi _{\beta N}
+\end{equation}%
+and use this to find our $E$ field%
+\[
+\frac{\mathbf{F}(\mathbf{r})}{(1+\frac{4\pi }{3}\chi )}=\mathbf{E}(\mathbf{r}%
+) 
+\]
+
+The code caluclates 
 \[
 T_{\alpha iNj}=\sum_{\beta }\left( 1_{\alpha i\beta j}\mathbf{-}G_{\alpha
 i\beta j}W_{\beta }\right) \Psi _{\beta N} 
@@ -307,17 +681,43 @@ T1_{(a,i,N,j)}=T1_{(a,i,N,j)}+(dd_{(a,i,b,j)}-d_{(b)}^{3}\ast W\ast
 GG_{(R,k,dtemp,EPS,a,i,b,j)})e^{(i\ast k\ast khatN.R(b))} 
 \]
 
-which is equation 185
+which is equation 185 and happens between lines (166) and (181).
 
 @@@I don't know what $d\left( b\right) $ is yet.
 
-Now it calculates Y%
+Now it calculates Y (191)%
 \[
 Y_{Nj}=\sum_{\alpha }\sum_{i}T_{\alpha iNj}^{\ast }E_{\alpha i}^{o} 
 \]%
-and then 
+and then (199)
+
 \[
 H_{MlNj}=\sum_{\alpha }\sum_{i}T_{\alpha iMl}^{\ast }T_{\alpha iNj} 
+\]
+
+Then it does a matrix solve. It first must reshape our multidimensional
+matricies into two-dimensional matricies because that is what the inversion
+routine can do.
+
+So $Y_{Nj}$ is turned into $bb\left( m\right) $ and $H_{MlNj}$ is turned
+into $aa(m,mp)$
+
+It then does something with ipvt and z that I\ need to figure out @@@@@
+
+The call to cgeco Factors a COMPLEX matrix by Gaussian elimination and
+estimates the condition of the matrix.
+
+The call to Solves the COMPLEX system A*X=B or CTRANS(A)*X=B using the
+factors computed by CGECO or CGEFA. The verablee $bb$ is the solution.
+
+The result should be the $a_{Nj}$ values which we then use to calculate 
+\begin{equation}
+\tilde{F}_{\beta j}\mathbf{=}\sum_{N=1}^{N_{k}}a_{Nj}\Psi _{\beta N}
+\end{equation}%
+and then 
+\[
+\mathbf{E}(\mathbf{r})=\frac{\mathbf{F}(\mathbf{r})}{(1+\frac{4\pi }{3}\chi )%
+} 
 \]
 
 \section{Subroutines}
@@ -484,7 +884,7 @@ The code that does this is the subroutine GG
 %\TeXButton{GG code}{\begin{verbatim}
 %C***********************************************************************
 %C*---------------------------------------------------------------------*
-%     complex function GG(R,k,d,EPS,a,i,b,j)      
+%complex function GG(R,k,d,EPS,a,i,b,j)      
 %C*---------------------------------------------------------------------*      
 %C***********************************************************************
 %C*    Function to calculate the dyadic Green's function for a dipole   *
@@ -492,46 +892,46 @@ The code that does this is the subroutine GG
 %C*    single value checked 1 Aug 96  Formula Checked 6 Aug 96          *
 %C***********************************************************************
 %C *** Set the value of NMAX via an included file                     ***  
-%     implicit none
-%     include 'nmax.inc'
+%implicit none
+%include 'nmax.inc'
 %C****  Variables                                                    ****
-%      complex PHZ,t1,t2,temp,CI,GAM,EPS
-%      real RMAG,Rhat(3),R(NMAX,3),Rab(3),k,K2,d,PI
-%      real delta
-%      integer a,b,i,j
-%      Parameter(PI=3.141592654,CI=(0.0,1.0))
+%complex PHZ,t1,t2,temp,CI,GAM,EPS
+%real RMAG,Rhat(3),R(NMAX,3),Rab(3),k,K2,d,PI
+%real delta
+%integer a,b,i,j
+%Parameter(PI=3.141592654,CI=(0.0,1.0))
 %C
-%      K2=k*k 
+%K2=k*k 
 %C       d3=d**3
-%      if(b.ne.a) then
+%if(b.ne.a) then
 %C         calculate separation distance Rmn=Rn-Rm and RMAG=|Rmn|
-%         Rab(1)=R(a,1)-R(b,1)
-%         Rab(2)=R(a,2)-R(b,2)
-%         Rab(3)=R(a,3)-R(b,3)
-%         RMAG=Rab(1)**2+Rab(2)**2+Rab(3)**2    
-%         RMAG=RMAG**0.5
+%  Rab(1)=R(a,1)-R(b,1)
+%  Rab(2)=R(a,2)-R(b,2)
+%  Rab(3)=R(a,3)-R(b,3)
+%  RMAG=Rab(1)**2+Rab(2)**2+Rab(3)**2    
+%  RMAG=RMAG**0.5
 %C         Make a unit vector in the Rmn direction                    ***
-%         Rhat(1)=Rab(1)/RMAG 
-%         Rhat(2)=Rab(2)/RMAG
-%         Rhat(3)=Rab(3)/RMAG
+%  Rhat(1)=Rab(1)/RMAG 
+%  Rhat(2)=Rab(2)/RMAG
+%  Rhat(3)=Rab(3)/RMAG
 %C                          
-%         temp=CI*k*RMAG  
-%         PHZ=cexp(temp) 
+%  temp=CI*k*RMAG  
+%  PHZ=cexp(temp) 
 %C         
-%         t1=(K2/RMAG)*(delta(i,j)-Rhat(i)*Rhat(j)) 
-%         t2=(ci*k/RMAG**2-1.0/RMAG**3)*(delta(i,j)-3.*Rhat(i)*Rhat(j))
-%         GG=PHZ*(t1+t2)  
-%       else
-%         GG=4.*PI*GAM(d,k,EPS)/(3.0*d**3)
-%      end if        
-%      return
-%     end
+%  t1=(K2/RMAG)*(delta(i,j)-Rhat(i)*Rhat(j)) 
+%  t2=(ci*k/RMAG**2-1.0/RMAG**3)*(delta(i,j)-3.*Rhat(i)*Rhat(j))
+%  GG=PHZ*(t1+t2)  
+%else
+%  GG=4.*PI*GAM(d,k,EPS)/(3.0*d**3)
+%end if        
+%return
+%end
 %\end{verbatim}}}%
 %BeginExpansion
 \begin{verbatim}
 C***********************************************************************
 C*---------------------------------------------------------------------*
-     complex function GG(R,k,d,EPS,a,i,b,j)      
+complex function GG(R,k,d,EPS,a,i,b,j)      
 C*---------------------------------------------------------------------*      
 C***********************************************************************
 C*    Function to calculate the dyadic Green's function for a dipole   *
@@ -539,40 +939,40 @@ C*      in the IBM write-up (equation ???)                             *
 C*    single value checked 1 Aug 96  Formula Checked 6 Aug 96          *
 C***********************************************************************
 C *** Set the value of NMAX via an included file                     ***  
-     implicit none
-     include 'nmax.inc'
+implicit none
+include 'nmax.inc'
 C****  Variables                                                    ****
-      complex PHZ,t1,t2,temp,CI,GAM,EPS
-      real RMAG,Rhat(3),R(NMAX,3),Rab(3),k,K2,d,PI
-      real delta
-      integer a,b,i,j
-      Parameter(PI=3.141592654,CI=(0.0,1.0))
+complex PHZ,t1,t2,temp,CI,GAM,EPS
+real RMAG,Rhat(3),R(NMAX,3),Rab(3),k,K2,d,PI
+real delta
+integer a,b,i,j
+Parameter(PI=3.141592654,CI=(0.0,1.0))
 C
-      K2=k*k 
+K2=k*k 
 C       d3=d**3
-      if(b.ne.a) then
+if(b.ne.a) then
 C         calculate separation distance Rmn=Rn-Rm and RMAG=|Rmn|
-         Rab(1)=R(a,1)-R(b,1)
-         Rab(2)=R(a,2)-R(b,2)
-         Rab(3)=R(a,3)-R(b,3)
-         RMAG=Rab(1)**2+Rab(2)**2+Rab(3)**2    
-         RMAG=RMAG**0.5
+  Rab(1)=R(a,1)-R(b,1)
+  Rab(2)=R(a,2)-R(b,2)
+  Rab(3)=R(a,3)-R(b,3)
+  RMAG=Rab(1)**2+Rab(2)**2+Rab(3)**2    
+  RMAG=RMAG**0.5
 C         Make a unit vector in the Rmn direction                    ***
-         Rhat(1)=Rab(1)/RMAG 
-         Rhat(2)=Rab(2)/RMAG
-         Rhat(3)=Rab(3)/RMAG
+  Rhat(1)=Rab(1)/RMAG 
+  Rhat(2)=Rab(2)/RMAG
+  Rhat(3)=Rab(3)/RMAG
 C                          
-         temp=CI*k*RMAG  
-         PHZ=cexp(temp) 
+  temp=CI*k*RMAG  
+  PHZ=cexp(temp) 
 C         
-         t1=(K2/RMAG)*(delta(i,j)-Rhat(i)*Rhat(j)) 
-         t2=(ci*k/RMAG**2-1.0/RMAG**3)*(delta(i,j)-3.*Rhat(i)*Rhat(j))
-         GG=PHZ*(t1+t2)  
-       else
-         GG=4.*PI*GAM(d,k,EPS)/(3.0*d**3)
-      end if        
-      return
-     end
+  t1=(K2/RMAG)*(delta(i,j)-Rhat(i)*Rhat(j)) 
+  t2=(ci*k/RMAG**2-1.0/RMAG**3)*(delta(i,j)-3.*Rhat(i)*Rhat(j))
+  GG=PHZ*(t1+t2)  
+else
+  GG=4.*PI*GAM(d,k,EPS)/(3.0*d**3)
+end if        
+return
+end
 \end{verbatim}%
 %EndExpansion
 
@@ -582,7 +982,7 @@ which calles the subroutine GAM based on equation (\ref{Gamma})
 %\TeXButton{GAM code}{\begin{verbatim}
 %C***********************************************************************       
 %C*---------------------------------------------------------------------*
-%     complex Function GAM(d,k,EPS)                                     
+%complex Function GAM(d,k,EPS)                                     
 %C*---------------------------------------------------------------------*      
 %C***********************************************************************
 %C*    Function to calculate the self term contribution termed GAMMA    *
@@ -607,14 +1007,14 @@ which calles the subroutine GAM based on equation (\ref{Gamma})
 %C*  Single value checed 1 Aug 96   formula checked 6 Aug 96            *
 %C***********************************************************************
 %C**** Variables                                                     ****  
-%     implicit none
-%      complex EPS,CI      
-%      real k,d,kd
-%      real PI
-%      parameter (PI=3.141592654,CI=(0.0,1.0)) 
+%implicit none
+%complex EPS,CI      
+%real k,d,kd
+%real PI
+%parameter (PI=3.141592654,CI=(0.0,1.0)) 
 %c       real b1,b2,b3,S
-%       real b1
-%      kd=k*d
+%real b1
+%kd=k*d
 %C *** Drain and Goodman                                              ***
 %c       b1=-1.8915316
 %c       b2=0.1648469
@@ -622,16 +1022,16 @@ which calles the subroutine GAM based on equation (\ref{Gamma})
 %c       S=1./5.
 %c       GAM=(3./(4.*PI))*((b1+EPS*(b2+b3*S))*kd**2+(2.*CI*(kd**3)/3.))
 %c      b1=0.0
-%      b1=(3./(4.*PI))**(2./3.)
-%      GAM=b1*(kd)**2 + CI*kd**3/(2.*PI)          
-%     return
-%     end
+%b1=(3./(4.*PI))**(2./3.)
+%GAM=b1*(kd)**2 + CI*kd**3/(2.*PI)          
+%return
+%end
 %\end{verbatim}}}%
 %BeginExpansion
 \begin{verbatim}
 C***********************************************************************       
 C*---------------------------------------------------------------------*
-     complex Function GAM(d,k,EPS)                                     
+complex Function GAM(d,k,EPS)                                     
 C*---------------------------------------------------------------------*      
 C***********************************************************************
 C*    Function to calculate the self term contribution termed GAMMA    *
@@ -656,14 +1056,14 @@ C*       GAM=2.*((1.-CI*k*a)*cexp(temp)-1.)                            *
 C*  Single value checed 1 Aug 96   formula checked 6 Aug 96            *
 C***********************************************************************
 C**** Variables                                                     ****  
-     implicit none
-      complex EPS,CI      
-      real k,d,kd
-      real PI
-      parameter (PI=3.141592654,CI=(0.0,1.0)) 
+implicit none
+complex EPS,CI      
+real k,d,kd
+real PI
+parameter (PI=3.141592654,CI=(0.0,1.0)) 
 c       real b1,b2,b3,S
-       real b1
-      kd=k*d
+real b1
+kd=k*d
 C *** Drain and Goodman                                              ***
 c       b1=-1.8915316
 c       b2=0.1648469
@@ -671,110 +1071,136 @@ c       b3=-1.7700004
 c       S=1./5.
 c       GAM=(3./(4.*PI))*((b1+EPS*(b2+b3*S))*kd**2+(2.*CI*(kd**3)/3.))
 c      b1=0.0
-      b1=(3./(4.*PI))**(2./3.)
-      GAM=b1*(kd)**2 + CI*kd**3/(2.*PI)          
-     return
-     end
+b1=(3./(4.*PI))**(2./3.)
+GAM=b1*(kd)**2 + CI*kd**3/(2.*PI)          
+return
+end
 \end{verbatim}%
 %EndExpansion
 
 \bigskip
 
-\section{What we want to do}
+\bigskip
 
-We want to find the scattered field from a particle being hit by a plane
-wave. The code sould find $\mathbf{E}$
+\subsection{In Order in the Code}
 
-In the dissertation we defined 
-\begin{equation}
-\mathbf{F}(\mathbf{r})\equiv \mathbf{E}(\mathbf{r})(1+\frac{4\pi }{3}\chi 
-\mathbf{(r}))  \tag{38}  \label{EtoF}
-\end{equation}%
-We want the electric field so we want%
+51-78 Declare variables
+
+80 Set inputfile (from vgfin.f), the output file name, and kfile (from
+vgfkv.f)
+
+82-83 Declare function types. We will use several functions in this code
+that are specific to the code. They are declared here.
+
+87-88 Define some constants
+
+89-98 Interact with the user to get input data
+
+99-116 Open the input file (from vgfin.f) and read in NUSE, Wave, Alpha,
+Beta, Gamma, Psi, RAD, Er, EI, TD and the cell positions. Along the way
+calculate $\chi $, $\varepsilon ,$ and $m.$
+
+117-135 Make the incoming plane wave and then rotate it into the right
+position. This starts with angles $\alpha ,$ $\beta ,$ and $\gamma $ and
+converts from degrees to radians. The the function Rot is used to calculate
+a rotation matrix. This function calculates the Euler rotation matrix where
+the three rotation angles are alpha, a rotation about the z-axis, beta, a
+rotation about the new y-axis, and gamma, a rotation about the new z-axis. 
 \[
-\mathbf{E}(\mathbf{r})=\frac{\mathbf{F}(\mathbf{r})}{(1+\frac{4\pi }{3}\chi 
-\mathbf{(r}))} 
+RRR=\left( 
+\begin{array}{ccc}
+\cos \alpha \cos \beta \cos \gamma -\sin \alpha \sin \gamma  & \cos \alpha
+\cos \beta \cos \gamma -\cos \alpha \sin \gamma  & \sin \beta \cos \gamma 
+\\ 
+-\cos \alpha \cos \beta \sin \gamma -\sin \alpha \cos \gamma  & -\sin \alpha
+\cos \beta \sin \gamma +\cos \alpha \cos \gamma  & \sin \beta \sin \gamma 
+\\ 
+\cos \alpha \sin \beta  & \sin \alpha \sin \beta  & \cos \beta 
+\end{array}%
+\right) 
+\]%
+we will start with our input direction being in the $z$-direction%
+\[
+V_{k}=\left( 
+\begin{array}{c}
+0 \\ 
+0 \\ 
+1%
+\end{array}%
+\right) 
+\]%
+so our new direction for our incoming wave in the particle frame is 
+\[
+Khat=RRR\ast V
+\]%
+where the function MV\ is used to do the multiply. But then we want the $E$%
+-vector to be in the $x-y$ plane in the lab frame (can't remember why). So
+take 
+\[
+V_{E}=\left( 
+\begin{array}{c}
+\cos \psi  \\ 
+\sin \psi  \\ 
+0%
+\end{array}%
+\right) 
+\]%
+then rotate into our particle frame%
+\[
+E_{Ohat}=RRR\ast V
+\]%
+and use MV again to do the multiply.
+
+137 Calculate the $W$ factor using function Wcalc%
+\[
+W\left( \nu \right) =\frac{\chi }{1+\frac{4\pi }{3}\chi } 
 \]
 
-so we ned to calculate $\mathbf{F}(\mathbf{r})$ and $\chi \mathbf{(r})$
+138-148 Form the incoming field. This will be of the form 
+\[
+\mathbf{E}\left( \mathbf{r},t\right) =E_{o}\exp \left( i\mathbf{r}\cdot 
+\mathbf{k}\right) \exp (-i\omega t)
+\]%
+And we want to know the value of the field at every cell. The code makes the 
+$\mathbf{r}\cdot \mathbf{k}$ in a loop from 140-142. It has to do this for
+each cell. So there is an outside loop from 138 to 148 that loops over cells
+and the $r$ components will be different for every cell as we calculated in
+vgfin.f. The $\mathbf{r}\cdot \mathbf{k}$ is then multiplied by $i$ in line
+143 and then put into an exponent in line 144 and finally the efield
+components are assembled in a small loop in lines 145 to 147.
 
-\begin{equation}
+151-154 Now go and get the k-vectors that we built in vgfkv.f. These will be
+used to form the outgoing scattered field.
+
+156-242 is the Monty Carlo loop that finds the outgoing scattered field. It
+caucluates the $a_{Nj}$ so later we can form  
+\[
 \tilde{F}_{\beta j}\mathbf{=}\sum_{N=1}^{N_{k}}a_{Nj}\Psi _{\beta N}
-\label{CPSI}
-\end{equation}
+\]%
+and then 
+\[
+\mathbf{E}(\mathbf{r})=\frac{\mathbf{F}(\mathbf{r})}{(1+\frac{4\pi }{3}\chi )%
+}
+\]%
+which is what we want as our answer.
 
-The $\Psi _{\beta N}$ are a series of plane waves%
-\begin{equation}
+The loop starts with finding $\Psi _{\beta N}$%
+\[
 \Psi _{\beta N}=e^{imk\mathbf{\hat{k}}_{N}\mathbf{\cdot r}_{\beta }}
-\end{equation}%
-and the $a_{Nj}$ is a set of coefficients. So our $E$ field comes out as a
-series expansion where our explansion funcitons are $\Psi _{\beta N}$. We
-need the $a_{Nj}$
+\]%
+\[
+\psi =e^{(i\ast k\ast khatN.R(b))}
+\]%
+and this is done with a call to the function CPHI.
 
-The $a_{Nj}$ come from a matrix inversion 
-\begin{equation}
-\left( \mathbf{a}\right) =\left( \mathbf{H}\right) ^{-1}\left( \mathbf{Y}%
-\right)  \label{aHY}
-\end{equation}%
-where $\mathbf{H}$ and $\mathbf{Y}$ are given by 
-\begin{eqnarray}
-H_{MlNj} &=&\Psi _{\gamma M}^{\ast }\left( 1_{\alpha i\gamma l}\mathbf{-}%
-W_{\beta }^{\ast }G_{\alpha i\gamma l}^{\ast }\right) \left( 1_{\alpha
-i\beta j}\mathbf{-}W_{\beta }G_{\alpha i\beta j}\right) \Psi _{\beta N} 
-\nonumber \\
-Y_{Nj} &=&\left( 1_{\alpha i\beta j}\mathbf{-}W_{\beta }G_{\alpha i\beta
-j}\right) ^{\ast }E_{\alpha i}^{o}\Psi _{\beta N}^{\ast }
-\end{eqnarray}
-
-or more compactlyl (and how it is done in the code) 
-\begin{equation}
-T_{\alpha iNj}=\sum_{\beta }\left( 1_{\alpha i\beta j}\mathbf{-}G_{\alpha
-i\beta j}W_{\beta }\right) \Psi _{\beta N}
-\end{equation}%
-Using $T_{\alpha iNj},$ $H_{MlNj}$ and $Y_{Nj}$ can be expressed as
-
-\begin{eqnarray}
-H_{MlNj} &=&\sum_{\alpha }\sum_{i}T_{\alpha iMl}^{\ast }T_{\alpha iNj}
-\label{HTYT} \\
-Y_{Nj} &=&\sum_{\alpha }\sum_{i}T_{\alpha iNj}^{\ast }E_{\alpha i}^{o} 
-\nonumber
-\end{eqnarray}
-
-The $T_{\alpha iNj}$ depend on
-
-\begin{equation}
-\Psi _{\beta N}=e^{imk\mathbf{\hat{k}}_{N}\mathbf{\cdot r}_{\beta }}
-\end{equation}%
-which depend on the $\mathbf{\hat{k}}_{N}$
-
-These are read in from a file. That file is created by vgfkv.f. And it looks
-like it makes a $k_{N}$ in equally spaced increments in the $\theta $ and $%
-\phi $ directions. \FRAME{ftbpF}{2.904in}{2.7043in}{0in}{}{}{Figure}{\special%
-{language "Scientific Word";type "GRAPHIC";maintain-aspect-ratio
-TRUE;display "USEDEF";valid_file "T";width 2.904in;height 2.7043in;depth
-0in;original-width 3.9418in;original-height 3.6668in;cropleft "0";croptop
-"1";cropright "1";cropbottom "0";tempfilename
-'QIZ05900.wmf';tempfile-properties "XPR";}}So we have what looks like a set
-of arrows in a spherical shape pointing away from the particle. Maybe we
-could experiment with non-uniform distributions of these? Anyway, it looks
-like we need to make vgfkv.py first.
-
-The $T_{\alpha iNj}$ also depend on $G_{\alpha i\beta j}$ which are found
-using
-
-\begin{equation}
-G_{\mu i\nu j}=\exp (ikR_{\mu \nu })\left[ \frac{k^{2}}{R_{\mu \nu }}\left(
-\delta _{ij}-\widehat{R_{\mu \nu i}}\widehat{R_{\mu \nu j}}\right) +\left( 
-\frac{ik}{R_{\mu \nu }^{2}}-\frac{1}{R_{\mu \nu }^{3}}\right) \left( \delta
-_{ij}-3\widehat{R_{\mu \nu i}}\widehat{R_{\mu \nu j}}\right) \right] 
-\end{equation}%
-and the self term 
-\begin{equation}
-G_{\mu i\mu j}=\frac{4\pi }{3d_{\mu }^{3}}\Gamma _{\mu }\delta _{ij}
-\label{Guiui}
-\end{equation}
-
-where I'm sure the $R_{\mu \nu }$ and $\widehat{R_{\mu \nu i}}$ mean
-something. Start her next time.
+Then it starts to calculate 
+\[
+ERR=\left\vert \Psi _{\beta N}\right\vert ^{2}
+\]%
+This will be our optimization test. In line 248 we check to see if $ERR>ERR0$
+The $ERR0$ was something we asked the user to input at the start. If $%
+ERR<ERR0$ then we are done with one itteration. The original inputs worked.
+So the code jumps down to the else clause in line 275 and it calles Ecalc to
+calcuate the scattered efield
 
 \end{document}
