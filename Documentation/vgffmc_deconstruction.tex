@@ -8,7 +8,7 @@
 %TCIDATA{<META NAME="SaveForMode" CONTENT="1">}
 %TCIDATA{BibliographyScheme=Manual}
 %TCIDATA{Created=Wednesday, July 01, 2020 17:46:22}
-%TCIDATA{LastRevised=Monday, June 07, 2021 13:24:47}
+%TCIDATA{LastRevised=Monday, December 13, 2021 13:01:55}
 %TCIDATA{<META NAME="GraphicsSave" CONTENT="32">}
 %TCIDATA{<META NAME="DocumentShell" CONTENT="Scientific Notebook\Blank Document">}
 %TCIDATA{Language=American English}
@@ -47,7 +47,7 @@
 
 \section{VGFFMC}
 
-Program to use the F-field formalizm to solve the scattering problem for a
+Program to use the F-field formalism to solve the scattering problem for a
 particle of arbitrary shape. The particle is divided into an array of
 dipoles on a cubic lattice (by program VGFIN). The scattering is computed
 through a plane wave expansion of the field inside the particle. From this
@@ -55,7 +55,7 @@ the external field and phase function are calculated (in program VGFPHZ)
 
 \subsubsection{Units:}
 
-All equations are in Gausian units. Lengths are all relative, that is, if
+All equations are in Gaussian units. Lengths are all relative, that is, if
 you input a wavelength of 10 um then all other lengths must be in um. You
 may use m or cm or furlongs if you wish as long as all lengths are in the
 same units.
@@ -72,7 +72,7 @@ beta, and gamma (corresponding to the Euler angles as given in Arfkin,
 Mathematical Methods for Physicists, 3nd Ed., Academic Press, NY, 1970). All
 calculations are done in this 'body frame.' The polarization is given
 relative to the x-axis in the lab or global frame. In this frame the
-incident plane wave traveles in the z-hat direction and the polarization is
+incident plane wave travels in the z-hat direction and the polarization is
 in the x-y plane. The direction of the electric field is measured by an
 angle psi from the x-axis.
 
@@ -109,7 +109,7 @@ three components
 
 \subsection{Algorithm}
 
-We will assume a field with complex time dependance.%
+We will assume a field with complex time dependence.%
 \begin{equation}
 \mathbf{E}\left( \mathbf{r},t\right) =\mathbf{E(r})\exp (-i\omega t)+c.c.
 \label{Field}
@@ -128,14 +128,14 @@ W\left( \mathbf{r}\right) =\frac{\chi \mathbf{(r})}{(1+\frac{4\pi }{3}\chi
 \end{equation}%
 then letting 
 \[
-\mathbf{F}(\mathbf{r})=\mathbf{E}(\mathbf{r})(1+\frac{4\pi }{3}\chi ) 
+\mathbf{F}(\mathbf{r})=\mathbf{E}(\mathbf{r})(1+\frac{4\pi }{3}\chi )
 \]%
 and the $F$-field 
 \begin{equation}
 \mathbf{F}(\mathbf{r})=\mathbf{E}^{e}(\mathbf{r)+}\int d^{3}\mathbf{r}%
 ^{\prime }\mathbf{G}\left( \mathbf{r},\mathbf{r}^{\prime }\right) \cdot
 W\left( \mathbf{r}^{\prime }\right) \mathbf{F(r}^{\prime })  \label{F-field}
-\end{equation}
+\end{equation}%
 to make our calculations more compact.
 
 We can write the F-field as%
@@ -326,7 +326,7 @@ Y_{Nj} &=&\sum_{\alpha }\sum_{i}T_{\alpha iNj}^{\ast }E_{\alpha i}^{o}
 \end{eqnarray}%
 This is the form of the quantities used in the actual algorithms.
 
-Then since we foudn the $a_{Nj}$ with the matrix inversion we can calculate
+Then since we found the $a_{Nj}$ with the matrix inversion we can calculate
 the 
 \begin{equation}
 \tilde{F}_{\beta j}\mathbf{=}\sum_{N=1}^{N_{k}}a_{Nj}e^{imk\mathbf{\hat{k}}%
@@ -346,7 +346,7 @@ and we have our electric field.
 
 This is what the code is supposed to do.
 
-\subsection{Self Term}
+\subsection{Green's function and Self Term}
 
 Equation (\ref{AlgF}) can be written as a sum where the infinitesimal volume 
 $d^{3}r^{\prime }$ is now a finite volume $d_{\nu }^{3}$:
@@ -549,12 +549,12 @@ Aspect ratio, ration of major to minor axis & $AR$ \\ \hline
 Dipole weighting factors & $D(NMAX)$ \\ \hline
 Locations of dipoles, $x,$ $y,$ and $z$ components. & $R(NMAX,3)$ \\ \hline
 real and imaginary part of the permittivity & $ER,$ $EI$ \\ \hline
-permitivity of the particle material & $EPS$ \\ \hline
+permittivity of the particle material & $EPS$ \\ \hline
 $r\cdot k$ & $RDK$ \\ \hline
 & $TD$ \\ \hline
 wave number $2\pi /\lambda $ & $k$ \\ \hline
 & $PI$ \\ \hline
-Convert from degrees to radioas & $DEG$ \\ \hline
+Convert from degrees to radians & $DEG$ \\ \hline
 & $Khat\left( 3\right) $ \\ \hline
 Rotation matrix & $RRR\left( 3,3\right) $ \\ \hline
 & $V\left( 3\right) $ \\ \hline
@@ -584,8 +584,8 @@ I think this is the input electric field direction & $E0hat\left( 3\right) $
 complex index of refraction (21) & $mm$ \\ \hline
 complex permittivity (20) & $EPS$ \\ \hline
 complex susceptibility (20) & $X$ \\ \hline
-W-factor (39) $\chi \left( r\right) /(1+\frac{4}{3}\pi \chi \left( r\right)
-) $ & $W$ \\ \hline
+W-factor (39) $\chi \left( r\right) /(1+\frac{4}{3}\pi \chi \left( r\right) )
+$ & $W$ \\ \hline
 & $C$ \\ \hline
 & $CI$ \\ \hline
 & $temp$ \\ \hline
@@ -619,10 +619,10 @@ Incident field (line 138-148) & $E0\left( 3\ast KNMAX\right) $ \\ \hline
 
 \section{Main Program}
 
-The program defines many variables at the start. After defining $\pi $ and $%
-i $ in line $86,$ it defines the particle permittivity $\epsilon $ in line
+The program defines many variables at the start. After defining $\pi $ and $i
+$ in line $86,$ it defines the particle permittivity $\epsilon $ in line
 107, the complex index of refraction $mm$ in line $108,$ and the complex
-suseptability $\chi $ in line 109.
+susceptibility $\chi $ in line 109.
 
 It inputs the positions and weights for our dipoles in lines 110 to 116.
 
@@ -632,28 +632,28 @@ lines 125-135.
 
 It then calculates the $W$ factor (137) 
 \[
-W\left( \nu \right) =\frac{\chi }{1+\frac{4\pi }{3}\chi } 
+W\left( \nu \right) =\frac{\chi }{1+\frac{4\pi }{3}\chi }
 \]%
-and the incident feild (147) 
+and the incident field (147) 
 \[
-E_{o}\left( r\right) =e^{-ik\mathbf{r}\cdot \mathbf{\hat{k}}} 
+E_{o}\left( r\right) =e^{-ik\mathbf{r}\cdot \mathbf{\hat{k}}}
 \]%
 for every $r$ where we have placed a dipole.
 
 The program then calls a subroutine to bring in our direction angles for
 each of the $k-vectors.$ (152)
 
-The program then calles kvector3 to turn the $k$-vector direction angles
-into the components of the $\hat{k}$ vectors.
+The program then calls kvector3 to turn the $k$-vector direction angles into
+the components of the $\hat{k}$ vectors.
 
-The program then starts the monte carlo loop. In this loop it calclates
+The program then starts the monte Carlo loop. In this loop it calculates
 where 
 \begin{equation}
 \Psi _{\beta N}=e^{imk\mathbf{\hat{k}}_{N}\mathbf{\cdot r}_{\beta }}
 \label{PSYFUN}
 \end{equation}%
 \[
-\psi =e^{(i\ast k\ast khatN.R(b))} 
+\psi =e^{(i\ast k\ast khatN.R(b))}
 \]%
 equation 183
 
@@ -667,10 +667,10 @@ and use this to find our $E$ field%
 ) 
 \]
 
-The code caluclates 
+The code calculates 
 \[
 T_{\alpha iNj}=\sum_{\beta }\left( 1_{\alpha i\beta j}\mathbf{-}G_{\alpha
-i\beta j}W_{\beta }\right) \Psi _{\beta N} 
+i\beta j}W_{\beta }\right) \Psi _{\beta N}
 \]%
 \[
 T1_{(a,i,N,j)}=T1_{(a,i,N,j)}+(dd_{(a,i,b,j)}-d_{(b)}^{3}\ast W\ast GG)\psi 
@@ -696,31 +696,107 @@ H_{MlNj}=\sum_{\alpha }\sum_{i}T_{\alpha iMl}^{\ast }T_{\alpha iNj}
 \]
 
 Then it does a matrix solve. It first must reshape our multidimensional
-matricies into two-dimensional matricies because that is what the inversion
+matrices into two-dimensional matrices because that is what the inversion
 routine can do.
 
 So $Y_{Nj}$ is turned into $bb\left( m\right) $ and $H_{MlNj}$ is turned
 into $aa(m,mp)$
 
-It then does something with ipvt and z that I\ need to figure out @@@@@
-
-The call to cgeco Factors a COMPLEX matrix by Gaussian elimination and
-estimates the condition of the matrix.
-
-The call to Solves the COMPLEX system A*X=B or CTRANS(A)*X=B using the
-factors computed by CGECO or CGEFA. The verablee $bb$ is the solution.
+The matrix inversion routine comes in two parts. It first calls CGECO and
+then CGESL. The call to cgeco Factors a COMPLEX matrix by Gaussian
+elimination and estimates the condition of the matrix. The call to cgefa
+solves the COMPLEX system A*X=B or CTRANS(A)*X=B using the factors computed
+by CGECO or CGEFA. The input matrix is $aa$ ($H$) and the subroutine uses
+two variables ipvt and z that come in as zeros. the variable $aa$ leaves
+cgeco row reduced and enters cgesl to finish the inversion and multiply. The
+input matrix is still aa, and the vector is now called $bb.$ After cgesl,
+the variable $bb$ has the solution. What we did was 
+\begin{equation}
+\left( \mathbf{a}\right) =\left( \mathbf{H}\right) ^{-1}\left( \mathbf{Y}%
+\right) 
+\end{equation}
 
 The result should be the $a_{Nj}$ values which we then use to calculate 
 \begin{equation}
 \tilde{F}_{\beta j}\mathbf{=}\sum_{N=1}^{N_{k}}a_{Nj}\Psi _{\beta N}
 \end{equation}%
-and then 
+but our $bb$ vector is in the wrong form. We have to turn it back into an
+array of vectors. And that is what happens next. The $bb$ output is turned
+into $A_{n}.$ Next we want to calculate the $F$ fields and then the $E$
+fields.  
 \[
 \mathbf{E}(\mathbf{r})=\frac{\mathbf{F}(\mathbf{r})}{(1+\frac{4\pi }{3}\chi )%
-} 
+}
 \]
 
+That happens in a call to Ecalc. That first finds $F$ and then finds $E.$
+
+There is still the test to see if our field has converged. That is all the
+calculation of ERR from $\Phi $ in lines 243 and 245. If the error is small
+enough then the $F$ and $E$ are calculated. $If$ not, we move the k-vectors
+around (line 271) to try to find a better set that represent the field
+better. Then we try the calculation again. 
+
+In the end, the fields are output by a function called printout and then the
+code vgfphz will make fancy graphs for us.
+
 \section{Subroutines}
+
+Subroutines are just functions. In vgffmc there are the following
+subroutines.
+
+subroutine Gcalc(R,k,Gmn,d,EPS,m,n) * This is a lie, it is called GG (see
+below)
+
+subroutine Ecalc(NUSE,R,E,F,An,khatN,X,NK,K,mm) 
+
+subroutine printout(COMMENTS,ERR,ERR0,NUSE,wave,alpha,beta,gamma,
+
+\& psi, RAD, EPS,R,D,E,NK,An,mcount,OUTFILE,khatN,divd) 
+
+complex function CPHI(An,H,Y,E0,NK,NUSE)
+
+subroutine printkv(kth,kph,NK,KFILE,ERR,ERRlast,mcount,kcount) 
+
+subroutine getkv(kth,kph,NK,KFILE,ERR,ERRlast,mcount,kcount) 
+
+subroutine move1kv(mcount,khatN,kth,kph,NK,iseed,divd) 
+
+real function rannum(iseed)
+
+subroutine kvectors4(N,khatN,kth,kph,NK) 
+
+subroutine kvectors3(khatN,kth,kph,NK)
+
+complex Function GAM(d,k,EPS)
+
+complex function CPSI(R,KhatN,k,mm,N,b) 
+
+complex Function Wcalc(X) 
+
+complex function GG(R,k,d,EPS,a,i,b,j) 
+
+real function delta(alpha,beta)
+
+real function dd(alpha,i,beta, j) 
+
+subroutine ROT(RRR, alpha, beta, gamma)
+
+subroutine MV(M,V,U) subroutine to multiply a 3x3 matrix by a vector with
+three components
+
+What follows is a description of each function.
+
+\subsection{subroutine Ecalc(NUSE,R,E,F,An,khatN,X,NK,K,mm) }
+
+Not done yet
+
+\subsection{subroutine printout(COMMENTS,ERR,ERR0,NUSE,wave,alpha,beta,gamma,%
+}
+
+\subsection{ \& psi, RAD, EPS,R,D,E,NK,An,mcount,OUTFILE,khatN,divd) }
+
+Not done yet
 
 \subsection{Subroutine
 getkvectors(kth,kph,NK,KFILE,ERR,ERRlast,mcount,kcount)}
@@ -733,27 +809,41 @@ complex Function GAM(d,k,EPS) *
 
 complex function CPSI(R,KhatN,k,mm,N,b) *
 
+\subsection{subroutine move1kv(mcount,khatN,kth,kph,NK,iseed,divd) }
+
+Not done yet
+
+\subsection{real function rannum(iseed)}
+
+Not done yet
+
+\subsection{subroutine kvectors4(N,khatN,kth,kph,NK) }
+
+Not done yet
+
+\subsection{subroutine kvectors3(khatN,kth,kph,NK)}
+
+Not done yet
+
+\subsection{complex function CPSI(R,KhatN,k,mm,N,b) }
+
+Not done yet
+
 \subsection{complex Function Wcalc(X,d,k,EPS)}
 
-this fucntion calcualtes the W-factor from the dissertation equation 39 and
+this function calculates the W-factor from the dissertation equation 39 and
 141.%
 \[
-W\left( \nu \right) =\frac{\chi }{1+\frac{4\pi }{3}\chi } 
+W\left( \nu \right) =\frac{\chi }{1+\frac{4\pi }{3}\chi }
 \]%
-where $\chi $ is the complex suseptibility.
+where $\chi $ is the complex susceptibility.
 
-subroutine Gcalc(R,k,Gmn,d,EPS,m,n) *
+\subsection{subroutine GG and GAM}
 
-real function delta(alpha,beta) *
+We already did this math. It is repeated here. But what you need to know now
+is that the Green's function happens in Gcalc.
 
-real function dd(alpha,i,beta,k) *
-
-subroutine ROT(RRR, alpha, beta, gamma) *
-
-subroutine MV(M,V,U) subroutine to multiply a 3x3 matrix by a vector with
-three components
-
-\subsection{The digitized Green's function}
+Now the math again.
 
 Equation (\ref{F-field}) can be written as a sum where the infinitesimal
 volume $d^{3}r^{\prime }$ is now a finite volume $d_{\nu }^{3}$:
@@ -905,24 +995,24 @@ The code that does this is the subroutine GG
 %C       d3=d**3
 %if(b.ne.a) then
 %C         calculate separation distance Rmn=Rn-Rm and RMAG=|Rmn|
-%  Rab(1)=R(a,1)-R(b,1)
-%  Rab(2)=R(a,2)-R(b,2)
-%  Rab(3)=R(a,3)-R(b,3)
-%  RMAG=Rab(1)**2+Rab(2)**2+Rab(3)**2    
-%  RMAG=RMAG**0.5
+% Rab(1)=R(a,1)-R(b,1)
+% Rab(2)=R(a,2)-R(b,2)
+% Rab(3)=R(a,3)-R(b,3)
+% RMAG=Rab(1)**2+Rab(2)**2+Rab(3)**2    
+% RMAG=RMAG**0.5
 %C         Make a unit vector in the Rmn direction                    ***
-%  Rhat(1)=Rab(1)/RMAG 
-%  Rhat(2)=Rab(2)/RMAG
-%  Rhat(3)=Rab(3)/RMAG
+% Rhat(1)=Rab(1)/RMAG 
+% Rhat(2)=Rab(2)/RMAG
+% Rhat(3)=Rab(3)/RMAG
 %C                          
-%  temp=CI*k*RMAG  
-%  PHZ=cexp(temp) 
+% temp=CI*k*RMAG  
+% PHZ=cexp(temp) 
 %C         
-%  t1=(K2/RMAG)*(delta(i,j)-Rhat(i)*Rhat(j)) 
-%  t2=(ci*k/RMAG**2-1.0/RMAG**3)*(delta(i,j)-3.*Rhat(i)*Rhat(j))
-%  GG=PHZ*(t1+t2)  
+% t1=(K2/RMAG)*(delta(i,j)-Rhat(i)*Rhat(j)) 
+% t2=(ci*k/RMAG**2-1.0/RMAG**3)*(delta(i,j)-3.*Rhat(i)*Rhat(j))
+% GG=PHZ*(t1+t2)  
 %else
-%  GG=4.*PI*GAM(d,k,EPS)/(3.0*d**3)
+% GG=4.*PI*GAM(d,k,EPS)/(3.0*d**3)
 %end if        
 %return
 %end
@@ -952,31 +1042,31 @@ K2=k*k
 C       d3=d**3
 if(b.ne.a) then
 C         calculate separation distance Rmn=Rn-Rm and RMAG=|Rmn|
-  Rab(1)=R(a,1)-R(b,1)
-  Rab(2)=R(a,2)-R(b,2)
-  Rab(3)=R(a,3)-R(b,3)
-  RMAG=Rab(1)**2+Rab(2)**2+Rab(3)**2    
-  RMAG=RMAG**0.5
+ Rab(1)=R(a,1)-R(b,1)
+ Rab(2)=R(a,2)-R(b,2)
+ Rab(3)=R(a,3)-R(b,3)
+ RMAG=Rab(1)**2+Rab(2)**2+Rab(3)**2    
+ RMAG=RMAG**0.5
 C         Make a unit vector in the Rmn direction                    ***
-  Rhat(1)=Rab(1)/RMAG 
-  Rhat(2)=Rab(2)/RMAG
-  Rhat(3)=Rab(3)/RMAG
+ Rhat(1)=Rab(1)/RMAG 
+ Rhat(2)=Rab(2)/RMAG
+ Rhat(3)=Rab(3)/RMAG
 C                          
-  temp=CI*k*RMAG  
-  PHZ=cexp(temp) 
+ temp=CI*k*RMAG  
+ PHZ=cexp(temp) 
 C         
-  t1=(K2/RMAG)*(delta(i,j)-Rhat(i)*Rhat(j)) 
-  t2=(ci*k/RMAG**2-1.0/RMAG**3)*(delta(i,j)-3.*Rhat(i)*Rhat(j))
-  GG=PHZ*(t1+t2)  
+ t1=(K2/RMAG)*(delta(i,j)-Rhat(i)*Rhat(j)) 
+ t2=(ci*k/RMAG**2-1.0/RMAG**3)*(delta(i,j)-3.*Rhat(i)*Rhat(j))
+ GG=PHZ*(t1+t2)  
 else
-  GG=4.*PI*GAM(d,k,EPS)/(3.0*d**3)
+ GG=4.*PI*GAM(d,k,EPS)/(3.0*d**3)
 end if        
 return
 end
 \end{verbatim}%
 %EndExpansion
 
-which calles the subroutine GAM based on equation (\ref{Gamma})
+which calls the subroutine GAM based on equation (\ref{Gamma})
 
 %TCIMACRO{%
 %\TeXButton{GAM code}{\begin{verbatim}
@@ -1078,11 +1168,26 @@ end
 \end{verbatim}%
 %EndExpansion
 
-\bigskip
+\subsection{real function delta(alpha,beta)}
 
-\bigskip
+not done yet
 
-\subsection{In Order in the Code}
+\subsection{real function dd(alpha,i,beta, j) }
+
+Not done yet
+
+\subsection{subroutine ROT(RRR, alpha, beta, gamma)}
+
+Not done yet
+
+\subsection{subroutine MV(M,V,U) subroutine to multiply a 3x3 matrix by a
+vector with three components}
+
+Not done yet
+
+\section{In Order in the Code}
+
+This next part is probably not useful. Maybe Ignore it.
 
 51-78 Declare variables
 
@@ -1109,13 +1214,11 @@ rotation about the new y-axis, and gamma, a rotation about the new z-axis.
 \[
 RRR=\left( 
 \begin{array}{ccc}
-\cos \alpha \cos \beta \cos \gamma -\sin \alpha \sin \gamma  & \cos \alpha
-\cos \beta \cos \gamma -\cos \alpha \sin \gamma  & \sin \beta \cos \gamma 
-\\ 
--\cos \alpha \cos \beta \sin \gamma -\sin \alpha \cos \gamma  & -\sin \alpha
-\cos \beta \sin \gamma +\cos \alpha \cos \gamma  & \sin \beta \sin \gamma 
-\\ 
-\cos \alpha \sin \beta  & \sin \alpha \sin \beta  & \cos \beta 
+\cos \alpha \cos \beta \cos \gamma -\sin \alpha \sin \gamma & \cos \alpha
+\cos \beta \cos \gamma -\cos \alpha \sin \gamma & \sin \beta \cos \gamma \\ 
+-\cos \alpha \cos \beta \sin \gamma -\sin \alpha \cos \gamma & -\sin \alpha
+\cos \beta \sin \gamma +\cos \alpha \cos \gamma & \sin \beta \sin \gamma \\ 
+\cos \alpha \sin \beta & \sin \alpha \sin \beta & \cos \beta%
 \end{array}%
 \right) 
 \]%
@@ -1131,7 +1234,7 @@ V_{k}=\left(
 \]%
 so our new direction for our incoming wave in the particle frame is 
 \[
-Khat=RRR\ast V
+Khat=RRR\ast V 
 \]%
 where the function MV\ is used to do the multiply. But then we want the $E$%
 -vector to be in the $x-y$ plane in the lab frame (can't remember why). So
@@ -1139,15 +1242,15 @@ take
 \[
 V_{E}=\left( 
 \begin{array}{c}
-\cos \psi  \\ 
-\sin \psi  \\ 
+\cos \psi \\ 
+\sin \psi \\ 
 0%
 \end{array}%
 \right) 
 \]%
 then rotate into our particle frame%
 \[
-E_{Ohat}=RRR\ast V
+E_{Ohat}=RRR\ast V 
 \]%
 and use MV again to do the multiply.
 
@@ -1159,7 +1262,7 @@ W\left( \nu \right) =\frac{\chi }{1+\frac{4\pi }{3}\chi }
 138-148 Form the incoming field. This will be of the form 
 \[
 \mathbf{E}\left( \mathbf{r},t\right) =E_{o}\exp \left( i\mathbf{r}\cdot 
-\mathbf{k}\right) \exp (-i\omega t)
+\mathbf{k}\right) \exp (-i\omega t) 
 \]%
 And we want to know the value of the field at every cell. The code makes the 
 $\mathbf{r}\cdot \mathbf{k}$ in a loop from 140-142. It has to do this for
@@ -1173,7 +1276,7 @@ components are assembled in a small loop in lines 145 to 147.
 used to form the outgoing scattered field.
 
 156-242 is the Monty Carlo loop that finds the outgoing scattered field. It
-caucluates the $a_{Nj}$ so later we can form  
+calculates the $a_{Nj}$ so later we can form 
 \[
 \tilde{F}_{\beta j}\mathbf{=}\sum_{N=1}^{N_{k}}a_{Nj}\Psi _{\beta N}
 \]%
@@ -1186,10 +1289,10 @@ which is what we want as our answer.
 
 The loop starts with finding $\Psi _{\beta N}$%
 \[
-\Psi _{\beta N}=e^{imk\mathbf{\hat{k}}_{N}\mathbf{\cdot r}_{\beta }}
+\Psi _{\beta N}=e^{imk\mathbf{\hat{k}}_{N}\mathbf{\cdot r}_{\beta }} 
 \]%
 \[
-\psi =e^{(i\ast k\ast khatN.R(b))}
+\psi =e^{(i\ast k\ast khatN.R(b))} 
 \]%
 and this is done with a call to the function CPHI.
 
@@ -1199,8 +1302,8 @@ ERR=\left\vert \Psi _{\beta N}\right\vert ^{2}
 \]%
 This will be our optimization test. In line 248 we check to see if $ERR>ERR0$
 The $ERR0$ was something we asked the user to input at the start. If $%
-ERR<ERR0$ then we are done with one itteration. The original inputs worked.
-So the code jumps down to the else clause in line 275 and it calles Ecalc to
-calcuate the scattered efield
+ERR<ERR0$ then we are done with one iteration. The original inputs worked.
+So the code jumps down to the else clause in line 275 and it calls Ecalc to
+calculate the scattered efield
 
 \end{document}
