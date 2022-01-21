@@ -1,9 +1,51 @@
+import random 
+
 # function move1kv to incrementally move the k-vectors
 # now we have the kth and kph values in arrays just like the original
 # code wanted.
      
 #Now there are fuctions that operate on the kvectors
 
+# function kvectors4 calculates the cartisian components of k-vectors    
+    
+# The original code is as follows
+# C***********************************************************************       
+# C*---------------------------------------------------------------------*
+#       subroutine kvectors4(N,khatN,kth,kph,NK)                      
+# C*---------------------------------------------------------------------* 
+# C*    Subroutine to set up the  khatN directions.                      *
+# C***********************************************************************       
+# C *** Set the value of NMAX via an included file                     *** 
+#       implicit none
+#       include 'nmax.inc'
+# C****  Variables          
+#       real khatN(KNMAX,3), kth(KNMAX), kph(KNMAX)
+#       integer N ,NK
+# C
+#       khatN(N,1)=sin(kth(N))*cos(kph(N)) 
+#       khatN(N,2)=sin(kth(N))*sin(kph(N))
+#       khatN(N,3)=cos(kth(N))
+# C
+#       return
+#       end
+
+def kvectors4(N,khatN, kth, kph, NK):
+    # Now we need to find the components. A function called kvectors4 does that
+    # in the original code. 
+    # This code just does the calculation of one set of components of one 
+    # vector.  The Nth vector. The compoments are placed in khatN, and array
+    # of vector compoments.  The dimensions of khatN are [NK] by [3].
+    #
+    khatN[N,0] = np.sin(kth[N])*np.cos(kph[N]) 
+    khatN[N,1] = np.sin(kth[N])*np.sin(kph[N])
+    khatN[N,2] = np.cos(kth[N])
+    # and we are done making the Nth vector components
+    
+#
+
+# function move1kv does a random adjustment on the kvectors to try to get
+#   a better field representation
+#
 # The original code is as follows
 # C***********************************************************************       
 # C*---------------------------------------------------------------------*
@@ -44,8 +86,7 @@
 # it looks like this changes the k-vector positions randomly for the Monty
 #   Carlo part of the code.  So let's look at this in python
 
-# this next part is not tested yet @@@@@@ start here 2022-01-18
-import random 
+ 
 
 def move1kv(mcount,khatN,kth,kph,NK,iseed,divd):
     # mcount seems to be a particular k-vector number
@@ -60,6 +101,7 @@ def move1kv(mcount,khatN,kth,kph,NK,iseed,divd):
     PHinc = 2*THinc         #Phi direction increment is twice as big
     temp1 = THinc*random.uniform(-1,1)
     temp2 = PHinc*random.uniform(-1,1)
+    #print(THinc, PHinc, temp1,temp2)
     kth[mcount] = kth[mcount]+ temp1
     kph[mcount] = kph[mcount] + temp2
     
@@ -77,39 +119,18 @@ def move1kv(mcount,khatN,kth,kph,NK,iseed,divd):
     if (kph[mcount] < 0.0):
         kph[mcount] = -kph[mcount]
     # Now we need to find the components. A function called kvectors4 does that
-    # in the original code. Let's just do it here
+    # in the original code. 
+    kvectors4(mcount, khatN, kth, kph, NK)
+    #or we could just do it here
     # we should worry about whether we are starting arrays at 0 or 1!!!!! @@@@
-    khatN[mcount,0] = np.sin(kth[mcount])*np.cos(kph[mcount]) 
-    khatN[mcount,1] = np.sin(kth[mcount])*np.sin(kph[mcount])
-    khatN[mcount,2] = np.cos(kth[mcount])
+    #khatN[mcount,0] = np.sin(kth[mcount])*np.cos(kph[mcount]) 
+    #khatN[mcount,1] = np.sin(kth[mcount])*np.sin(kph[mcount])
+    #khatN[mcount,2] = np.cos(kth[mcount])
+    #
     # and we are done. We have a set of k-vectors with one vector randomly
     # moved.
     
     
-# function kvectors4 calculates the cartisian components of k-vectors    
-    
-# The original code is as follows
-# C***********************************************************************       
-# C*---------------------------------------------------------------------*
-#       subroutine kvectors4(N,khatN,kth,kph,NK)                      
-# C*---------------------------------------------------------------------* 
-# C*    Subroutine to set up the  khatN directions.                      *
-# C***********************************************************************       
-# C *** Set the value of NMAX via an included file                     *** 
-#       implicit none
-#       include 'nmax.inc'
-# C****  Variables          
-#       real khatN(KNMAX,3), kth(KNMAX), kph(KNMAX)
-#       integer N ,NK
-# C
-#       khatN(N,1)=sin(kth(N))*cos(kph(N)) 
-#       khatN(N,2)=sin(kth(N))*sin(kph(N))
-#       khatN(N,3)=cos(kth(N))
-# C
-#       return
-#       end
-
-
 
 
 # It looks like this isn't used ????
@@ -136,7 +157,6 @@ def move1kv(mcount,khatN,kth,kph,NK,iseed,divd):
 
 
 # functon getkv to read in a k-vector file
-#    There are library functions to do this in python alread
 
 # The original code is as follows
 # C***********************************************************************
@@ -216,31 +236,36 @@ with open(workfile) as f:
      kcount=int(split_string[36])
      #print(ERR, ERRlast, mcount, kcount)
 
+# now we have the kth and kph values in arrays just like the original
+# code wanted.
 
 #fig=plt.figure()  
 #plt.plot(kth,kph)
 #plt.show()
-# Now let's try to modify one of the vectors     
-divd = 2
+# Now let's try to modify the vectors     
+divd = 100
 iseed = 1  # not used yet
-print(kth[1],kph[1])
-for i in range(0,NK,1):
-    move1kv(i,khatN,kth,kph,NK,iseed,divd)
-print(khatN[9])
-print(kth[9],kph[9])    
-# now we have the kth and kph values in arrays just like the original
-# code wanted.
+#print(kth[1],kph[1])
+#let's do nchange  changes of kvectors
+nchange=20
+for j in range(nchange):
+    #start the loop to change all the kvectors a little
+    for i in range(0,NK,1):
+       move1kv(i,khatN,kth,kph,NK,iseed,divd)
+    # and let's look at the kvectors.  
+    fig=plt.figure()
+    ax=plt.axes(projection = '3d')
+    ax.set_xlim([-1,1])
+    ax.set_ylim([-1,1])
+    ax.set_zlim([-1,1])
+    start = [0.0,0.0,0.0]
 
-# let's look at the kvectors.  
-fig=plt.figure()
-ax=plt.axes(projection = '3d')
-ax.set_xlim([-1,1])
-ax.set_ylim([-1,1])
-ax.set_zlim([-1,1])
-start = [0.0,0.0,0.0]
-#ax.quiver(start[0],start[1],start[2],khatN[1][0],khatN[1][1],khatN[1][2])
-for i in range(0,NK,1):
-    ax.quiver(start[0],start[1],start[2],khatN[i][0],khatN[i][1],khatN[i][2])
+    for i in range(0,NK,1):
+        ax.quiver(start[0],start[1],start[2],khatN[i][0],khatN[i][1],khatN[i][2])
+    plt.pause(0.005)
+plt.show()
+
+
 
 # Now try writing out the data to a new file to practice
 
