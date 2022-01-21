@@ -168,8 +168,11 @@ def move1kv(mcount,khatN,kth,kph,NK,iseed,divd):
 # This is going to be a pain, because we don't have json to help us
 #    We will need some formatted input. 
 import numpy as np
+
+
+import matplotlib.pyplot as plt
 #
-workfile ="Test_1_10_10.kv"
+workfile ="Test_2_5_5.kv"
 with open(workfile) as f:
      read_data = f.readline()            # read a whole line
      #print(read_data)                    # The first line is just the number of kvectors
@@ -212,28 +215,44 @@ with open(workfile) as f:
      mcount=int(split_string[25])
      kcount=int(split_string[36])
      #print(ERR, ERRlast, mcount, kcount)
-     
+
+
+#fig=plt.figure()  
+#plt.plot(kth,kph)
+#plt.show()
 # Now let's try to modify one of the vectors     
-divd = 20
+divd = 2
 iseed = 1  # not used yet
-#print(kth[1])
-#move1kv(1,khatN,kth,kph,NK,iseed,divd)
-#print(khatN)
-#print(kth)    
+print(kth[1],kph[1])
+for i in range(0,NK,1):
+    move1kv(i,khatN,kth,kph,NK,iseed,divd)
+print(khatN[9])
+print(kth[9],kph[9])    
 # now we have the kth and kph values in arrays just like the original
 # code wanted.
+
+# let's look at the kvectors.  
+fig=plt.figure()
+ax=plt.axes(projection = '3d')
+ax.set_xlim([-1,1])
+ax.set_ylim([-1,1])
+ax.set_zlim([-1,1])
+start = [0.0,0.0,0.0]
+#ax.quiver(start[0],start[1],start[2],khatN[1][0],khatN[1][1],khatN[1][2])
+for i in range(0,NK,1):
+    ax.quiver(start[0],start[1],start[2],khatN[i][0],khatN[i][1],khatN[i][2])
 
 # Now try writing out the data to a new file to practice
 
 workfile ="Test_write.kv"
 with open(workfile,"w") as f:
     write_data = str(NK) +"\n"
-    print(write_data)
+    #print(write_data)
     f.write(write_data)
     for i in range(0,NK,1):
         write_data = str(kth[i]) + " " + str(kph[i])+"\n"
-        print(write_data)
+        #print(write_data)
         f.write(write_data)
     write_data = str(ERR)+" "+str(ERRlast)+" "+str(mcount)+" "+str(kcount)+"\n"
     f.write(write_data) 
-    print(write_data)
+    #print(write_data)
