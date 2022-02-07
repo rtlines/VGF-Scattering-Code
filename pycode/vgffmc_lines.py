@@ -12,6 +12,73 @@ import matplotlib.pyplot as plt
 #
 #
 # Function definitions section ################################################
+
+###############################################################################
+#
+###############################################################################
+def read_input_file(workfile, comments, NUSE, wave, alpha,beta,gamma,psi,RAD, ER, EI,
+            TD, R, D ):
+   # comments is the coment string from vgfin
+   # NUSE is the number of dipoles to use
+   # wave is the wavelength in relative uints (as long as all lenght units 
+   #      are the same it doesn't matter, but use microns)
+   # alpha, beta, and gamma are the euler rotation angles
+   # psi is the polarization angle (I think)
+   # RAD is the particle semimajor axis (use microns)
+   # ER and EI are the complext components of the particle permitivity
+   # TD is the dipole size
+   # R is a NUSE by 3 array of cell locations
+   # D is a NUSE array of cell weights
+   #
+   # Start reading in data
+   print("start read intput file")
+   with open(workfile) as f:
+        read_data = f.readline()            # read a whole line
+        print(read_data)
+        read_data = f.readline()            # read a whole line
+        print(read_data)
+        NUSE = int(read_data)
+        print(NUSE)
+        read_data = f.readline()            # read a whole line
+        split_string = read_data.split(" ")  #parse the line splitting where
+        print(split_string)
+        W = float(split_string[3])
+        alpha = float(split_string[10])
+        beta = float(split_string[17])
+        gamma = float(split_string[31])
+        psi = float(split_string[38])
+        print(W,alpha,beta,gamma,psi)
+        read_data = f.readline()            # read a whole line
+        split_string = read_data.split(" ")  #parse the line splitting where
+        print(split_string)  
+        ER = float(split_string[3])
+        EI = float(split_string[9])
+        TD = float(split_string[16])
+        print(ER, EI, TD)
+        # make a place for the locations of the dipole cells, we need x,y,z components
+        # and make a place for the dipole weights
+        R = np.zeros((NUSE,3))
+        D = np.zeros(NUSE)
+        for i in range(0,NUSE,1):             # loop to input all the theta and phi values
+             read_data = f.readline()       # read in a whole line
+             #print(read_data)
+             split_string = read_data.split(" ")  #parse the line splitting where
+                                                  #there are spaces
+                                                  #Each line starts with a space
+                                                  #then a number, then a space
+                                                  #then a vextor and then a weight.
+                                                  # So we will get
+                                                  # severak parts to our split
+                                                  #a space, a string that is a 
+                                                  #number, then a second string 
+                                                  #that is a number, etc. 
+             print(split_string)
+             R[i][0] = float(split_string[3])
+             R[i][1] = float(split_string[5])
+             R[i][2] = float(split_string[8])
+             D[i] = float(split_string[11])
+          #still need 
+###############################################################################
 #
 ###############################################################################
 def kvector_components(theta, phi):
@@ -163,17 +230,53 @@ def read_kv(kth,kph, workfile):
 #
 # array of theta and pi values to read in.  These are the direction angles
 #   for the unit k-vectors.
+#
+# Define Variables
+#
+# Array Limits:  First let's set limits on how big the arrays can be
 KMAX = 2000
+NMAX =2000
+#
+####### read in the dipole locatons and data from the input file
+#
+print("read input file")
+comments = "Not Set"          #is the coment string from vgfin
+NUSE = 0.0              # the number of dipoles to use
+wave = 0.0              # the wavelength in relative uints (as long as all lenght units 
+                   #    are the same it doesn't matter, but use microns)
+alpha = 0.0            # The tree Euler angles describing the particle orientation
+beta = 0.0
+gamma = 0.0 
+psi = 0.0                # the polarization angle (I think)
+RAD = 0.0                # is the particle semimajor axis (use microns)
+ER = 0.0                 # the complext components of the particle permitivity
+EI = 0.0
+TD = 0.0                 # the dipole size
+R = np.zeros((NMAX,3))    # a NUSE by 3 array of cell locations
+D = np.zeros(NMAX)         # a NUSE array of cell weights
+workfile = "test_output_file.out" # @@@ needs to be an input
+read_input_file(workfile, comments, NUSE, wave, alpha,beta,gamma,psi,RAD, ER, EI, TD, R, D )
+print(coments)
+print(NUSE)
+print(wave, alpha, beta, gamma, psi, RAD)
+print(ER, EI, TD)
+print(R)
+print(D)
+#
+#
+###### Read in the K-Vectors
 NK=0
 kth = np.zeros(KMAX)                  # make arrays for the kvector components
 kph = np.zeros(KMAX)
 # array of k-vector cartisian components.
-khatN = np.zeros((KMAX,3))              # actual components of the vectors
-workfile ="Test_2_5_5.kv"
-NK = read_kv(kth,kph, workfile)
-print(NK)
-for i in range(NK):
-   print(kth[i],kph[i])
+khatN = np.zeros((KMAX,3))              # arrat of components of the vectors
+workfile ="Test_2_5_5.kv"   #@@@ needs to be an input
+NK = read_kv(kth,kph, workfile)       # Function call to get the k-vectors
+# Test to see if it worked
+# print(NK)
+# for i in range(NK):
+#    print(kth[i],kph[i])
+
 
 
 
