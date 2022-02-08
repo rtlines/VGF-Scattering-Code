@@ -30,7 +30,7 @@ def read_input_file(workfile):
    # D is a NUSE array of cell weights
    #
    # Start reading in data
-   print("start read intput file")
+   #print("start read intput file")
    with open(workfile) as f:
         #print("read comment")
         read_data = f.readline()            # read a whole line
@@ -178,7 +178,9 @@ def move1kv(mcount,khatN,kth,kph,NK,iseed,divd):
         kph[mcount] = -kph[mcount]
     # Now we need to find the components. A function called kvectors4 does that
     # in the original code. kvectors4(mcount, khatN, kth, kph, NK)
-    khatN[mcount]=kvectors_components(kth[mcount], kph[mcount])
+    #
+    khatN[mcount]=kvector_components(kth[mcount], kph[mcount])
+    #
     #or we could just do it here
     # we should worry about whether we are starting arrays at 0 or 1!!!!! @@@@
     #khatN[mcount,0] = np.sin(kth[mcount])*np.cos(kph[mcount]) 
@@ -187,6 +189,7 @@ def move1kv(mcount,khatN,kth,kph,NK,iseed,divd):
     #
     # and we are done. We have a set of k-vectors with one vector randomly
     # moved.
+    return kth, kph, khatN 
 ###############################################################################
 #
 ###############################################################################
@@ -242,9 +245,21 @@ def read_kv(workfile):
 ###############################################################################
 #
 ###############################################################################
+def ROT(alpha, beta, gamma):
+    RRR = np.array(
+      [[ np.cos(alpha)*np.cos(beta)*np.cos(gamma)-np.sin(alpha)*np.sin(gamma),
+         np.sin(alpha)*np.cos(beta)*np.cos(gamma)+np.cos(alpha)*np.sin(gamma),
+        -np.sin(beta)*np.cos(gamma)],
+       [-np.cos(alpha)*np.cos(beta)*np.sin(gamma)-np.sin(alpha)*np.cos(gamma),
+        -np.sin(alpha)*np.cos(beta)*np.sin(gamma)+np.cos(alpha)*np.cos(gamma),
+         np.sin(beta)*np.sin(gamma)],
+       [ np.cos(alpha)*np.sin(beta),
+         np.sin(alpha)*np.sin(beta),
+         np.cos(beta)]])
+    return RRR
+###############################################################################
 #
-#
-#
+###############################################################################
 # Main function goes here
 #
 # Test reading in the k-vectors
@@ -258,9 +273,12 @@ def read_kv(workfile):
 KMAX = 2000
 NMAX =2000
 #
+# Convinient consDEG=PI/180.0tants
+DEG=np.pi/180.0     # conversion from degress to radians
+#
 ####### read in the dipole locatons and data from the input file
 #
-print("read input file")
+#print("read input file")
 comments = "Not Set"          #is the coment string from vgfin
 NUSE = 0.0              # the number of dipoles to use
 wave = 0.0              # the wavelength in relative uints (as long as all lenght units 
@@ -298,6 +316,55 @@ workfile ="Test_2_5_5.kv"   #@@@ needs to be an input
 #print(NK)
 #for i in range(NK):
 #    print(kth[i],kph[i])
+#
+###### Now we have the data input, start calculations
+#
+## Find the index of refraction, epsilon, and the suseptibility, X
+eps = complex(ER,EI)
+#print(eps)
+mm = np.sqrt(eps)
+#print(mm)
+X = complex(0.0,0.0)
+X = (eps - 1)/(4.0*np.pi)
+#print(X)
+#
+###### Begin the incident field calculations
+#
+k=2.0*np.pi/wave         # wave number
+# covert angles from degrees to radians
+alpah = alpha * DEG
+beta = beta * DEG
+gamma = gamma * DEG
+pis = psi * DEG
+#
+# set up the rotation matrix with a call to ROT
+#
+RRR = ROT(alpha, beta, gamma)
+#print(RRR)
+#
+# K-hat is in the z direction in the lab frame, we need to rotate it into the
+#   particle frame
+V=np.zeros(3)                                 # temporary storage
+V[0] = 0.0                                    
+V[1] = 0.0
+V[2] = 1.0
+khat = RRR.dot(V)
+# Thus E0hat must be in the x-y plane in the lab. Rotate it into the particle
+#   frame     
+V[0] = np.cos(psi)
+V[1] = np.sin(psi)
+V[2] = 0.0
+E0hat = RRR.dot(V)
+#
+# Calculate the W factor    Wcalc=X/(1.+(4.*PI/3.)*X)
+W = X/(1.0+(4.*np.pi/3.)*X)
+#
+###### Calcuate inital and incident field
+
+
+
+
+
 
 
 
