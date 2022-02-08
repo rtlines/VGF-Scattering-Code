@@ -360,9 +360,29 @@ E0hat = RRR.dot(V)
 W = X/(1.0+(4.*np.pi/3.)*X)
 #
 ###### Calcuate inital and incident field
-
-
-
+#
+# We need a place to put the calcualted electric field at each dipole location
+#
+E0 = np.zeros((NUSE,3), dtype=complex)
+#
+# we need some complex temporary varuables
+temp = 0+0j
+C = 0+0j
+#
+# first calcualte the r dot khat part of the exponential
+#
+for i in range (NUSE):
+    RDK = np.dot(khat, R[i])       # khat dot R
+    temp = 1j*k*RDK                # i times the wave number times RDK
+    C = np.exp(temp)               # take the exponential
+    E0[i] = C*E0hat                # it is a plane wave, so we need the 
+                                   # complex amplitude multiplied by the 
+                                   # plane wave exponential
+   #
+   # We are going to calcualte the field in a big loop
+   #    Set up the big loop.
+   # 
+   
 
 
 
