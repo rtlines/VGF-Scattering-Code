@@ -1,5 +1,20 @@
 import numpy as np
 
+def vector_components(theta, phi):
+    # Function to find the components of a unit vector given in three dimensions
+    #   given the sherical componets angles theta and phi
+    #
+    # We are going to call this using our kth and kph arrars and put the result
+    #    into khatN.  So the call shoudl be something like
+    #    khatN(N)=kvectors_components(kth[N], kph[N])
+    #
+    khat=np.zeros(3)
+    khat[0] = np.sin(theta)*np.cos(phi) 
+    khat[1] = np.sin(theta)*np.sin(phi)
+    khat[2] = np.cos(theta)
+    return khat
+    # and we are done making the Nth vector components
+    
 workfile = "test_output_file.out"
 
 with open(workfile) as f:
@@ -64,4 +79,20 @@ with open(workfile) as f:
      #print(factor)
      
           
-          
+particle_list=[]
+
+from vpython import *
+for i in range(NUSE):
+    ball = sphere(pos=vector(R[i][0],R[i][1],R[i][2]),radius=D[i]/2)
+    particle_list.append(ball)
+
+scene.background=color.white
+particle=compound(particle_list)
+vect = np.zeros(3)
+Deg = np.pi/180.0
+theta = 45*Deg    
+phi = 45*Deg
+vect=vector_components(theta, phi)
+print (vect)
+particle.axis = vector(vect[0],vect[1],vect[2])
+        
