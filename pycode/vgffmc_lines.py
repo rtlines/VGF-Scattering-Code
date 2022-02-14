@@ -144,6 +144,18 @@ def kvector_components(theta, phi):
 ###############################################################################
 #
 ###############################################################################
+# function to find the components of the k-vectors as a group
+def kvectors3(kth,kph,NK):                      
+    khatN=np.zeros((NK,3))
+    for N in range(NK):          
+           khatN[N][0]=np.sin(kth[N])*np.cos(kph[N]) 
+           khatN[N][1]=np.sin(kth[N])*np.sin(kph[N])
+           khatN[N][2]=np.cos(kth[N])
+    return khatN
+###############################################################################
+#
+###############################################################################
+
 def move1kv(mcount,khatN,kth,kph,NK,iseed,divd):
     # mcount is the index of a particular k-vector number
     # khatN is the Cartisian components of the k-vector 
@@ -302,9 +314,8 @@ def GAM(d,k,EPS):
        GAM=0.0+0.0j
        kd=k*d
        b1=(3./(4.*np.pi))**(2./3.)
-       GAM=b1*(kd)**2 + 1j*kd**3/(2.*PI)          
-      return GAM
-      end
+       GAM=b1*(kd)**2 + 1j*kd**3/(2.*np.pi)          
+       return GAM
 ###############################################################################
 #
 ###############################################################################
@@ -350,7 +361,7 @@ def GG(R,k,d,EPS,a,i,b,j):
         t2 = (1j*k/RMAG**2 - 1.0/RMAG**3) * (delta(i,j)-3.0*Rhat[i]*Rhat[j])
         GG = PHZ * (t1 + t2)
     else:    
-        GG = 4.0*np.pi*GAM(d,i,EPS)/(3.0*)
+        GG = 4.0*np.pi*GAM(d,i,EPS)/(3.0*d**3)
     return GG
 #
 ###############################################################################
@@ -367,32 +378,7 @@ def CPSI(R,KhatN,k,mm,N,b) :
     
     
     
-C***********************************************************************
-C*---------------------------------------------------------------------*
-      complex function CPSI(R,KhatN,k,mm,N,b)                                 
-C*---------------------------------------------------------------------*
-C***********************************************************************
-C*    Function to calculate the trial funciton expansion functions     *
-C*      CPSI=cexp(i*k*khatN.R(b))                                      *
-C*      formula checked 6 Aug 96                                       *
-C***********************************************************************
-C *** Set the value of NMAX via an included file                     *** 
-      implicit none
-      include 'nmax.inc'
-C****  Variables                                                    ****
-       real KDR,KhatN(KNMAX,3),R(NMAX,3),k,PI
-       complex temp,CI,mm
-       integer i,b,N 
-       parameter (PI=3.141592654,CI=(0.0,1.0))
-C                                   
-       KDR=0.0
-       do i = 1,3
-          KDR=KDR+KhatN(N,i)*R(b,i)
-       end do
-       temp=CI*mm*k*KDR                   ! random test, shoud be +
-       CPSI=cexp(temp)       
-       return
-       end
+
 ###############################################################################
 #
 ###############################################################################
@@ -414,7 +400,14 @@ DEG=np.pi/180.0     # conversion from degress to radians
 #
 ####### read in the dipole locatons and data from the input file
 #
-#print("read input file")
+# The code needsto input some things.  I will hard code them here for now @@@@@
+ERR0 = 1000
+divd = 100
+#
+# Now read the input file.  The file name should be an input, but hard code
+#    for now @@@@@
+#
+print("read input file")
 comments = "Not Set"          #is the coment string from vgfin
 NUSE = 0.0              # the number of dipoles to use
 wave = 0.0              # the wavelength in relative uints (as long as all lenght units 
@@ -456,6 +449,8 @@ workfile ="Test_2_5_5.kv"   #@@@ needs to be an input
 #for i in range(NK):
 #    print(kth[i],kph[i])
 #
+# find the components of the k-vectors
+khatN = kvectors3(kth,kph,NK) 
 ###### Now we have the data input, start calculations
 #
 ## Find the index of refraction, epsilon, and the suseptibility, X
@@ -537,14 +532,14 @@ while (ERR > ERR0) and (mcount < 100):
         for a in range(NUSE):
             for i in range(3):
                 for N in range (NK):
-                    for j in range(3)
+                    for j in range(3):
                         T1[a][i][N][j] = 0.0+0.0j
                         for b in range (NUSE):
-                            dtemp = D(b)
-                            T1[a][i][N][j] =  T1[a][i][N][j] +                \ 
+                            dtemp = D[b]
+                            T1[a][i][N][j] =  T1[a][i][N][j] +                \
                                 ( dd(a,i,b,j)-D[b]**3 * W 
-                                 * GG(R,k, dtemp,EPS,a,i,b,j))                \
-                                 * CPSI(R,KhanN, k, mm, N, b)
+                                 * GG(R,k, dtemp,eps,a,i,b,j))                \
+                                 * CPSI(R,khatN, k, mm, N, b)
     
                         
     # T1 should be done, now we need H and Y
