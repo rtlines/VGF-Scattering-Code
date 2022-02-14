@@ -238,7 +238,7 @@ def read_kv(workfile):
       mcount=int(split_string[25])
       kcount=int(split_string[36])
       #print(ERR, ERRlast, mcount, kcount)
-      return NK,kth,kph
+      return NK,kth,kph, ERR, ERRlast, mcount, kcount
 
 # now we have the kth and kph values in arrays just like the original
 # code wanted.
@@ -257,6 +257,142 @@ def ROT(alpha, beta, gamma):
          np.sin(alpha)*np.sin(beta),
          np.cos(beta)]])
     return RRR
+###############################################################################
+#
+###############################################################################
+# Calculates a Dirac Delta Function
+def delta(alpha, beta):
+    d=0.0
+    if ( alpha == beta ):
+        d=1.0
+    return d  
+###############################################################################
+#
+###############################################################################
+# Calculates a double Dirac Delta Function
+def dd(alpha, i, beta, j):
+    d=0.0
+    if ((alpha == beta) and (i == j)):
+        d=1.0
+    return d
+
+###############################################################################
+#
+###############################################################################
+#    Function to calculate the self term contribution termed GAMMA    
+#      in the IBM write-up. The form for GAM  is taken from the work  
+#      of B. T. Draine and J. Goodman, Astrophysical Journal, 405:    
+#      685-697, 1993 March 10. In my experience, the Draine and   
+#      Goodman formulation is the better of the three.  But it is more 
+#      complicated.  It looks like this uses Goedecke and O'Brian.
+#      Note the sign change due the time dependance in VGF being exp(-iwt). 
+#      This different from Goedecke and O'Brien's choice. 
+#
+#            GAM=(3./(4.*PI))**(2./3.)*(kd)**2 + CI*kd**3/(2.*PI)          
+#
+#      Note that in the Goedecke and O'Brien series, Goedecke and     
+#      O'Brien expand the exponential in the self term integral and   
+#      throw away most of the trems.                               
+#           real a                                                        
+#           complex temp                                                  
+#           a=d*(3./(4.*PI))**(1./3.)                                     
+#           temp=CI*k*a                                                   
+#           GAM=2.*((1.-CI*k*a)*cexp(temp)-1.)          
+def GAM(d,k,EPS):
+       GAM=0.0+0.0j
+       kd=k*d
+       b1=(3./(4.*np.pi))**(2./3.)
+       GAM=b1*(kd)**2 + 1j*kd**3/(2.*PI)          
+      return GAM
+      end
+###############################################################################
+#
+###############################################################################
+# Calculate the Dyadic Green's Function for a dipole 
+#
+def GG(R,k,d,EPS,a,i,b,j):
+    # Inputs:
+    #    R matrix of dipole locations (Nuse,3)
+    #    k the wave number
+    #    d is a specific cell weighting (passed in as a single value)
+    #    EPS is the complex permitivity
+    #    a, i, b, and j are indexes to get the right component of the right 
+    #    dopole location.
+    # set up the complex variables and zero them
+    PHZ = 0.0+0.0j
+    t1 = 0.0+0.0j
+    t2 = 0.0+0.0j
+    temp = 0.0+0.0j
+
+    #
+    K2=k*k 
+    # make a space for dipole displacement vectors 
+    Rab = np.zeros(3)
+    Rhat = np.zeros(3)
+    if b != a:    
+        # calculat4e the separation distance between two dipoles
+        #   Rmn = Rn - Rm and RMAG = |Rmn|
+        Rab[0] = R[a][0] - R[b][0]
+        Rab[1] = R[a][1] - R[b][1]
+        Rab[2] = R[a][2] - R[b][2]
+        # now find the magnitude
+        RMAG = Rab[0]**2 + Rab[1]**2 +Rab[2]**2 
+        RMAG = RMAG**0.5
+        # make a unit vector in the Rmn direction
+        Rhat[0] = Rab[0]/RMAG
+        Rhat[1] = Rab[1]/RMAG
+        Rhat[2] = Rab[2]/RMAG
+        # our exponent is i(k dot r) form the exponent
+        temp = 1j*k*RMAG
+        PHZ = np.exp(temp)
+        #
+        t1 = (K2/RMAG)*(delta(i,j) - Rhat[i]*Rhat[j])
+        t2 = (1j*k/RMAG**2 - 1.0/RMAG**3) * (delta(i,j)-3.0*Rhat[i]*Rhat[j])
+        GG = PHZ * (t1 + t2)
+    else:    
+        GG = 4.0*np.pi*GAM(d,i,EPS)/(3.0*)
+    return GG
+#
+###############################################################################
+#
+###############################################################################
+# Function to calculate the trial funciton expansion functions 
+#    CPSI=cexp(i*k*khatN.R(b))  
+ 
+
+def CPSI(R,KhatN,k,mm,N,b) :
+    KDR=khatN[N].dot(R[b])
+    temp = 1j*mm*k*KDR
+    return np.exp(temp)
+    
+    
+    
+C***********************************************************************
+C*---------------------------------------------------------------------*
+      complex function CPSI(R,KhatN,k,mm,N,b)                                 
+C*---------------------------------------------------------------------*
+C***********************************************************************
+C*    Function to calculate the trial funciton expansion functions     *
+C*      CPSI=cexp(i*k*khatN.R(b))                                      *
+C*      formula checked 6 Aug 96                                       *
+C***********************************************************************
+C *** Set the value of NMAX via an included file                     *** 
+      implicit none
+      include 'nmax.inc'
+C****  Variables                                                    ****
+       real KDR,KhatN(KNMAX,3),R(NMAX,3),k,PI
+       complex temp,CI,mm
+       integer i,b,N 
+       parameter (PI=3.141592654,CI=(0.0,1.0))
+C                                   
+       KDR=0.0
+       do i = 1,3
+          KDR=KDR+KhatN(N,i)*R(b,i)
+       end do
+       temp=CI*mm*k*KDR                   ! random test, shoud be +
+       CPSI=cexp(temp)       
+       return
+       end
 ###############################################################################
 #
 ###############################################################################
@@ -305,13 +441,16 @@ workfile = "test_output_file.out" # @@@ needs to be an input
 #
 #
 ###### Read in the K-Vectors
-NK=0
+NK = 0                                # number of k-vectors
+ERR = 0                               # Monte Carlo Loop Test Value (MCTV)
+ERRlast = ERR                         # Last value of MCTV to see if we are 
+                                      #   converging to a better answer
 kth = np.zeros(KMAX)                  # make arrays for the kvector components
 kph = np.zeros(KMAX)
 # array of k-vector cartisian components.
 khatN = np.zeros((KMAX,3))              # arrat of components of the vectors
 workfile ="Test_2_5_5.kv"   #@@@ needs to be an input
-[NK,kth,kph] = read_kv(workfile)       # Function call to get the k-vectors
+[NK,kth,kph, ERR, ERRlast, mcount, kcount] = read_kv(workfile)       # Function call to get the k-vectors
 # Test to see if it worked
 #print(NK)
 #for i in range(NK):
@@ -378,10 +517,38 @@ for i in range (NUSE):
     E0[i] = C*E0hat                # it is a plane wave, so we need the 
                                    # complex amplitude multiplied by the 
                                    # plane wave exponential
-   #
-   # We are going to calcualte the field in a big loop
-   #    Set up the big loop.
-   # 
+#
+# We are going to calcualte the field in a big loop
+#    Set up the big loop.
+#    We will need spaces for the large matracies to go into
+#
+T1 = np.zeros((NUSE,3,NK,3),dtype = complex)
+#
+print ('before the loop', ERR, ERRlast)
+while (ERR > ERR0) and (mcount < 100):
+    #ERR came from the k-vector file. We read it in before
+    #kcount is the number of kvectors to loop over. ikcount seems to have allowed
+    #   us to start not at the first k-vector.  I don't see why we would do that
+    #   so let's try without it.
+    for kcount in range (NK):        # @@@ why this loop?
+        print('Calculationg internal fields...')
+        # Calculate the T1 matrix
+        print('Calculating T1')
+        for a in range(NUSE):
+            for i in range(3):
+                for N in range (NK):
+                    for j in range(3)
+                        T1[a][i][N][j] = 0.0+0.0j
+                        for b in range (NUSE):
+                            dtemp = D(b)
+                            T1[a][i][N][j] =  T1[a][i][N][j] +                \ 
+                                ( dd(a,i,b,j)-D[b]**3 * W 
+                                 * GG(R,k, dtemp,EPS,a,i,b,j))                \
+                                 * CPSI(R,KhanN, k, mm, N, b)
+    
+                        
+    # T1 should be done, now we need H and Y
+   
    
 
 
