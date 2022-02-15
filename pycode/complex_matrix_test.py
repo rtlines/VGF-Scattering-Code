@@ -18,5 +18,11 @@ a[1][1] = 5.0+0j
 
 ainv = np.linalg.inv(a)
 print(ainv)
+b = np.zeros(2,dtype = complex)
+b[0] = 16+0j
+b[1] = 21+0j
+x = np.zeros(2, dtype=complex)
+x = np.linalg.solve(a,b)
+print(x)
 
 
