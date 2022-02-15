@@ -384,18 +384,75 @@ def CPSI(R,KhatN,k,mm,N,b) :
 #
 ###############################################################################
 # function to print T1 to a file
-def print_R(R):
-    data={'R':R}
-    print(data['R'])
-    with open("test_file.json",'w') as fp: 
+def print_T1(T1):
+    data={'T1':T1}
+    print(data['T1'])
+    with open("test_file_T1.json",'w') as fp: 
          variable=json.dumps(data, indent=4)
          fp.write(variable)
 
 ###############################################################################
 #
 ###############################################################################
+# function to tell if our field expansion coefficients are good
+#   so we can end the Monty Carlo loop
+def Calculate_PHI(An, H, Y, E0, NK, NUSE):
+    CPHI=0.0+0.0j
+    for N in range(NK):
+        for j in range(3):
+            for M in range(NK):
+                for l in range (3):
+                    CPHI = CPHI + np.conjugate(An[M][l]*H[M][l][N][j]*A[N][j])
+                    # End l loop
+                # End M loop
+            # End j loop
+        # End N loop
+    for j in range (3):
+        for N in range (NK):
+            CPHI = CPHI - (np.conjugate(Y[N][j])*An[N][j]                     \
+                           +Y[N][j]*np.conjugate(An[N][j]))
+            # End N loop
+        # End j loop
+    for a in range(NUSE):
+        for i in range(3):
+            CPHI - CPHI + E0[a][i]*np.conjugate(E)[a][i]
+            # End i loop
+        # End a loop        
+    return CPHI
+    #
+###############################################################################
+#
+###############################################################################
 
-
+def ecalc (NUSE,R,E, An,khatN,X,NK,K,mm)  :
+    # NUSE is the number of dipoles we used to repdresent the particle
+    # R is the array of dipole locations
+    # E is the array of electric field vectors
+    # F is the array of F-field vectors
+    # An is the array of amplitudes for our field expansion
+    # khatN is the array of k vector components
+    # X is the electric suseptibility
+    # NK is the number of k vectors
+    # mm I think is the complex index of refraction
+    #
+    # Form the F-field vectors
+    F = np.zeros((NUSE,3),dtype = complex)
+    for b in range(0,NUSE):
+        for j in range(3):
+            F[b][j]=(0.0,0.0)
+            for N in range(0,NK):
+                F[b][j]=F[b][j]+An[N][j]*CPSI(R,KhatN,k,mm,N,b)          
+    #
+    #Done, Calculate the internal E-field to output it.
+    #
+    for m in range(0, NUSE):
+        for I in range(3):
+            E[m][I]=F[m][I]/(1.+(4.*np.pi)*X/3.)
+    #
+    return E
+###############################################################################
+#
+###############################################################################
 
 
 # Main function goes here
@@ -460,8 +517,8 @@ kth = np.zeros(KMAX)                  # make arrays for the kvector components
 kph = np.zeros(KMAX)
 # array of k-vector cartisian components.
 khatN = np.zeros((KMAX,3))              # arrat of components of the vectors
-workfile ="Test_2_5_5.kv"   #@@@ needs to be an input
-[NK,kth,kph, ERR, ERRlast, mcount, kcount] = read_kv(workfile)       # Function call to get the k-vectors
+kworkfile ="Test_2_5_5.kv"   #@@@ needs to be an input
+[NK,kth,kph, ERR, ERRlast, mcount, kcount] = read_kv(kworkfile)       # Function call to get the k-vectors
 # Test to see if it worked
 #print(NK)
 #for i in range(NK):
@@ -538,6 +595,12 @@ for i in range (NUSE):
 #    We will need spaces for the large matracies to go into
 #
 T1 = np.zeros((NUSE,3,NK,3),dtype = complex)
+Y  = np.zeros((NK,3), dtype = complex)
+H  = np.zeros((NK,3,NK,3), dtype = complex)
+An = np.zeros((NK,3), dtype = complex)
+bb = np.zeros((3*NK, 3*NK), dtype = complex)
+aa = np.zeros((3*NK, 3*NK), dtype = complex)
+xx = np.zeros((3*NK), dtype = complex)
 #
 print('Calculationg internal fields...')
 while (ERR > ERR0) and (mcount < MMAX):
@@ -560,11 +623,99 @@ while (ERR > ERR0) and (mcount < MMAX):
                                 ( dd(a,i,b,j)-D[b]**3 * W 
                                  * GG(R,k, dtemp,eps,a,i,b,j))                \
                                  * CPSI(R,khatN, k, mm, N, b)
-    
+                                 # End of the b loop
+                        # End of the j loop         
+                    # End of the N loop
+            # End of the a loop
+            #print out the T1 matrix to a file so we can check it
+            #print_T1(T1)
+            # Calculate the H and Y matricies
+            print('building the Y  and H matricies')
+            for M in range(NK):
+                for l in range(3):
+                    Y[M][l] = 0.0+0.0j    
+                    for a in range(NUSE):
+                        for i in range(3):
+                            Y[M][l] = Y[M][l] + np.conjugate(T1[a][i][M][l])  \
+                                      *E0[a][i]
+                            # End i loop
+                        # End a loop
+                    # End l loop
+                # End M loop
+            for M in range (NK):
+                for l in range (3):
+                    for N in range(NK):
+                        for j in range(3):
+                            H[M][l][N][j] = 0.0+0.0j
+                            for a in range(NUSE):
+                                for i in range(3):
+                                    H[M][l][N][j] =  H[M][l][N][j]            \
+                                        + np.conjugate(T1[a][i][M][l])        \
+                                        * (T1[a][i][N][j])
+                                    # End i loop
+                                # End a loop
+                            # End j loop
+                        # End N loop
+                    # End l looop
+                # End M loop
+            # Now get ready for the matrix inversion
+            # But we need H in a good form for the matrix inverter
+            # Try to reform it into a NK*3 by NK*3 matrix
+            for n in range(NK):
+                for i in range(3):
+                    m = 3*(n-0)+i     # in fortran arrays start with 1, but 
+                                      # our python arrays start with 0
+                    bb[m] = Y[n][i]
+                    for np in range (NK):
+                        for j in range (3):
+                            mp = 3*(N-0)+j
+                            aa[m][mp] = H[n][i][np][j]
+                            # End j loop
+                        # End np loop
+                    # End i loop
+                # End n loop
+            # Now we want to solve the matrix equation aa * xx = bb
+            # python is supposed to be able to do this with its linear algebra
+            # function linalg.solve(aa,bb)
+            xx = np.linalg.solve(aa,bb)  
+            # now take our solutino and put it back into matrix component format
+            for N in range (NK):
+                for i in range (3):
+                    M = 3*(N-0)+i
+                    An[n][i] = xx[M]
+                    # End i loop
+                # End N loop
+            # Now we need to test our solution to see how good it is
+            # 
+            PHI = CPHI(An, H, Y, E0, NK, NUSE)  
+            ERR = PHI * np.conjugate(PHI)
+            if (ERR>ERR0):      # Not done with the MC loop, keep going
+               if (ERR > ERRlast):  # Reject: our try isn't so good, reset the k-vectors
+                  ERRlast = ERR     # update the ERR history
+                  [NK,kth,kph, ERR, ERRlast, mcount, kcount] = read_kv(kworkfile)       # Function call to get the k-vectors
+                  for N in range(NK):
+                      khatN[N]=kvector_components(kth[N], kph[N])
+               else:               # Acept:  The try was better, keep it
+                  ERRlast = ERR    # update the ERR history
+                  # because this is an accept, calcualte the fields
+                  E = ecalc (NUSE,R,E, An,khatN,X,NK,K,mm) 
+                  #If we want more Monty carlo tries, keep going, change the k-vectors
+                  if (kcount < NK):
+                      [kth, kph, khatN]=move1kv(mcount,khatN,kth,kph,NK,iseed,divd)
+                 
+            else:               # Accept the MC try
+               E = ecalc (NUSE,R,E, An,khatN,X,NK,K,mm)   
+               break # to exit the kcount loop because we feel we are done
+        #        
+        # End of kcount loop                        
+    #
     # End the Monte Carlo loop
     mcount = mcount +1  
     print ('End Monte Carlo Loop, mcount =',mcount, 'ERR =',ERR)              
-    # T1 should be done, now we need H and Y
+# And that is the end of the program
+# Of couse I haven't saved off the E-Fields yet.  So there is not output file
+#  yet.
+
    
    
 
