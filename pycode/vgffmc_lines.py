@@ -661,15 +661,16 @@ while (ERR > ERR0) and (mcount < MMAX):
             # Now get ready for the matrix inversion
             # But we need H in a good form for the matrix inverter
             # Try to reform it into a NK*3 by NK*3 matrix
+            print('reforming the matrix for solving ')
             for n in range(NK):
                 for i in range(3):
                     m = 3*(n-0)+i     # in fortran arrays start with 1, but 
                                       # our python arrays start with 0
                     bb[m] = Y[n][i]
-                    for np in range (NK):
+                    for nnp in range (NK):
                         for j in range (3):
                             mp = 3*(N-0)+j
-                            aa[m][mp] = H[n][i][np][j]
+                            aa[m][mp] = H[n][i][nnp][j]
                             # End j loop
                         # End np loop
                     # End i loop
@@ -677,7 +678,8 @@ while (ERR > ERR0) and (mcount < MMAX):
             # Now we want to solve the matrix equation aa * xx = bb
             # python is supposed to be able to do this with its linear algebra
             # function linalg.solve(aa,bb)
-            xx = np.linalg.solve(aa,bb)  
+            print('matrix solve')
+            xx = np.linalg.solve(aa,bb)
             # now take our solutino and put it back into matrix component format
             for N in range (NK):
                 for i in range (3):
