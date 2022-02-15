@@ -9,6 +9,7 @@ Created on Wed Feb  2 14:25:34 2022
 import random 
 import numpy as np
 import matplotlib.pyplot as plt
+import json
 #
 #
 # Function definitions section ################################################
@@ -382,6 +383,21 @@ def CPSI(R,KhatN,k,mm,N,b) :
 ###############################################################################
 #
 ###############################################################################
+# function to print T1 to a file
+def print_R(R):
+    data={'R':R}
+    print(data['R'])
+    with open("test_file.json",'w') as fp: 
+         variable=json.dumps(data, indent=4)
+         fp.write(variable)
+
+###############################################################################
+#
+###############################################################################
+
+
+
+
 # Main function goes here
 #
 # Test reading in the k-vectors
@@ -392,8 +408,9 @@ def CPSI(R,KhatN,k,mm,N,b) :
 # Define Variables
 #
 # Array Limits:  First let's set limits on how big the arrays can be
-KMAX = 2000
-NMAX =2000
+KMAX = 2000     # maximum number of k-vectors
+NMAX =2000      # maximum number of dipoles
+MMAX = 2        # maximum number of Monte Carlo itterations (starts at 1?)
 #
 # Convinient consDEG=PI/180.0tants
 DEG=np.pi/180.0     # conversion from degress to radians
@@ -434,6 +451,7 @@ workfile = "test_output_file.out" # @@@ needs to be an input
 #
 #
 ###### Read in the K-Vectors
+print('read in the k-vector file')
 NK = 0                                # number of k-vectors
 ERR = 0                               # Monte Carlo Loop Test Value (MCTV)
 ERRlast = ERR                         # Last value of MCTV to see if we are 
@@ -465,6 +483,8 @@ X = (eps - 1)/(4.0*np.pi)
 ###### Begin the incident field calculations
 #
 k=2.0*np.pi/wave         # wave number
+#
+print('rotate the input field into particle frame, calc field at each dipole')
 # covert angles from degrees to radians
 alpah = alpha * DEG
 beta = beta * DEG
@@ -519,16 +539,16 @@ for i in range (NUSE):
 #
 T1 = np.zeros((NUSE,3,NK,3),dtype = complex)
 #
-print ('before the loop', ERR, ERRlast)
-while (ERR > ERR0) and (mcount < 100):
+print('Calculationg internal fields...')
+while (ERR > ERR0) and (mcount < MMAX):
+    print('Monte Carlo Loop mcount = ', mcount)
     #ERR came from the k-vector file. We read it in before
     #kcount is the number of kvectors to loop over. ikcount seems to have allowed
     #   us to start not at the first k-vector.  I don't see why we would do that
     #   so let's try without it.
     for kcount in range (NK):        # @@@ why this loop?
-        print('Calculationg internal fields...')
         # Calculate the T1 matrix
-        print('Calculating T1')
+        print('Calculating T1, NK =',NK,' kcount =', kcount)
         for a in range(NUSE):
             for i in range(3):
                 for N in range (NK):
@@ -541,7 +561,9 @@ while (ERR > ERR0) and (mcount < 100):
                                  * GG(R,k, dtemp,eps,a,i,b,j))                \
                                  * CPSI(R,khatN, k, mm, N, b)
     
-                        
+    # End the Monte Carlo loop
+    mcount = mcount +1  
+    print ('End Monte Carlo Loop, mcount =',mcount, 'ERR =',ERR)              
     # T1 should be done, now we need H and Y
    
    
