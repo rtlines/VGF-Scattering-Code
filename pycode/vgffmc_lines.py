@@ -372,13 +372,12 @@ def GG(R,k,d,EPS,a,i,b,j):
 #    CPSI=cexp(i*k*khatN.R(b))  
  
 
-def CPSI(R,KhatN,k,mm,N,b) :
+def CPSI(R,khatN,k,mm,N,b) :
     KDR=khatN[N].dot(R[b])
     temp = 1j*mm*k*KDR
     return np.exp(temp)
     
-    
-    
+     
 
 ###############################################################################
 #
@@ -402,7 +401,7 @@ def Calculate_PHI(An, H, Y, E0, NK, NUSE):
         for j in range(3):
             for M in range(NK):
                 for l in range (3):
-                    CPHI = CPHI + np.conjugate(An[M][l]*H[M][l][N][j]*A[N][j])
+                    CPHI = CPHI + np.conjugate(An[M][l]*H[M][l][N][j]*An[N][j])
                     # End l loop
                 # End M loop
             # End j loop
@@ -415,7 +414,7 @@ def Calculate_PHI(An, H, Y, E0, NK, NUSE):
         # End j loop
     for a in range(NUSE):
         for i in range(3):
-            CPHI - CPHI + E0[a][i]*np.conjugate(E)[a][i]
+            CPHI - CPHI + E0[a][i]*np.conjugate(E0)[a][i]
             # End i loop
         # End a loop        
     return CPHI
@@ -441,7 +440,7 @@ def ecalc (NUSE,R,E, An,khatN,X,NK,K,mm)  :
         for j in range(3):
             F[b][j]=(0.0,0.0)
             for N in range(0,NK):
-                F[b][j]=F[b][j]+An[N][j]*CPSI(R,KhatN,k,mm,N,b)          
+                F[b][j]=F[b][j]+An[N][j]*CPSI(R,khatN,k,mm,N,b)          
     #
     #Done, Calculate the internal E-field to output it.
     #
