@@ -623,97 +623,98 @@ while (ERR > ERR0) and (mcount < MMAX):
                                 ( dd(a,i,b,j)-D[b]**3 * W 
                                  * GG(R,k, dtemp,eps,a,i,b,j))                \
                                  * CPSI(R,khatN, k, mm, N, b)
-                                 # End of the b loop
+#                            print (a,i,b,j,dd(a,i,b,j) )
+                            # End of the b loop
                         # End of the j loop         
                     # End of the N loop
             # End of the a loop
             #print out the T1 matrix to a file so we can check it
             #print_T1(T1)
             # Calculate the H and Y matricies
-            print('building the Y  and H matricies')
-            for M in range(NK):
-                for l in range(3):
-                    Y[M][l] = 0.0+0.0j    
-                    for a in range(NUSE):
-                        for i in range(3):
-                            Y[M][l] = Y[M][l] + np.conjugate(T1[a][i][M][l])  \
-                                      *E0[a][i]
-                            # End i loop
-                        # End a loop
-                    # End l loop
-                # End M loop
-            for M in range (NK):
-                for l in range (3):
-                    for N in range(NK):
-                        for j in range(3):
-                            H[M][l][N][j] = 0.0+0.0j
-                            for a in range(NUSE):
-                                for i in range(3):
-                                    H[M][l][N][j] =  H[M][l][N][j]            \
-                                        + np.conjugate(T1[a][i][M][l])        \
-                                        * (T1[a][i][N][j])
-                                    # End i loop
-                                # End a loop
-                            # End j loop
-                        # End N loop
-                    # End l looop
-                # End M loop
-            # Now get ready for the matrix inversion
-            # But we need H in a good form for the matrix inverter
-            # Try to reform it into a NK*3 by NK*3 matrix
-            print('reforming the matrix for solving ')
-            for n in range(NK):
-                for i in range(3):
-                    m = 3*(n-0)+i     # in fortran arrays start with 1, but 
-                                      # our python arrays start with 0
-                    bb[m] = Y[n][i]
-                    for nnp in range (NK):
-                        for j in range (3):
-                            mp = 3*(N-0)+j
-                            aa[m][mp] = H[n][i][nnp][j]
-                            # End j loop
-                        # End np loop
-                    # End i loop
-                # End n loop
-            # Now we want to solve the matrix equation aa * xx = bb
-            # python is supposed to be able to do this with its linear algebra
-            # function linalg.solve(aa,bb)
-            print('matrix solve')
-            xx = np.linalg.solve(aa,bb)
-            # now take our solutino and put it back into matrix component format
-            for N in range (NK):
-                for i in range (3):
-                    M = 3*(N-0)+i
-                    An[n][i] = xx[M]
-                    # End i loop
-                # End N loop
-            # Now we need to test our solution to see how good it is
-            # 
-            PHI = CPHI(An, H, Y, E0, NK, NUSE)  
-            ERR = PHI * np.conjugate(PHI)
-            if (ERR>ERR0):      # Not done with the MC loop, keep going
-               if (ERR > ERRlast):  # Reject: our try isn't so good, reset the k-vectors
-                  ERRlast = ERR     # update the ERR history
-                  [NK,kth,kph, ERR, ERRlast, mcount, kcount] = read_kv(kworkfile)       # Function call to get the k-vectors
-                  for N in range(NK):
-                      khatN[N]=kvector_components(kth[N], kph[N])
-               else:               # Acept:  The try was better, keep it
-                  ERRlast = ERR    # update the ERR history
-                  # because this is an accept, calcualte the fields
-                  E = ecalc (NUSE,R,E, An,khatN,X,NK,K,mm) 
-                  #If we want more Monty carlo tries, keep going, change the k-vectors
-                  if (kcount < NK):
-                      [kth, kph, khatN]=move1kv(mcount,khatN,kth,kph,NK,iseed,divd)
-                 
-            else:               # Accept the MC try
-               E = ecalc (NUSE,R,E, An,khatN,X,NK,K,mm)   
-               break # to exit the kcount loop because we feel we are done
-        #        
-        # End of kcount loop                        
-    #
-    # End the Monte Carlo loop
-    mcount = mcount +1  
-    print ('End Monte Carlo Loop, mcount =',mcount, 'ERR =',ERR)              
+#            print('building the Y  and H matricies')
+#            for M in range(NK):
+#                for l in range(3):
+#                    Y[M][l] = 0.0+0.0j    
+#                    for a in range(NUSE):
+#                        for i in range(3):
+#                            Y[M][l] = Y[M][l] + np.conjugate(T1[a][i][M][l])  \
+#                                      *E0[a][i]
+#                            # End i loop
+#                        # End a loop
+#                    # End l loop
+#                # End M loop
+#            for M in range (NK):
+#                for l in range (3):
+#                    for N in range(NK):
+#                        for j in range(3):
+#                            H[M][l][N][j] = 0.0+0.0j
+#                            for a in range(NUSE):
+#                                for i in range(3):
+#                                    H[M][l][N][j] =  H[M][l][N][j]            \
+#                                        + np.conjugate(T1[a][i][M][l])        \
+#                                        * (T1[a][i][N][j])
+#                                    # End i loop
+#                                # End a loop
+#                            # End j loop
+#                        # End N loop
+#                    # End l looop
+#                # End M loop
+#            # Now get ready for the matrix inversion
+#            # But we need H in a good form for the matrix inverter
+#            # Try to reform it into a NK*3 by NK*3 matrix
+#            print('reforming the matrix for solving ')
+#            for n in range(NK):
+#                for i in range(3):
+#                    m = 3*(n-0)+i     # in fortran arrays start with 1, but 
+#                                      # our python arrays start with 0
+#                    bb[m] = Y[n][i]
+#                    for nnp in range (NK):
+#                        for j in range (3):
+#                            mp = 3*(N-0)+j
+#                            aa[m][mp] = H[n][i][nnp][j]
+#                            # End j loop
+#                        # End np loop
+#                    # End i loop
+#                # End n loop
+#            # Now we want to solve the matrix equation aa * xx = bb
+#            # python is supposed to be able to do this with its linear algebra
+#            # function linalg.solve(aa,bb)
+#            print('matrix solve')
+#            xx = np.linalg.solve(aa,bb)
+#            # now take our solutino and put it back into matrix component format
+#            for N in range (NK):
+#                for i in range (3):
+#                    M = 3*(N-0)+i
+#                    An[n][i] = xx[M]
+#                    # End i loop
+#                # End N loop
+#            # Now we need to test our solution to see how good it is
+#            # 
+#            PHI = CPHI(An, H, Y, E0, NK, NUSE)  
+#            ERR = PHI * np.conjugate(PHI)
+#            if (ERR>ERR0):      # Not done with the MC loop, keep going
+#               if (ERR > ERRlast):  # Reject: our try isn't so good, reset the k-vectors
+#                  ERRlast = ERR     # update the ERR history
+#                  [NK,kth,kph, ERR, ERRlast, mcount, kcount] = read_kv(kworkfile)       # Function call to get the k-vectors
+#                  for N in range(NK):
+#                      khatN[N]=kvector_components(kth[N], kph[N])
+#               else:               # Acept:  The try was better, keep it
+#                  ERRlast = ERR    # update the ERR history
+#                  # because this is an accept, calcualte the fields
+#                  E = ecalc (NUSE,R,E, An,khatN,X,NK,K,mm) 
+#                  #If we want more Monty carlo tries, keep going, change the k-vectors
+#                  if (kcount < NK):
+#                      [kth, kph, khatN]=move1kv(mcount,khatN,kth,kph,NK,iseed,divd)
+#                 
+#            else:               # Accept the MC try
+#               E = ecalc (NUSE,R,E, An,khatN,X,NK,K,mm)   
+#               break # to exit the kcount loop because we feel we are done
+#        #        
+#        # End of kcount loop                        
+#    #
+#    # End the Monte Carlo loop
+#    mcount = mcount +1  
+#    print ('End Monte Carlo Loop, mcount =',mcount, 'ERR =',ERR)              
 # And that is the end of the program
 # Of couse I haven't saved off the E-Fields yet.  So there is not output file
 #  yet.
