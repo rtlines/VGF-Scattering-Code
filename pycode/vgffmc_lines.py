@@ -310,7 +310,8 @@ def dd(alpha, i, beta, j):
 #           complex temp                                                  
 #           a=d*(3./(4.*PI))**(1./3.)                                     
 #           temp=CI*k*a                                                   
-#           GAM=2.*((1.-CI*k*a)*cexp(temp)-1.)          
+#           GAM=2.*((1.-CI*k*a)*cexp(temp)-1.)      
+#      Single Point Test 2/16/2022    
 def GAM(d,k,EPS):
        GAM=0.0+0.0j
        kd=k*d
@@ -330,7 +331,7 @@ def GG(R,k,d,EPS,a,i,b,j):
     #    EPS is the complex permitivity
     #    a, i, b, and j are indexes to get the right component of the right 
     #    dopole location.
-    # set up the complex variables and zero them
+    # set up the complex temporary variables and zero them
     PHZ = 0.0+0.0j
     t1 = 0.0+0.0j
     t2 = 0.0+0.0j
@@ -362,7 +363,7 @@ def GG(R,k,d,EPS,a,i,b,j):
         t2 = (1j*k/RMAG**2 - 1.0/RMAG**3) * (delta(i,j)-3.0*Rhat[i]*Rhat[j])
         GG = PHZ * (t1 + t2)
     else:    
-        GG = 4.0*np.pi*GAM(d,i,EPS)/(3.0*d**3)
+        GG = 4.0*np.pi*GAM(d,k,EPS)/(3.0*d**3)
     return GG
 #
 ###############################################################################
@@ -370,7 +371,8 @@ def GG(R,k,d,EPS,a,i,b,j):
 ###############################################################################
 # Function to calculate the trial funciton expansion functions 
 #    CPSI=cexp(i*k*khatN.R(b))  
- 
+# 
+# Single point checked 02/16/2022 
 
 def CPSI(R,khatN,k,mm,N,b) :
     KDR=khatN[N].dot(R[b])
@@ -383,12 +385,21 @@ def CPSI(R,khatN,k,mm,N,b) :
 #
 ###############################################################################
 # function to print T1 to a file
-def print_T1(T1):
-    data={'T1':T1}
-    print(data['T1'])
-    with open("test_file_T1.json",'w') as fp: 
-         variable=json.dumps(data, indent=4)
-         fp.write(variable)
+def print_T1_to_file(T1,NUSE, NK):
+    print("Printing T1 data to T1_file.txt:w")
+    with open('T1_file.txt','w') as Tf:
+       for a in range(NUSE):
+            for i in range(3):
+                for N in range (NK):
+                    for j in range(3):
+                        temp = str(a)+", "+str(i)+", "+str(N)+", "+str(j)
+                        temp = temp + ", " + str(T1[a][i][N][j])+"\n" 
+                        Tf.write(temp)            # write a whole line
+                        # End of the j loop         
+                    # End of the N loop
+            # End of the a loopallowed
+       # End of file open
+   
 
 ###############################################################################
 #
@@ -601,14 +612,48 @@ bb = np.zeros((3*NK, 3*NK), dtype = complex)
 aa = np.zeros((3*NK, 3*NK), dtype = complex)
 xx = np.zeros((3*NK), dtype = complex)
 #
-print('Calculationg internal fields...')
+# Code to check the functions we will use, comment out later
+# Test CPSI ################################################
+#print('testing CPSI')
+#N=1
+#b=1
+#testCPSI = CPSI(R,khatN,k,mm,N,b)
+#print('khatN, Rb, mm, k', khatN[N],R[b],mm,k )
+#print('CPSI test = ',testCPSI)
+#print('Calculationg internal fields...')
+# Test dd ################################################
+#print('Testing dd')
+#a=0
+#i=1
+#b=0
+#j=1
+#print(a, i, b, j, 'dd= ', dd(a,i,b,j))
+# Test GAM ################################################ 
+#print('Testing GAM')
+#dtemp = 1.24
+#print('d, k, eps ',dtemp,k,eps)
+#print('GAM = ',GAM(dtemp,k,eps))
+
+# Test GG ################################################   
+#print('Testing GG')
+#a=0
+#i=0
+#b=0
+#j=0
+#dtemp = 1.24
+#tempGG = GG(R,k,dtemp,eps,a,i,b,j)
+#print(a,i,b,j,' GG= ',tempGG)
+
 while (ERR > ERR0) and (mcount < MMAX):
+    
     print('Monte Carlo Loop mcount = ', mcount)
     #ERR came from the k-vector file. We read it in before
-    #kcount is the number of kvectors to loop over. ikcount seems to have allowed
-    #   us to start not at the first k-vector.  I don't see why we would do that
-    #   so let's try without it.
-    for kcount in range (NK):        # @@@ why this loop?
+    #kcount is the number of kvector tries to loop over. ikcount seems to have 
+    #   allowed us to start not at the first k-vector.  I don't see why we would
+    #   do that so let's try without it. The kcount loop gives us the number
+    #   of random tries for best fit for the field.  But if we get a good one
+    #   we drop out of the loop.
+    for kcount in range (1):        # should be NK @@@@ put it back after testing T1
         # Calculate the T1 matrix
         print('Calculating T1, NK =',NK,' kcount =', kcount)
         for a in range(NUSE):
@@ -622,14 +667,17 @@ while (ERR > ERR0) and (mcount < MMAX):
                                 ( dd(a,i,b,j)-D[b]**3 * W 
                                  * GG(R,k, dtemp,eps,a,i,b,j))                \
                                  * CPSI(R,khatN, k, mm, N, b)
-#                            print (a,i,b,j,dd(a,i,b,j) )
                             # End of the b loop
+                        #print ("T1 loop ",a,i,N,j,T1[a][i][N][j])
                         # End of the j loop         
                     # End of the N loop
             # End of the a loop
             #print out the T1 matrix to a file so we can check it
-            #print_T1(T1)
-            # Calculate the H and Y matricies
+            if (kcount == 0):
+                print("print out the T1 matrix for checking")
+                print_T1_to_file(T1,NUSE, NK)
+                break
+#            # Calculate the H and Y matricies
 #            print('building the Y  and H matricies')
 #            for M in range(NK):
 #                for l in range(3):
@@ -641,7 +689,7 @@ while (ERR > ERR0) and (mcount < MMAX):
 #                            # End i loop
 #                        # End a loop
 #                    # End l loop
-#                # End M loop
+#       CPSI(R,khatN,k,mm,N,b) :         # End M loop
 #            for M in range (NK):
 #                for l in range (3):
 #                    for N in range(NK):
@@ -677,7 +725,7 @@ while (ERR > ERR0) and (mcount < MMAX):
 #                # End n loop
 #            # Now we want to solve the matrix equation aa * xx = bb
 #            # python is supposed to be able to do this with its linear algebra
-#            # function linalg.solve(aa,bb)
+#       CPSI(R,khatN,k,mm,N,b) :     # function linalg.solve(aa,bb)
 #            print('matrix solve')
 #            xx = np.linalg.solve(aa,bb)
 #            # now take our solutino and put it back into matrix component format
@@ -708,12 +756,13 @@ while (ERR > ERR0) and (mcount < MMAX):
 #            else:               # Accept the MC try
 #               E = ecalc (NUSE,R,E, An,khatN,X,NK,K,mm)   
 #               break # to exit the kcount loop because we feel we are done
-#        #        
-#        # End of kcount loop                        
-#    #
-#    # End the Monte Carlo loop
-#    mcount = mcount +1  
-#    print ('End Monte Carlo Loop, mcount =',mcount, 'ERR =',ERR)              
+#        #
+        print('end of the kcount loop')        
+        # End of kcount loop                        
+    #
+    # End the Monte Carlo loop
+    mcount = mcount +1  
+    print ('End Monte Carlo Loop, mcount =',mcount, 'ERR =',ERR)              
 # And that is the end of the program
 # Of couse I haven't saved off the E-Fields yet.  So there is not output file
 #  yet.
