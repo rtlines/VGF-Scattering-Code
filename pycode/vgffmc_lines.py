@@ -336,13 +336,15 @@ def GG(R,k,d,EPS,a,i,b,j):
     t1 = 0.0+0.0j
     t2 = 0.0+0.0j
     temp = 0.0+0.0j
+    ci = 0.0+1.0j
 
     #
     K2=k*k 
     # make a space for dipole displacement vectors 
     Rab = np.zeros(3)
     Rhat = np.zeros(3)
-    if b != a:    
+    if b != a:  
+        # @@@ Check for error in this branch
         # calculat4e the separation distance between two dipoles
         #   Rmn = Rn - Rm and RMAG = |Rmn|
         Rab[0] = R[a][0] - R[b][0]
@@ -356,15 +358,15 @@ def GG(R,k,d,EPS,a,i,b,j):
         Rhat[1] = Rab[1]/RMAG
         Rhat[2] = Rab[2]/RMAG
         # our exponent is i(k dot r) form the exponent
-        temp = 1j*k*RMAG
+        temp = ci*k*RMAG
         PHZ = np.exp(temp)
         #
         t1 = (K2/RMAG)*(delta(i,j) - Rhat[i]*Rhat[j])
-        t2 = (1j*k/RMAG**2 - 1.0/RMAG**3) * (delta(i,j)-3.0*Rhat[i]*Rhat[j])
-        GG = PHZ * (t1 + t2)
+        t2 = (ci*k/RMAG**2 - 1.0/RMAG**3) * (delta(i,j)-3.0*Rhat[i]*Rhat[j])
+        G = PHZ * (t1 + t2)
     else:    
-        GG = 4.0*np.pi*GAM(d,k,EPS)/(3.0*d**3)
-    return GG
+        G = 4.0*np.pi*GAM(d,k,EPS)/(3.0*d**3)
+    return G
 #
 ###############################################################################
 #
@@ -645,7 +647,7 @@ xx = np.zeros((3*NK), dtype = complex)
 #print(a,i,b,j,' GG= ',tempGG)
 
 while (ERR > ERR0) and (mcount < MMAX):
-    
+    GG
     print('Monte Carlo Loop mcount = ', mcount)
     #ERR came from the k-vector file. We read it in before
     #kcount is the number of kvector tries to loop over. ikcount seems to have 

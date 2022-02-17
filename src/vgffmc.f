@@ -70,7 +70,7 @@ C *** Real
 C *** Complex
       complex  aa(3*KNMAX,3*KNMAX)
       complex  bb(3*KNMAX)  
-      complex  mm, EPS, X, W, C, CI, temp
+      complex  mm, EPS, X, W, C, CI, temp,GAM
       complex  E0(NMAX,3),E(NMAX,3)
       complex T1(NMAX,3,KNMAX,3)
       complex  F(NMAX,3)
@@ -153,6 +153,15 @@ C**** Setup the khatN directions.
       ERR=ERRlast
       call kvectors3(khatN,kth,kph,NK)      
 C
+C     test subroutines here
+      a=1
+      i=1
+      b=1
+      j=1
+      dtemp=1.24
+      print *, "dtemp,k, EPS, a,i, b,j", dtemp,k, EPS, a, i, b, j
+      print *,"GG = ", GG(R,k,dtemp, EPS,a,i,b,j)      
+C      print *,"GAM = ", GAM(dtemp,k,EPS) 
 C**** HERE WE START THE MONTE CARLO LOOP                             ***
       open(50, file = 'ERRlist', STATUS="UNKNOWN")
       write(50,*) INFILE
@@ -175,6 +184,7 @@ C               write(43,22) KhatN(N,1),KhatN(N,2),KhatN(N,3)
      &               (dd(a,i,b,j)-d(b)**3*W*GG(R,k,dtemp,EPS,a,i,b,j))
      &               *CPSI(R,KhatN,k,mm,N,b)
                   end do 
+                  print *, a,i,N,j,T1(a,i,N,j)
                end do   
             end do
          end do
