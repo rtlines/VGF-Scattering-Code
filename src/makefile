@@ -11,13 +11,16 @@ NEW_OBJ_make=icamax cgefa scacum csscal cgesl \
         ran0 ran1 ran2 ran3 izamax dcabs1
 
 
-all:	$(NEW_OBJ) vgffmco vgffmc vgfphz vgfin vgfkv   
+all:	$(NEW_OBJ) vgffmco vgffmc vgfphz vgfin vgfkv vgffmctest  
 
 vgffmco: vgffmc.f
 	f77 -c -o vgffmc.o vgffmc.f
 
 vgffmc:	vgffmc.o $(NEW_OBJ) 
 	f77 -o vgffmc vgffmc.o $(NEW_OBJ)
+ 
+vgffmctest:	vgffmctest.o $(NEW_OBJ) 
+	f77 -o vgffmctest vgffmctest.o $(NEW_OBJ)
  
 vgfin:	vgfin.f  
 	f77 -o vgfin vgfin.f 
