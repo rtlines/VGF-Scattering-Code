@@ -828,7 +828,7 @@ while (ERR > ERR0) and (mcount < MMAX):
                       for j in range (3):
                           mp = 3*(N-0)+j
                           aa[m][mp] = H[n][i][nnp][j]
-                          print('m, mp, aa[m][mp]',m, mp, aa[m][mp])
+                          #print('m, mp, aa[m][mp]',m, mp, aa[m][mp])
                           # End j loop
                       # End np loop
                   # End i loop
@@ -838,8 +838,8 @@ while (ERR > ERR0) and (mcount < MMAX):
         # Now we want to solve the matrix equation aa * xx = bb
         # python is supposed to be able to do this with its linear algebra
         # function linalg.solve(aa,bb)
-        print('matrix solve')
-        xx = np.linalg.solve(aa,bb)
+ #       print('matrix solve')
+#        xx = np.linalg.solve(aa,bb)
 #        # now take our solutino and put it back into matrix component format
 #        for N in range (NK):
 #                for i in range (3):
