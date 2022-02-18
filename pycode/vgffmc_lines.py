@@ -213,13 +213,13 @@ def read_kv(workfile):
       read_data = f.readline()            # read a whole line
       #print(read_data)                    # The first line is just the number of kvectors
       NK=int(read_data)                   # turn the whole line into a number
-      #print(NK)
+      print(NK)
 #      kth = np.zeros(NK)                  # make arrays for the kvector components
 #      kph = np.zeros(NK)
 #      khatN = np.zeros((NK,3))              # actual components of the vectors
       for i in range(0,NK,1):             # loop to input all the theta and phi values
           read_data = f.readline()       # read in a whole line
-          #print(read_data)
+          print(read_data)
           split_string = read_data.split(" ")  #parse the line splitting where
                                                #there are spaces
                                                #Each line starts with a sppace
@@ -229,28 +229,28 @@ def read_kv(workfile):
                                                #a space, a string that is a 
                                                #number, then a second string 
                                                #that is a number.
-          #print(split_string)
+          print(split_string)
           theta=split_string[1]        # ignore the first split piece and 
                                        # copy the first number string into 
                                        # a variable
           phi=split_string[2]          # and do the same for the second number
                                        # string
-          #print(theta, phi)     
+          print(theta, phi)     
           kth[i] = float(theta)        # now convert the string into a number
                                        # and put it into the array
           kph[i] = float(phi)          # and do the same for the second string
-          #print(kth[i],kph[i])
+          print(kth[i],kph[i])
           
       read_data = f.readline()       # The last line has dummy strings
                                      # for kth and kph but has at the end 
-      #print(read_data)
+      print(read_data)
       split_string = read_data.split(" ")
-      #print(split_string)
-      ERR=int(split_string[7])
-      ERRlast=int(split_string[14])
-      mcount=int(split_string[25])
-      kcount=int(split_string[36])
-      #print(ERR, ERRlast, mcount, kcount)
+      print(split_string)
+      ERR=float(split_string[3])
+      ERRlast=float(split_string[6])
+      mcount=int(split_string[21])
+      kcount=int(split_string[32])
+      print(ERR, ERRlast, mcount, kcount)
       return NK,kth,kph, ERR, ERRlast, mcount, kcount
 
 # now we have the kth and kph values in arrays just like the original
@@ -402,7 +402,25 @@ def print_T1_to_file(T1,NUSE, NK):
             # End of the a loopallowed
        # End of file open
    
-
+###############################################################################
+#
+###############################################################################
+# function to print T1 to a file
+def print_GG_to_file(R, k, eps):
+    print("Printing GG data to GG_file.txt")
+    dtemp = 1.24
+    with open('GG_file.txt','w') as Gf:
+       for a in range(NUSE):
+            for i in range(3):
+                for b in range (NK):
+                    for j in range(3):
+                        temp = str(a)+", "+str(i)+", "+str(b)+", "+str(j)
+                        temp = temp + ", " + str(GG(R,k,dtemp,eps,a,i,b,j))+"\n" 
+                        Gf.write(temp)            # write a whole line
+                        # End of the j loop         
+                    # End of the N loop
+            # End of the a loopallowed
+       # End of file open
 ###############################################################################
 #
 ###############################################################################
@@ -508,7 +526,7 @@ EI = 0.0
 TD = 0.0                 # the dipole size
 R = np.zeros((NMAX,3))    # a NUSE bcom,wave,alpha,beta,gamma,psi,RAD,ER,EI,TD,R,Dy 3 array of cell locations
 D = np.zeros(NMAX)         # a NUSE array of cell weights
-workfile = "test_output_file.out" # @@@ needs to be an input
+workfile = "Figure3.in" # @@@ needs to be an input
 [NUSE,comments,wave,alpha,beta,gamma,psi,RAD,ER,EI,TD,R,D] = read_input_file(workfile)
 # Test to see if it worked
 #print(comments)
@@ -529,7 +547,7 @@ kth = np.zeros(KMAX)                  # make arrays for the kvector components
 kph = np.zeros(KMAX)
 # array of k-vector cartisian components.
 khatN = np.zeros((KMAX,3))              # arrat of components of the vectors
-kworkfile ="Test_2_5_5.kv"   #@@@ needs to be an input
+kworkfile ="Figure3.kv"   #@@@ needs to be an input
 [NK,kth,kph, ERR, ERRlast, mcount, kcount] = read_kv(kworkfile)       # Function call to get the k-vectors
 # Test to see if it worked
 #print(NK)
@@ -639,46 +657,47 @@ xx = np.zeros((3*NK), dtype = complex)
 # Test GG ################################################   
 #print('Testing GG')
 #a=0
-#i=0
-#b=0
+#i=1
+#b=2
 #j=0
 #dtemp = 1.24
 #tempGG = GG(R,k,dtemp,eps,a,i,b,j)
-#print(a,i,b,j,' GG= ',tempGG)
+#print(a,i,b,j,dtemp,' GG= ',tempGG)
+#print_GG_to_file(R, k, eps)
 
-while (ERR > ERR0) and (mcount < MMAX):
-    GG
-    print('Monte Carlo Loop mcount = ', mcount)
-    #ERR came from the k-vector file. We read it in before
-    #kcount is the number of kvector tries to loop over. ikcount seems to have 
-    #   allowed us to start not at the first k-vector.  I don't see why we would
-    #   do that so let's try without it. The kcount loop gives us the number
-    #   of random tries for best fit for the field.  But if we get a good one
-    #   we drop out of the loop.
-    for kcount in range (1):        # should be NK @@@@ put it back after testing T1
-        # Calculate the T1 matrix
-        print('Calculating T1, NK =',NK,' kcount =', kcount)
-        for a in range(NUSE):
-            for i in range(3):
-                for N in range (NK):
-                    for j in range(3):
-                        T1[a][i][N][j] = 0.0+0.0j
-                        for b in range (NUSE):
-                            dtemp = D[b]
-                            T1[a][i][N][j] =  T1[a][i][N][j] +                \
-                                ( dd(a,i,b,j)-D[b]**3 * W 
-                                 * GG(R,k, dtemp,eps,a,i,b,j))                \
-                                 * CPSI(R,khatN, k, mm, N, b)
-                            # End of the b loop
-                        #print ("T1 loop ",a,i,N,j,T1[a][i][N][j])
-                        # End of the j loop         
-                    # End of the N loop
-            # End of the a loop
-            #print out the T1 matrix to a file so we can check it
-            if (kcount == 0):
-                print("print out the T1 matrix for checking")
-                print_T1_to_file(T1,NUSE, NK)
-                break
+#while (ERR > ERR0) and (mcount < MMAX):
+#    GG
+#    print('Monte Carlo Loop mcount = ', mcount)
+#    #ERR came from the k-vector file. We read it in before
+#    #kcount is the number of kvector tries to loop over. ikcount seems to have 
+#    #   allowed us to start not at the first k-vector.  I don't see why we would
+#    #   do that so let's try without it. The kcount loop gives us the number
+#    #   of random tries for best fit for the field.  But if we get a good one
+#    #   we drop out of the loop.
+#    for kcount in range (1):        # should be NK @@@@ put it back after testing T1
+#        # Calculate the T1 matrix
+#        print('Calculating T1, NK =',NK,' kcount =', kcount)
+#        for a in range(NUSE):
+#            for i in range(3):
+#                for N in range (NK):
+#                    for j in range(3):
+#                        T1[a][i][N][j] = 0.0+0.0j
+#                        for b in range (NUSE):
+#                            dtemp = D[b]
+#                            T1[a][i][N][j] =  T1[a][i][N][j] +                \
+#                                ( dd(a,i,b,j)-D[b]**3 * W 
+#                                 * GG(R,k, dtemp,eps,a,i,b,j))                \
+#                                 * CPSI(R,khatN, k, mm, N, b)
+#                            # End of the b loop
+#                        #print ("T1 loop ",a,i,N,j,T1[a][i][N][j])
+#                        # End of the j loop         
+#                    # End of the N loop
+#            # End of the a loop
+#            #print out the T1 matrix to a file so we can check it
+#            if (kcount == 0):
+#                print("print out the T1 matrix for checking")
+#                print_T1_to_file(T1,NUSE, NK)
+#                break
 #            # Calculate the H and Y matricies
 #            print('building the Y  and H matricies')
 #            for M in range(NK):
@@ -759,12 +778,12 @@ while (ERR > ERR0) and (mcount < MMAX):
 #               E = ecalc (NUSE,R,E, An,khatN,X,NK,K,mm)   
 #               break # to exit the kcount loop because we feel we are done
 #        #
-        print('end of the kcount loop')        
-        # End of kcount loop                        
-    #
-    # End the Monte Carlo loop
-    mcount = mcount +1  
-    print ('End Monte Carlo Loop, mcount =',mcount, 'ERR =',ERR)              
+#        print('end of the kcount loop')        
+#        # End of kcount loop                        
+#    #
+#    # End the Monte Carlo loop
+#    mcount = mcount +1  
+#    print ('End Monte Carlo Loop, mcount =',mcount, 'ERR =',ERR)              
 # And that is the end of the program
 # Of couse I haven't saved off the E-Fields yet.  So there is not output file
 #  yet.
