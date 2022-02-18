@@ -213,13 +213,13 @@ def read_kv(workfile):
       read_data = f.readline()            # read a whole line
       #print(read_data)                    # The first line is just the number of kvectors
       NK=int(read_data)                   # turn the whole line into a number
-      print(NK)
+      #print(NK)
 #      kth = np.zeros(NK)                  # make arrays for the kvector components
 #      kph = np.zeros(NK)
 #      khatN = np.zeros((NK,3))              # actual components of the vectors
       for i in range(0,NK,1):             # loop to input all the theta and phi values
           read_data = f.readline()       # read in a whole line
-          print(read_data)
+          #print(read_data)
           split_string = read_data.split(" ")  #parse the line splitting where
                                                #there are spaces
                                                #Each line starts with a sppace
@@ -229,28 +229,28 @@ def read_kv(workfile):
                                                #a space, a string that is a 
                                                #number, then a second string 
                                                #that is a number.
-          print(split_string)
+          #print(split_string)
           theta=split_string[1]        # ignore the first split piece and 
                                        # copy the first number string into 
                                        # a variable
           phi=split_string[2]          # and do the same for the second number
                                        # string
-          print(theta, phi)     
+          #print(theta, phi)     
           kth[i] = float(theta)        # now convert the string into a number
                                        # and put it into the array
           kph[i] = float(phi)          # and do the same for the second string
-          print(kth[i],kph[i])
+          #print(kth[i],kph[i])
           
       read_data = f.readline()       # The last line has dummy strings
                                      # for kth and kph but has at the end 
-      print(read_data)
+      #print(read_data)
       split_string = read_data.split(" ")
-      print(split_string)
+      #print(split_string)
       ERR=float(split_string[3])
       ERRlast=float(split_string[6])
       mcount=int(split_string[21])
       kcount=int(split_string[32])
-      print(ERR, ERRlast, mcount, kcount)
+      #print(ERR, ERRlast, mcount, kcount)
       return NK,kth,kph, ERR, ERRlast, mcount, kcount
 
 # now we have the kth and kph values in arrays just like the original
@@ -388,7 +388,7 @@ def CPSI(R,khatN,k,mm,N,b) :
 ###############################################################################
 # function to print T1 to a file
 def print_T1_to_file(T1,NUSE, NK):
-    print("Printing T1 data to T1_file.txt:w")
+    print("Printing T1 data to T1_file.txt")
     with open('T1_file.txt','w') as Tf:
        for a in range(NUSE):
             for i in range(3):
@@ -401,7 +401,40 @@ def print_T1_to_file(T1,NUSE, NK):
                     # End of the N loop
             # End of the a loopallowed
        # End of file open
-   
+###############################################################################
+#
+###############################################################################
+# function to print Y to a file
+def print_Y_to_file(Y, NK):    
+    print('Printing Y data to Y_file.txt')
+    with open('Y_file.txt','w') as Yf:
+        for M in range(NK):
+              for l in range(3):  
+                    temp = str(M) +", "+str(l)+", "
+                    temp = temp + str(Y[M][l])+"\n"
+                    Yf.write(temp)            # write a whole line
+                    # End l loop
+              # End M loop   
+        # Close file
+###############################################################################
+#
+###############################################################################
+# function to print H to a file    
+def print_H_to_file(H,NK):      
+    print('Printing H data to H_file.txt')
+    with open('H_file.txt','w') as Hf:
+         for M in range (NK):
+             for l in range (3):
+                 for N in range(NK):
+                     for i in range(3):
+                         temp = str(M)+", "+str(l)+", "+str(N)+", "+str(i)
+                         temp = temp + str(H[M][l][N][i])+"\n"
+                         Hf.write(temp)            # write a whole line
+                         # End i loop
+                     # End N loop
+                 # End l looop
+             # End M loop
+         # Close File    
 ###############################################################################
 #
 ###############################################################################
@@ -419,8 +452,33 @@ def print_GG_to_file(R, k, eps):
                         Gf.write(temp)            # write a whole line
                         # End of the j loop         
                     # End of the N loop
-            # End of the a loopallowed
+            # End of the a loop
        # End of file open
+###############################################################################
+#
+###############################################################################
+# function to print bb to a file
+def print_bb_to_file(bb, NK):
+    print("Printing bb data to bb_file.txt")
+    with open('bb_file.txt','w') as bf:
+       for i in range(NK*3):
+            temp = str(i)+", "+str(bb[i])+"\n" 
+            bf.write(temp)            # write a whole line
+            # End of the i loop
+       # End of file open
+###############################################################################
+#
+###############################################################################
+# function to print aa to a file
+def print_aa_to_file(aa, NK):
+    print("Printing aa data to aa_file.txt")
+    with open('aa_file.txt','w') as aaf:
+       for i in range(NK*3):
+           for j in range(NK*3):
+               temp = str(i)+", "+str(j)+", "+ str(aa[i][j])+"\n" 
+               aaf.write(temp)            # write a whole line
+            # End of the i loop
+       # End of file open       
 ###############################################################################
 #
 ###############################################################################
@@ -483,6 +541,31 @@ def ecalc (NUSE,R,E, An,khatN,X,NK,K,mm)  :
 ###############################################################################
 #
 ###############################################################################
+# Caclulate the T1 matrix
+def Calculate_T1_Matrix( D, R, k, khatN, eps, mm, W, NUSE, NK ):
+    for a in range(NUSE):
+        for i in range(3):
+            for N in range (NK):
+                  for j in range(3):
+                      T1[a][i][N][j] = 0.0+0.0j
+                      for b in range (NUSE):
+                          dtemp = D[b]
+                          T1[a][i][N][j] =  T1[a][i][N][j] +                  \
+                                        ( dd(a,i,b,j)-D[b]**3 * W             \
+                                        * GG(R,k, dtemp,eps,a,i,b,j))         \
+                                        * CPSI(R,khatN, k, mm, N, b)
+                          # End of the b loop
+                          
+                          #print ("T1 loop ",a,i,N,j,T1[a][i][N][j])
+                      # End of the j loop         
+                  # End of the N loop
+            # End of the i loop
+        # End of the a loop
+    return T1
+###############################################################################
+#
+###############################################################################
+
 
 
 # Main function goes here
@@ -505,7 +588,7 @@ DEG=np.pi/180.0     # conversion from degress to radians
 ####### read in the dipole locatons and data from the input file
 #
 # The code needsto input some things.  I will hard code them here for now @@@@@
-ERR0 = 1000
+ERR0 = 0.05
 divd = 100
 #
 # Now read the input file.  The file name should be an input, but hard code
@@ -628,7 +711,7 @@ T1 = np.zeros((NUSE,3,NK,3),dtype = complex)
 Y  = np.zeros((NK,3), dtype = complex)
 H  = np.zeros((NK,3,NK,3), dtype = complex)
 An = np.zeros((NK,3), dtype = complex)
-bb = np.zeros((3*NK, 3*NK), dtype = complex)
+bb = np.zeros((3*NK), dtype = complex)
 aa = np.zeros((3*NK, 3*NK), dtype = complex)
 xx = np.zeros((3*NK), dtype = complex)
 #
@@ -665,18 +748,21 @@ xx = np.zeros((3*NK), dtype = complex)
 #print(a,i,b,j,dtemp,' GG= ',tempGG)
 #print_GG_to_file(R, k, eps)
 
-#while (ERR > ERR0) and (mcount < MMAX):
-#    GG
-#    print('Monte Carlo Loop mcount = ', mcount)
-#    #ERR came from the k-vector file. We read it in before
-#    #kcount is the number of kvector tries to loop over. ikcount seems to have 
-#    #   allowed us to start not at the first k-vector.  I don't see why we would
-#    #   do that so let's try without it. The kcount loop gives us the number
-#    #   of random tries for best fit for the field.  But if we get a good one
-#    #   we drop out of the loop.
-#    for kcount in range (1):        # should be NK @@@@ put it back after testing T1
-#        # Calculate the T1 matrix
-#        print('Calculating T1, NK =',NK,' kcount =', kcount)
+while (ERR > ERR0) and (mcount < MMAX):
+
+    print('Monte Carlo Loop mcount = ', mcount)
+    #ERR came from the k-vector file. We read it in before
+    #kcount is the number of kvector tries to loop over. ikcount seems to have 
+    #   allowed us to start not at the first k-vector.  I don't see why we would
+    #   do that so let's try without it. The kcount loop gives us the number
+    #   of random tries for best fit for the field.  But if we get a good one
+    #   we drop out of the loop.
+    for kcount in range (1):        # should be NK @@@@ put it back after testing T1
+        ##################### Calculate the T1 matrix -------------------------
+        print('Calculating T1, NK =',NK,' kcount =', kcount)
+        T1 = Calculate_T1_Matrix( D, R, k, khatN, eps, mm, W, NUSE, NK )
+        # output the T1 matrix for debugging
+        print_T1_to_file(T1,NUSE, NK)
 #        for a in range(NUSE):
 #            for i in range(3):
 #                for N in range (NK):
@@ -685,72 +771,77 @@ xx = np.zeros((3*NK), dtype = complex)
 #                        for b in range (NUSE):
 #                            dtemp = D[b]
 #                            T1[a][i][N][j] =  T1[a][i][N][j] +                \
-#                                ( dd(a,i,b,j)-D[b]**3 * W 
+#                                ( dd(a,i,b,j)-D[b]**3 * W                     \
 #                                 * GG(R,k, dtemp,eps,a,i,b,j))                \
 #                                 * CPSI(R,khatN, k, mm, N, b)
-#                            # End of the b loop
-#                        #print ("T1 loop ",a,i,N,j,T1[a][i][N][j])
-#                        # End of the j loop         
-#                    # End of the N loop
-#            # End of the a loop
-#            #print out the T1 matrix to a file so we can check it
-#            if (kcount == 0):
-#                print("print out the T1 matrix for checking")
-#                print_T1_to_file(T1,NUSE, NK)
-#                break
-#            # Calculate the H and Y matricies
-#            print('building the Y  and H matricies')
-#            for M in range(NK):
-#                for l in range(3):
-#                    Y[M][l] = 0.0+0.0j    
-#                    for a in range(NUSE):
-#                        for i in range(3):
-#                            Y[M][l] = Y[M][l] + np.conjugate(T1[a][i][M][l])  \
-#                                      *E0[a][i]
-#                            # End i loop
-#                        # End a loop
-#                    # End l loop
-#       CPSI(R,khatN,k,mm,N,b) :         # End M loop
-#            for M in range (NK):
-#                for l in range (3):
-#                    for N in range(NK):
-#                        for j in range(3):
-#                            H[M][l][N][j] = 0.0+0.0j
-#                            for a in range(NUSE):
-#                                for i in range(3):
-#                                    H[M][l][N][j] =  H[M][l][N][j]            \
-#                                        + np.conjugate(T1[a][i][M][l])        \
-#                                        * (T1[a][i][N][j])
-#                                    # End i loop
-#                                # End a loop
-#                            # End j loop
-#                        # End N loop
-#                    # End l looop
-#                # End M loop
-#            # Now get ready for the matrix inversion
-#            # But we need H in a good form for the matrix inverter
-#            # Try to reform it into a NK*3 by NK*3 matrix
-#            print('reforming the matrix for solving ')
-#            for n in range(NK):
-#                for i in range(3):
-#                    m = 3*(n-0)+i     # in fortran arrays start with 1, but 
-#                                      # our python arrays start with 0
-#                    bb[m] = Y[n][i]
-#                    for nnp in range (NK):
-#                        for j in range (3):
-#                            mp = 3*(N-0)+j
-#                            aa[m][mp] = H[n][i][nnp][j]
-#                            # End j loop
-#                        # End np loop
-#                    # End i loop
-#                # End n loop
-#            # Now we want to solve the matrix equation aa * xx = bb
-#            # python is supposed to be able to do this with its linear algebra
-#       CPSI(R,khatN,k,mm,N,b) :     # function linalg.solve(aa,bb)
-#            print('matrix solve')
-#            xx = np.linalg.solve(aa,bb)
-#            # now take our solutino and put it back into matrix component format
-#            for N in range (NK):
+                            # End of the b loop
+                        #print ("T1 loop ",a,i,N,j,T1[a][i][N][j])
+                        # End of the j loop         
+                    # End of the N loop
+        # End of the a loop
+        ################# Calculate the Y matrix ------------------------------
+        # Calculate the H and Y matricies
+        print('Building the Y matricx')
+        for M in range(NK):
+              for l in range(3):
+                    Y[M][l] = 0.0+0.0j    
+                    for a in range(NUSE):
+                        for i in range(3):
+                            Y[M][l] = Y[M][l] + np.conjugate(T1[a][i][M][l])  \
+                                      *E0[a][i]
+                            # End i loop
+                        # End a loop
+                    # End l loop
+                # End M loop   
+        print_Y_to_file(Y, NK)
+        ################# Calculate the Y matrix ------------------------------
+        print('Building the H matrix')
+        for M in range (NK):
+              for l in range (3):
+                    for N in range(NK):
+                        for j in range(3):
+                            H[M][l][N][j] = 0.0+0.0j
+                            for a in range(NUSE):
+                                for i in range(3):
+                                    H[M][l][N][j] =  H[M][l][N][j]            \
+                                        + np.conjugate(T1[a][i][M][l])        \
+                                        * (T1[a][i][N][j])
+                                    # End i loop
+                                # End a loop
+                            # End j loop
+                        # End N loop
+                    # End l looop
+              # End M loop
+        print_H_to_file(H,NK)
+        ################# Now get ready for the matrix inversion---------------
+        # Now get ready for the matrix inversion
+        # But we need H in a good form for the matrix inverter
+        # Try to reform it into a NK*3 by NK*3 matrix
+        print('reforming the matrix for solving ')
+        for n in range(NK):
+              for i in range(3):
+                  m = 3*(n-0)+i     # in fortran arrays start with 1, but 
+                                    # our python arrays start with 0
+                  bb[m] = Y[n][i]
+                  #print('m, i, m, bb ',n, i, m, bb[m])
+                  for nnp in range (NK):
+                      for j in range (3):
+                          mp = 3*(N-0)+j
+                          aa[m][mp] = H[n][i][nnp][j]
+                          print('m, mp, aa[m][mp]',m, mp, aa[m][mp])
+                          # End j loop
+                      # End np loop
+                  # End i loop
+              # End n loop
+        print_bb_to_file(bb, NK)
+        print_aa_to_file(aa, NK)
+        # Now we want to solve the matrix equation aa * xx = bb
+        # python is supposed to be able to do this with its linear algebra
+        # function linalg.solve(aa,bb)
+        print('matrix solve')
+        xx = np.linalg.solve(aa,bb)
+#        # now take our solutino and put it back into matrix component format
+#        for N in range (NK):
 #                for i in range (3):
 #                    M = 3*(N-0)+i
 #                    An[n][i] = xx[M]
@@ -779,11 +870,11 @@ xx = np.zeros((3*NK), dtype = complex)
 #               break # to exit the kcount loop because we feel we are done
 #        #
 #        print('end of the kcount loop')        
-#        # End of kcount loop                        
-#    #
-#    # End the Monte Carlo loop
-#    mcount = mcount +1  
-#    print ('End Monte Carlo Loop, mcount =',mcount, 'ERR =',ERR)              
+        # End of kcount loop                        
+    #
+    # End the Monte Carlo loop
+    mcount = mcount +1  
+    print ('End Monte Carlo Loop, mcount =',mcount, 'ERR =',ERR)              
 # And that is the end of the program
 # Of couse I haven't saved off the E-Fields yet.  So there is not output file
 #  yet.
