@@ -133,6 +133,7 @@ C *** Thus E0hat must be in the x-y plane in the lab frame           ***
       V(2)=sin(psi)
       v(3)=0.0
       call MV(RRR,V,E0hat)                                              
+C      print *, "E0hat ",psi, E0hat(1), E0hat(2),E0hat(3)
 C *** Assign incident and initial fields...                          ***
       W=Wcalc(X)                       
       do m = 1,NUSE                              
@@ -140,11 +141,15 @@ C *** Assign incident and initial fields...                          ***
          do I=1,3
             RDK=RDK+Khat(I)*R(m,I)
          end do
+C         print *, "RDK", RDK
          temp=CI*k*RDK                      
+C         print *, "temp ", temp
          C=cexp(temp)                       
+C         print *, "C ", C
          do I=1,3
             E0(m,I)=C*E0hat(I)               ! incident E-field    
          end do    
+C         print *, "E0 ", E0(m,1), E0(m,2),E0(m,3)
       end do
 C**** Setup the khatN directions.
       Write (*,*) 'Define the Kn vectors' 
@@ -170,23 +175,23 @@ C      j = 1
       dtemp = 1.24
 C      tempGG = GG(R,k,dtemp,EPS,a,i,b,j)
 C      print *, a,i,b,j,dtemp,"GG= ",tempGG
-      print *, NUSE, NK
-      do a=1,NUSE
-         do i=1,3
-            do b =1,NK
-               do j=1,3
-                   tempGG = GG(R,k,dtemp,EPS,a,i,b,j)
-                   print *, a,i,b,j,tempGG
-               end do
-            end do   
-          end do
-      End do
+C      print *, NUSE, NK
+C      do a=1,NUSE
+C         do i=1,3
+C            do b =1,NK
+C               do j=1,3
+c                   tempGG = GG(R,k,dtemp,EPS,a,i,b,j)
+C                   print *, a,i,b,j,tempGG
+C               end do
+C            end do   
+C          end do
+C      End do
 C
 C      
 C
 C
 C      
-      goto 451
+C      goto 451
 C
 C
 C
@@ -211,7 +216,7 @@ C               write(43,22) KhatN(N,1),KhatN(N,2),KhatN(N,3)
      &               (dd(a,i,b,j)-d(b)**3*W*GG(R,k,dtemp,EPS,a,i,b,j))
      &               *CPSI(R,KhatN,k,mm,N,b)
                   end do 
-                  print *, a,i,N,j,T1(a,i,N,j)
+C                  print *, a,i,N,j,T1(a,i,N,j)
                end do   
             end do
          end do
@@ -226,6 +231,7 @@ C
           do a=1,NUSE
              do i=1,3
                Y(M,l)=Y(M,l)+conjg(T1(a,i,M,l))*E0(a,i)
+C               print *,'Y', M,l,a,i,T1(a,i,M,l),E0(a,i)
              end do      
           end do            
           do 3 N=1,NK
@@ -238,6 +244,7 @@ C
              end do 
  4        continue !end do
  3        continue !end do
+         print *,"Y = ", M, l, Y(M,l)
  2    continue !end do  
  1    continue !end do   
 C *** Now do the matrix invertion and solve the system of equaitons
@@ -248,6 +255,7 @@ C *** reform H into a N*3 by N*3 complex matrix *****
          do i=1,3      
             m =3*(n -1)+i         
             bb(m)=Y(n,i)
+C           print *, 'bb ',m, bb(m)
             do np=1,NK
                do j=1,3
                   mp=3*(np-1)+j

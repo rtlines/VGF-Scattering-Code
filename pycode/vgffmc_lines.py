@@ -33,12 +33,12 @@ def read_input_file(workfile):
    # Start reading in data
    #print("start read intput file")
    with open(workfile) as f:
-        #print("read comment")
+        print("read comment")
         read_data = f.readline()            # read a whole line
         com=read_data
-        #print(com)
+        print(com)
         read_data = f.readline()            # read a whole line
-        #print("NUSE",read_data)
+        print("NUSE",read_data)
         NUSE = int(read_data)
         #print("NUSE", NUSE)
         read_data = f.readline()            # read a whole line
@@ -47,9 +47,10 @@ def read_input_file(workfile):
         wave = float(split_string[3])
         alpha = float(split_string[10])
         beta = float(split_string[17])
+        gamma = float(split_string[24])
         gamma = float(split_string[31])
-        psi = float(split_string[38])
-        #print("W,alpha, beta, gamma, psi", W,alpha,beta,gamma,psi)
+        RAD = float(split_string[38])
+        #print("W,alpha, beta, gamma, psi, RAD", wave,alpha,beta,gamma,psi,RAD)
         read_data = f.readline()            # read a whole line
         split_string = read_data.split(" ")  #parse the line splitting where
         #print("  ")
@@ -542,6 +543,7 @@ def ecalc (NUSE,R,E, An,khatN,X,NK,K,mm)  :
 #
 ###############################################################################
 # Caclulate the T1 matrix
+#  Checked 02/18/2022
 def Calculate_T1_Matrix( D, R, k, khatN, eps, mm, W, NUSE, NK ):
     for a in range(NUSE):
         for i in range(3):
@@ -659,7 +661,7 @@ print('rotate the input field into particle frame, calc field at each dipole')
 alpah = alpha * DEG
 beta = beta * DEG
 gamma = gamma * DEG
-pis = psi * DEG
+psi = psi * DEG
 #
 # set up the rotation matrix with a call to ROT
 #
@@ -679,6 +681,7 @@ V[0] = np.cos(psi)
 V[1] = np.sin(psi)
 V[2] = 0.0
 E0hat = RRR.dot(V)
+print("E0hat ",psi, E0hat)
 #
 # Calculate the W factor    Wcalc=X/(1.+(4.*PI/3.)*X)
 W = X/(1.0+(4.*np.pi/3.)*X)
@@ -697,11 +700,15 @@ C = 0+0j
 #
 for i in range (NUSE):
     RDK = np.dot(khat, R[i])       # khat dot R
+    #print("RDK ", RDK)
     temp = 1j*k*RDK                # i times the wave number times RDK
+    #print("temp ",temp)
     C = np.exp(temp)               # take the exponential
+    #print ("C ",C)
     E0[i] = C*E0hat                # it is a plane wave, so we need the 
                                    # complex amplitude multiplied by the 
                                    # plane wave exponential
+    #print('E0',E0[i],'\n')
 #
 # We are going to calcualte the field in a big loop
 #    Set up the big loop.
@@ -789,11 +796,14 @@ while (ERR > ERR0) and (mcount < MMAX):
                         for i in range(3):
                             Y[M][l] = Y[M][l] + np.conjugate(T1[a][i][M][l])  \
                                       *E0[a][i]
+                            #print("M, l, a, i",M, l,a,i, T1[a][i][M][l],E0[a][i]  )
                             # End i loop
                         # End a loop
+                    #print("M, l, Y[M][l]",M, l, T1[a][i][M][l],E0[a][i]  )
                     # End l loop
                 # End M loop   
         print_Y_to_file(Y, NK)
+        # Y matrix checked on 02/18/2022
         ################# Calculate the Y matrix ------------------------------
         print('Building the H matrix')
         for M in range (NK):
