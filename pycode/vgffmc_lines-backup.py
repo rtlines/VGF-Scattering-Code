@@ -836,6 +836,7 @@ E = np.zeros((NUSE,3),dtype = complex)
 #print_GG_to_file(R, k, eps)
 
 while (ERR > ERR0) and (mcount < MMAX):
+
     print('Monte Carlo Loop mcount = ', mcount)
     #ERR came from the k-vector file. We read it in before
     #kcount is the number of kvector tries to loop over. ikcount seems to have 
@@ -849,15 +850,60 @@ while (ERR > ERR0) and (mcount < MMAX):
         T1 = Calculate_T1_Matrix( D, R, k, khatN, eps, mm, W, NUSE, NK )
         # output the T1 matrix for debugging
         print_T1_to_file(T1,NUSE, NK)
+#        for a in range(NUSE):
+#            for i in range(3):
+#                for N in range (NK):
+#                    for j in range(3):
+#                        T1[a][i][N][j] = 0.0+0.0j
+#                        for b in range (NUSE):
+#                            dtemp = D[b]
+#                            T1[a][i][N][j] =  T1[a][i][N][j] +                \
+#                                ( dd(a,i,b,j)-D[b]**3 * W                     \
+#                                 * GG(R,k, dtemp,eps,a,i,b,j))                \
+#                                 * CPSI(R,khatN, k, mm, N, b)
+                            # End of the b loop
+                        #print ("T1 loop ",a,i,N,j,T1[a][i][N][j])
+                        # End of the j loop         
+                    # End of the N loop
+        # End of the a loop
         ################# Calculate the Y matrix ------------------------------
         # Calculate the H and Y matricies
         print('Building the Y matricx')
         Y = Calculate_Y_Matrix(T1,E0, NUSE, NK)
+        #for M in range(NK):
+        #      for l in range(3):
+        #            Y[M][l] = 0.0+0.0j    
+        #            for a in range(NUSE):
+        #                for i in range(3):
+        #                    Y[M][l] = Y[M][l] + np.conjugate(T1[a][i][M][l])  \
+        #                              *E0[a][i]
+        #                    #print("M, l, a, i",M, l,a,i, T1[a][i][M][l],E0[a][i]  )
+        #                    # End i loop
+        #                # End a loop
+        #            #print("M, l, Y[M][l]",M, l, T1[a][i][M][l],E0[a][i]  )
+        #            # End l loop
+        #        # End M loop   
         print_Y_to_file(Y, NK)
         # Y matrix checked on 02/18/2022
         ################# Calculate the Y matrix ------------------------------
         print('Building the H matrix')
         H = Calculate_H_Matrix(T1, NK)
+        #for M in range (NK):
+        #      for l in range (3):
+        #            for N in range(NK):
+        #                for j in range(3):
+        #                    H[M][l][N][j] = 0.0+0.0j
+        #                    for a in range(NUSE):
+        #                        for i in range(3):
+        #                            H[M][l][N][j] =  H[M][l][N][j]            \
+        #                                + np.conjugate(T1[a][i][M][l])        \
+        #                                * (T1[a][i][N][j])
+        #                            # End i loop
+        #                 ]       # End a loop
+        #                    # End j loop
+        #                # End N loop
+        #            # End l looop
+        #      # End M loop
         print_H_to_file(H,NK)
         ################# Now get ready for the matrix inversion---------------
         # Now get ready for the matrix inversion
@@ -865,6 +911,21 @@ while (ERR > ERR0) and (mcount < MMAX):
         # Try to reform it into a NK*3 by NK*3 matrix
         print('reforming the matrix for solving ')
         [aa, bb] = Reform_Y_H_Matricies(Y, H, NK)
+        #for n in range(NK):
+        #      for i in range(3):
+        #          m = 3*(n-0)+i     # in fortran arrays start with 1, but 
+        #                            # our python arrays start with 0
+        #          bb[m] = Y[n][i]
+        #          #print('m, i, m, bb ',n, i, m, bb[m])
+        #          for nnp in range (NK):
+        #              for j in range (3):
+        #                  mp = 3*(nnp-0)+j
+        #                  aa[m][mp] = H[n][i][nnp][j]
+        #                  #print('m, mp, aa[m][mp]',m, mp, aa[m][mp])
+        #                  # End j loop
+        #              # End np loop
+        #          # End i loop
+        #      # End n loop
         print_bb_to_file(bb, NK)
         print_aa_to_file(aa, NK)
         # Now we want to solve the matrix equation aa * xx = bb
@@ -911,7 +972,8 @@ while (ERR > ERR0) and (mcount < MMAX):
 print ("print out the E-vectors")
 print_E_to_file(E, NUSE)            
 # And that is the end of the program
-
+# Of couse I haven't saved off the E-Fields yet.  So there is not output file
+#  yet.
 
    
    
