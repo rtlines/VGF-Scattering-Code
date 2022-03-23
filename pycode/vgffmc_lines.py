@@ -669,19 +669,19 @@ def diff_cross_sect(E, R, W, X, D, RRR, RAD):
     for IANG in range (0,NDATA):
          TH = np.pi*IANG/(NDATA - 1.0)
          #define THhat and PHhat, and rotate them into prime frame    ***
-         V[1]= np.cos(TH)*np.cos(PH)
-         V[2]= np.cos(TH)*np.sin(PH)
-         V[3]=-np.sin(TH)
+         V[0]= np.cos(TH)*np.cos(PH)
+         V[1]= np.cos(TH)*np.sin(PH)
+         V[2]=-np.sin(TH)
          THhat = RRR.dot(V)
-         V[1]=-np.sin(PH)
-         V[2]= np.cos(PH)
-         V[3]= 0
+         V[0]=-np.sin(PH)
+         V[1]= np.cos(PH)
+         V[2]= 0
          PHhat = RRR.dot(V)
          #THhat and PHhat are now really primed,but drop prime        ***         
          #calculate r-hat prime direction for the given theta         ***
-         V[1] = np.sin(TH)*np.cos(PH)
-         V[2] = np.sin(TH)*np.sin(PH)
-         V[3] = np.cos(TH)
+         V[0] = np.sin(TH)*np.cos(PH)
+         V[1] = np.sin(TH)*np.sin(PH)
+         V[2] = np.cos(TH)
          Rhat = RRR.dot(V)
          # Now loop over each dipole cell
          fh = 0.0 + 0.0j
