@@ -647,7 +647,81 @@ def Reform_Y_H_Matricies(Y, H, NK):
 ###############################################################################
 #
 ###############################################################################
+# Calculate the differential Scatternig Cross Section
+#   This is the average power scattered into each direction
+#   We need the power scattered by each dipole in the particle
+#   So we will loop over each particle and find the amount of 
+#   scattered field in that direction.
+#
+def diff_cross_sect(E, R, W, X, D, RRR, RAD):
+    NDATA = 181  # number of angles to use
+    TH = np.zeros(NDATA)
+    PH = np.zeros(NDATA)
+    diff_cross_sect_H = np.zeros(NDATA)
+    diff_cross_sect_V = np.zeros(NDATA)
+    V = np.zeros(3)
+    THhat = np.zeros(3)
+    PHhat = np.zeros(3)
+    PA2 = 1/(np.pi*RAD*RAD)
+    #Do the main calculation of the scattering amplitude            ***
+    PH=0.0 # for now
+    #Loop over angle (rad)                                         ***
+    for IANG in range (0,NDATA):
+         TH = np.pi*IANG/(NDATA - 1.0)
+         #define THhat and PHhat, and rotate them into prime frame    ***
+         V[1]= np.cos(TH)*np.cos(PH)
+         V[2]= np.cos(TH)*np.sin(PH)
+         V[3]=-np.sin(TH)
+         THhat = RRR.dot(V)
+         V[1]=-np.sin(PH)
+         V[2]= np.cos(PH)
+         V[3]= 0
+         PHhat = RRR.dot(V)
+         #THhat and PHhat are now really primed,but drop prime        ***         
+         #calculate r-hat prime direction for the given theta         ***
+         V[1] = np.sin(TH)*np.cos(PH)
+         V[2] = np.sin(TH)*np.sin(PH)
+         V[3] = np.cos(TH)
+         Rhat = RRR.dot(V)
+         # Now loop over each dipole cell
+         fh = 0.0 + 0.0j
+         fv = 0.0 + 0.0j
+         K = 2.0*np.pi/W
+         K2 = K*K
+         K3 = K2*K
+         for mu in range (0, NUSE):
+             RDOT = 0.0
+             #calculate rhatprime dot rprime for the exponential
+             for j in range (0,3):
+                 RDOT = RDOT + R[mu][j]*Rhat[j]
+             #calculate all factors that don't depend on i and j       ***
+             temp = -j*K*RDOT
+             C = j*K3*X*D[mu]*np.exp(temp) 
+             #now put the scattering amplitude together                ***
+             TDE = 0.0 + 0.0j
+             PDE = 0.0 + 0.0j
+             #calculate THhat dot E and PHhat dot E
+             for I in range(0,3):
+                 TDE = TDE + THhat(I)*E(mu,I)
+                 PDE = PDE + PHhat(i)*E(mu,I)
 
+             #now put the scattering amplitude together                ***            
+             fh = fh + C * TDE
+             fv = fv + C * PDE
+         #separate into _H_orizontal and _V_ertical components and    ***
+         #at the same time convert to diff. scat. cross section (/K2) *
+         HOR = (fh*np.conjugate(fh))/K2
+         VER = (fv*np.conjugate(fv))/K2
+         #normalize and and return
+         TH[IANG] = np.degrees(TH)
+         PH[IANG] = np.degrees(PH)
+         diff_cross_sect_H[IANG] = HOR*PA2
+         diff_cross_sect_V[IANG] = VER*PA2
+    return TH, PH, diff_cross_sect_H, diff_cross_sect_V
+
+###############################################################################
+#
+###############################################################################
 
 # Main function goes here
 #
@@ -910,6 +984,19 @@ while (ERR > ERR0) and (mcount < MMAX):
     #
 print ("print out the E-vectors")
 print_E_to_file(E, NUSE)            
+#
+# End of VGFFMC
+#
+### Now let's try for the scattering differential cross section
+[TH, PH, diff_cross_sect_H, diff_cross_sect_V] = diff_cross_sect(E, R, W, X, D, RRR, RAD)
+print(TH)
+print(PH)
+print(diff_cross_sect_H)
+print(diff_cross_sect_V)
+
+
+
+
 # And that is the end of the program
 
 
