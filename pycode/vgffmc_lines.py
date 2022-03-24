@@ -663,6 +663,7 @@ def diff_cross_sect(E, R, W, X, D, RRR, RAD):
     THhat = np.zeros(3)
     PHhat = np.zeros(3)
     PA2 = 1/(np.pi*RAD*RAD)
+    #print("PA2",PA2)
     #Do the main calculation of the scattering amplitude            ***
     PH=0.0 # for now
     #Loop over angle (rad)                                         ***
@@ -673,22 +674,27 @@ def diff_cross_sect(E, R, W, X, D, RRR, RAD):
          V[1]= np.cos(TH)*np.sin(PH)
          V[2]=-np.sin(TH)
          THhat = RRR.dot(V)
+         #print("THhat3", THhat)
          V[0]=-np.sin(PH)
          V[1]= np.cos(PH)
          V[2]= 0
-         PHhat = RRR.dot(V)
+         #PHhat = RRR.dot(V)
+         #print("PHhat ", PHhat)
          #THhat and PHhat are now really primed,but drop prime        ***         
          #calculate r-hat prime direction for the given theta         ***
          V[0] = np.sin(TH)*np.cos(PH)
          V[1] = np.sin(TH)*np.sin(PH)
          V[2] = np.cos(TH)
          Rhat = RRR.dot(V)
+         #print("Rhat3", Rhat)
          # Now loop over each dipole cell
          fh = 0.0 + 0.0j
          fv = 0.0 + 0.0j
          K = 2.0*np.pi/W
          K2 = K*K
          K3 = K2*K
+         print("X", X)
+         #print("K's", K, K2, K3)
          for mu in range (0, NUSE):
              RDOT = 0.0
              #calculate rhatprime dot rprime for the exponential
@@ -696,7 +702,7 @@ def diff_cross_sect(E, R, W, X, D, RRR, RAD):
                  RDOT = RDOT + R[mu][j]*Rhat[j]
              #calculate all factors that don't depend on i and j       ***
              temp = -j*K*RDOT
-             C = j*K3*X*D[mu]*np.exp(temp) 
+             C = j*K3*X*D[mu]**3*np.exp(temp) 
              #now put the scattering amplitude together                ***
              TDE = 0.0 + 0.0j
              PDE = 0.0 + 0.0j
@@ -717,7 +723,7 @@ def diff_cross_sect(E, R, W, X, D, RRR, RAD):
          PHDeg[IANG] = np.degrees(PH)
          diff_cross_sect_H[IANG] = HOR*PA2
          diff_cross_sect_V[IANG] = VER*PA2
-    return THDeg, PHDeg, diff_cross_sect_H, diff_cross_sect_V
+    return THDeg, PHDeg, diff_cross_sect_H, diff_cross_sect_V, NDATA
 
 ###############################################################################
 #
@@ -988,15 +994,17 @@ print_E_to_file(E, NUSE)
 # End of VGFFMC
 #
 ### Now let's try for the scattering differential cross section
-[TH, PH, diff_cross_sect_H, diff_cross_sect_V] = diff_cross_sect(E, R, W, X, D, RRR, RAD)
-print(TH)
-print(PH)
-print(diff_cross_sect_H)
-print(diff_cross_sect_V)
+[TH, PH, diff_cross_sect_H, diff_cross_sect_V,NANG] = diff_cross_sect(E, R, wave, X, D, RRR, RAD)
+#print(TH)
+#print(PH)
+#print(diff_cross_sect_H)
+#print(diff_cross_sect_V)
 
+for i in range (0,NANG):
+    print(TH[i], PH[i], diff_cross_sect_V[i], diff_cross_sect_H[i])
 
-
-
+plt.plot(TH, diff_cross_sect_H)
+plt.show()
 # And that is the end of the program
 
 
