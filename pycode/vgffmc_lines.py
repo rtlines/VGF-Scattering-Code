@@ -655,8 +655,8 @@ def Reform_Y_H_Matricies(Y, H, NK):
 #
 def diff_cross_sect(E, R, W, X, D, RRR, RAD):
     NDATA = 181  # number of angles to use
-    TH = np.zeros(NDATA)
-    PH = np.zeros(NDATA)
+    THDeg = np.zeros(NDATA)
+    PHDeg = np.zeros(NDATA)
     diff_cross_sect_H = np.zeros(NDATA)
     diff_cross_sect_V = np.zeros(NDATA)
     V = np.zeros(3)
@@ -702,8 +702,8 @@ def diff_cross_sect(E, R, W, X, D, RRR, RAD):
              PDE = 0.0 + 0.0j
              #calculate THhat dot E and PHhat dot E
              for I in range(0,3):
-                 TDE = TDE + THhat(I)*E(mu,I)
-                 PDE = PDE + PHhat(i)*E(mu,I)
+                 TDE = TDE + THhat[I]*E[mu][I]
+                 PDE = PDE + PHhat[i]*E[mu][I]
 
              #now put the scattering amplitude together                ***            
              fh = fh + C * TDE
@@ -713,11 +713,11 @@ def diff_cross_sect(E, R, W, X, D, RRR, RAD):
          HOR = (fh*np.conjugate(fh))/K2
          VER = (fv*np.conjugate(fv))/K2
          #normalize and and return
-         TH[IANG] = np.degrees(TH)
-         PH[IANG] = np.degrees(PH)
+         THDeg[IANG] = np.degrees(TH)
+         PHDeg[IANG] = np.degrees(PH)
          diff_cross_sect_H[IANG] = HOR*PA2
          diff_cross_sect_V[IANG] = VER*PA2
-    return TH, PH, diff_cross_sect_H, diff_cross_sect_V
+    return THDeg, PHDeg, diff_cross_sect_H, diff_cross_sect_V
 
 ###############################################################################
 #
