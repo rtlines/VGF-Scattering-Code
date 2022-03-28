@@ -82,7 +82,7 @@ def read_input_file(workfile):
                                                 #a space, a string that is a 
                                                 #number, then a second string 
                                                 #that is a number, etc. 
-           #print("split_string1",split_string)
+           print("split_string1",split_string)
            R[i][0] = float(split_string[1])
            R[i][1] = float(split_string[2])
            R[i][2] = float(split_string[3])
@@ -662,6 +662,8 @@ def diff_cross_sect(E, R, W, X, D, RRR, RAD):
     V = np.zeros(3)
     THhat = np.zeros(3)
     PHhat = np.zeros(3)
+    temp=0.0+0.0j
+    CI = 0.0 + 1.0j
     PA2 = 1/(np.pi*RAD*RAD)
     #print("PA2",PA2)
     #Do the main calculation of the scattering amplitude            ***
@@ -693,7 +695,7 @@ def diff_cross_sect(E, R, W, X, D, RRR, RAD):
          K = 2.0*np.pi/W
          K2 = K*K
          K3 = K2*K
-         print("X", X)
+         #print("X", X)
          #print("K's", K, K2, K3)
          for mu in range (0, NUSE):
              RDOT = 0.0
@@ -701,8 +703,10 @@ def diff_cross_sect(E, R, W, X, D, RRR, RAD):
              for j in range (0,3):
                  RDOT = RDOT + R[mu][j]*Rhat[j]
              #calculate all factors that don't depend on i and j       ***
-             temp = -j*K*RDOT
-             C = j*K3*X*D[mu]**3*np.exp(temp) 
+             temp = -CI*K*RDOT
+             #print ("temp ", mu, temp, K, RDOT)
+             C = CI*K3*X*D[mu]**3*np.exp(temp) 
+             #print("C ",C, mu, D[mu]**3)
              #now put the scattering amplitude together                ***
              TDE = 0.0 + 0.0j
              PDE = 0.0 + 0.0j
@@ -721,8 +725,10 @@ def diff_cross_sect(E, R, W, X, D, RRR, RAD):
          #normalize and and return
          THDeg[IANG] = np.degrees(TH)
          PHDeg[IANG] = np.degrees(PH)
-         diff_cross_sect_H[IANG] = HOR*PA2
-         diff_cross_sect_V[IANG] = VER*PA2
+         # HOR and VER should now be real, but are of type complex
+         # Python is happier if we explicitly remove the complex zero part
+         diff_cross_sect_H[IANG] = np.real(HOR)*PA2
+         diff_cross_sect_V[IANG] = np.real(VER)*PA2
     return THDeg, PHDeg, diff_cross_sect_H, diff_cross_sect_V, NDATA
 
 ###############################################################################
@@ -778,7 +784,7 @@ workfile = "Figure3.in" # @@@ needs to be an input
 #print(wave, alpha, beta, gamma, psi, RAD)
 #print(ER, EI, TD)
 #print(R)
-#print(D)
+print(D)
 #
 #
 ###### Read in the K-Vectors
@@ -952,7 +958,7 @@ while (ERR > ERR0) and (mcount < MMAX):
         # function linalg.solve(aa,bb)
         print('matrix solve')
         xx = np.linalg.solve(aa,bb)
-        # now take our solutino and put it back into matrix component format
+        # now ptake our solutino and put it back into matrix component format
         for N in range (NK):
                 for i in range (3):
                     M = 3*(N-0)+i
