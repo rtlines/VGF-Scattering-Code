@@ -31,14 +31,11 @@ def read_input_file(workfile):
    # D is a NUSE array of cell weights
    #
    # Start reading in data
-   #print("start read intput file")
    with open(workfile) as f:
-        print("read comment")
+        #gprint("read comment")
         read_data = f.readline()            # read a whole line
         com=read_data
-        print(com)
         read_data = f.readline()            # read a whole line
-        print("NUSE",read_data)
         NUSE = int(read_data)
         #print("NUSE", NUSE)
         read_data = f.readline()            # read a whole line
@@ -82,7 +79,7 @@ def read_input_file(workfile):
                                                 #a space, a string that is a 
                                                 #number, then a second string 
                                                 #that is a number, etc. 
-           print("split_string1",split_string)
+           #print("split_string1",split_string)
            R[i][0] = float(split_string[1])
            R[i][1] = float(split_string[2])
            R[i][2] = float(split_string[3])
@@ -493,7 +490,22 @@ def print_E_to_file(E, NUSE):
              Ef.write(temp)
              # End of the i loop
         # End of file open
-
+       # End of file open       
+###############################################################################
+#
+###############################################################################
+# Print the E field vectors at each dipole
+def print_Phz_to_file(TH, PH, diff_cross_sect_V, diff_cross_sect_H,NANG):
+    print("Printing Differential Scattering Cross Section to PHZ_file.txt")
+    with open('PHZ_file.txt','w') as Pf:
+        temp = ""
+        for i in range(NANG):
+             temp = temp + str(TH[i])+ str(PH[i])
+             temp = temp + str(diff_cross_sect_V[i])
+             temp = temp + str(diff_cross_sect_H[i])+"\n"
+             Pf.write(temp)
+             # End of the i loop
+        # End of file open
 ###############################################################################
 #
 ###############################################################################
@@ -784,7 +796,7 @@ workfile = "Figure3.in" # @@@ needs to be an input
 #print(wave, alpha, beta, gamma, psi, RAD)
 #print(ER, EI, TD)
 #print(R)
-print(D)
+#print(D)
 #
 #
 ###### Read in the K-Vectors
@@ -846,7 +858,7 @@ V[0] = np.cos(psi)
 V[1] = np.sin(psi)
 V[2] = 0.0
 E0hat = RRR.dot(V)
-print("E0hat ",psi, E0hat)
+#print("E0hat ",psi, E0hat)
 #
 # Calculate the W factor    Wcalc=X/(1.+(4.*PI/3.)*X)
 W = X/(1.0+(4.*np.pi/3.)*X)
@@ -999,7 +1011,8 @@ print_E_to_file(E, NUSE)
 #
 # End of VGFFMC
 #
-### Now let's try for the scattering differential cross section
+### Now let's try for the scattering differential cross section or "phase function"
+print ("Calculating the phase function")
 [TH, PH, diff_cross_sect_H, diff_cross_sect_V,NANG] = diff_cross_sect(E, R, wave, X, D, RRR, RAD)
 #print(TH)
 #print(PH)
@@ -1009,6 +1022,7 @@ print_E_to_file(E, NUSE)
 for i in range (0,NANG):
     print(TH[i], PH[i], diff_cross_sect_V[i], diff_cross_sect_H[i])
 
+print_Phz_to_file(TH, PH, diff_cross_sect_V, diff_cross_sect_H,NANG)
 plt.plot(TH, diff_cross_sect_H)
 plt.show()
 # And that is the end of the program
