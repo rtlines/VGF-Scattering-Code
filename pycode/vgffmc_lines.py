@@ -37,38 +37,29 @@ def read_input_file(workfile):
         com=read_data
         read_data = f.readline()            # read a whole line
         NUSE = int(read_data)
-        #print("NUSE", NUSE)
         read_data = f.readline()            # read a whole line
         split_string = read_data.split(" ")  #parse the line splitting where
-        #print(split_string)
         wave = float(split_string[3])
         alpha = float(split_string[10])
         beta = float(split_string[17])
         gamma = float(split_string[24])
         gamma = float(split_string[31])
         RAD = float(split_string[38])
-        #print("W,alpha, beta, gamma, psi, RAD", wave,alpha,beta,gamma,psi,RAD)
         read_data = f.readline()            # read a whole line
         split_string = read_data.split(" ")  #parse the line splitting where
-        #print("  ")
-        #print(split_string)  
         ER = float(split_string[3])
         EI = float(split_string[9])
         TD = float(split_string[15])
-        #print("ER, EI, TD", ER, EI, TD)  
         # make a place for the locations of the dipole cells, we need x,y,z components
         # and make a place for the dipole weights
         R = np.zeros((NUSE,3))  
         D = np.zeros(NUSE)
         for i in range(0,NUSE,1):             # loop to input all the theta and phi values
-           #print("I = ",i," NUSE = ", NUSE)
            read_data = f.readline()       # read in a whole line
-           #print("read_data in loop",read_data)
            while "  " in read_data:        # make double spaces into sinble spaces
                read_data = read_data.replace("  "," ")
            read_data.lstrip()           # remove leading space
            read_data.lstrip()           # remove leading space
-           #print("read_data",read_data)
            split_string = read_data.split(" ")  #parse the line splitting where
                                                 #there are spaces
                                                 #Each line starts with a space
@@ -79,23 +70,14 @@ def read_input_file(workfile):
                                                 #a space, a string that is a 
                                                 #number, then a second string 
                                                 #that is a number, etc. 
-           #print("split_string1",split_string)
            R[i][0] = float(split_string[1])
            R[i][1] = float(split_string[2])
            R[i][2] = float(split_string[3])
            D[i] = float(split_string[4])
-           #print("loop end")
-           #still need 
-        #print("after loop")        
         read_data = f.readline()            # read a whole line
-        #print("after loop",read_data)
         temp = float(read_data)
-        #print(temp)
         read_data = f.readline()            # read a whole line
-        #print(read_data)
         factor = float(read_data) 
-        #print(factor)
-   #print("return to main program")
    return NUSE,com,wave,alpha,beta,gamma,psi,RAD,ER,EI,TD,R,D
 ###############################################################################
 #
@@ -113,33 +95,7 @@ def kvector_components(theta, phi):
     khat[1] = np.sin(theta)*np.sin(phi)
     khat[2] = np.cos(theta)
     return khat
-#
-#  Test code
-#
-######
-#NK=2                                  # Asking for 2 vectors
-#khatN = np.zeros((NK,3))              # array of components of the vectors
-#kth = np.zeros(NK)                    # array of theta values
-#kph = np.zeros(NK)                    # array of phi values
-#kth[0] = np.pi/2                      # test theta values
-#kth[1] = np.pi/3
-#kph[0] = 0.0                          # test phi values
-#kph[1] = np.pi
-#
-#N = 1                                 # choose the vector to find components
-#print(khatN)                          # print to make sure all zeros
-#khatN[N] =  kvector_components(kth[N],kph[N])   # find the components
-#print(khatN)                          # print to check it worked
-#####                                      
-# for N = 0 you should get
-#    [[1.000000e+00 0.000000e+00 6.123234e-17]
-#    [0.000000e+00 0.000000e+00 0.000000e+00]]
-#
-# for N = 1 you should get 
-#     [[ 0.00000000e+00  0.00000000e+00  0.00000000e+00]
-#     [-8.66025404e-01  1.06057524e-16  5.00000000e-01]]
-#
-# End Test code
+# 
 ###############################################################################
 #
 ###############################################################################
@@ -206,18 +162,14 @@ def move1kv(mcount,khatN,kth,kph,NK,divd):
 ###############################################################################
 
 def read_kv(workfile):
-   #workfile ="Test_2_5_5.kv"
    with open(workfile) as f:
       read_data = f.readline()            # read a whole line
-      #print(read_data)                    # The first line is just the number of kvectors
+                                          # The first line is just the number of kvectors
       NK=int(read_data)                   # turn the whole line into a number
-      #print(NK)
-#      kth = np.zeros(NK)                  # make arrays for the kvector components
-#      kph = np.zeros(NK)
-#      khatN = np.zeros((NK,3))              # actual components of the vectors
+      kth = np.zeros(NK)                  # make arrays for the kvector components
+      kph = np.zeros(NK)
       for i in range(0,NK,1):             # loop to input all the theta and phi values
           read_data = f.readline()       # read in a whole line
-          #print(read_data)
           split_string = read_data.split(" ")  #parse the line splitting where
                                                #there are spaces
                                                #Each line starts with a sppace
@@ -227,35 +179,30 @@ def read_kv(workfile):
                                                #a space, a string that is a 
                                                #number, then a second string 
                                                #that is a number.
-          #print(split_string)
           theta=split_string[1]        # ignore the first split piece and 
                                        # copy the first number string into 
                                        # a variable
           phi=split_string[2]          # and do the same for the second number
-                                       # string
-          #print(theta, phi)     
+                                       # string   
           kth[i] = float(theta)        # now convert the string into a number
                                        # and put it into the array
           kph[i] = float(phi)          # and do the same for the second string
-          #print(kth[i],kph[i])
           
       read_data = f.readline()       # The last line has dummy strings
                                      # for kth and kph but has at the end 
-      #print(read_data)
       split_string = read_data.split(" ")
-      #print(split_string)
       ERR=float(split_string[3])
       ERRlast=float(split_string[6])
       mcount=int(split_string[21])
       kcount=int(split_string[32])
-      #print(ERR, ERRlast, mcount, kcount)
       return NK,kth,kph, ERR, ERRlast, mcount, kcount
-
+#
 # now we have the kth and kph values in arrays just like the original
 # code wanted.
 ###############################################################################
 #
 ###############################################################################
+# Creates a rotation matrix using the Euler angles alpha, beta, and gamma
 def ROT(alpha, beta, gamma):
     RRR = np.array(
       [[ np.cos(alpha)*np.cos(beta)*np.cos(gamma)-np.sin(alpha)*np.sin(gamma),
@@ -342,7 +289,6 @@ def GG(R,k,d,EPS,a,i,b,j):
     Rab = np.zeros(3)
     Rhat = np.zeros(3)
     if b != a:  
-        # @@@ Check for error in this branch
         # calculat4e the separation distance between two dipoles
         #   Rmn = Rn - Rm and RMAG = |Rmn|
         Rab[0] = R[a][0] - R[b][0]
@@ -583,8 +529,6 @@ def Calculate_T1_Matrix( D, R, k, khatN, eps, mm, W, NUSE, NK ):
                                         * GG(R,k, dtemp,eps,a,i,b,j))         \
                                         * CPSI(R,khatN, k, mm, N, b)
                           # End of the b loop
-                          
-                          #print ("T1 loop ",a,i,N,j,T1[a][i][N][j])
                       # End of the j loop         
                   # End of the N loop
             # End of the i loop
@@ -644,7 +588,6 @@ def Reform_Y_H_Matricies(Y, H, NK):
             m = 3*(n-0)+i     # in fortran arrays start with 1, but 
                               # our python arrays start with 0
             bb[m] = Y[n][i]
-            #print('m, i, m, bb ',n, i, m, bb[m])
             for nnp in range (NK):
                     for j in range (3):
                         mp = 3*(nnp-0)+j
@@ -677,7 +620,6 @@ def diff_cross_sect(E, R, W, X, D, RRR, RAD):
     temp=0.0+0.0j
     CI = 0.0 + 1.0j
     PA2 = 1/(np.pi*RAD*RAD)
-    #print("PA2",PA2)
     #Do the main calculation of the scattering amplitude            ***
     PH=0.0 # for now
     #Loop over angle (rad)                                         ***
@@ -688,27 +630,22 @@ def diff_cross_sect(E, R, W, X, D, RRR, RAD):
          V[1]= np.cos(TH)*np.sin(PH)
          V[2]=-np.sin(TH)
          THhat = RRR.dot(V)
-         #print("THhat3", THhat)
          V[0]=-np.sin(PH)
          V[1]= np.cos(PH)
          V[2]= 0
-         #PHhat = RRR.dot(V)
-         #print("PHhat ", PHhat)
+         PHhat = RRR.dot(V)
          #THhat and PHhat are now really primed,but drop prime        ***         
          #calculate r-hat prime direction for the given theta         ***
          V[0] = np.sin(TH)*np.cos(PH)
          V[1] = np.sin(TH)*np.sin(PH)
          V[2] = np.cos(TH)
          Rhat = RRR.dot(V)
-         #print("Rhat3", Rhat)
          # Now loop over each dipole cell
          fh = 0.0 + 0.0j
          fv = 0.0 + 0.0j
          K = 2.0*np.pi/W
          K2 = K*K
          K3 = K2*K
-         #print("X", X)
-         #print("K's", K, K2, K3)
          for mu in range (0, NUSE):
              RDOT = 0.0
              #calculate rhatprime dot rprime for the exponential
@@ -716,9 +653,7 @@ def diff_cross_sect(E, R, W, X, D, RRR, RAD):
                  RDOT = RDOT + R[mu][j]*Rhat[j]
              #calculate all factors that don't depend on i and j       ***
              temp = -CI*K*RDOT
-             #print ("temp ", mu, temp, K, RDOT)
              C = CI*K3*X*D[mu]**3*np.exp(temp) 
-             #print("C ",C, mu, D[mu]**3)
              #now put the scattering amplitude together                ***
              TDE = 0.0 + 0.0j
              PDE = 0.0 + 0.0j
@@ -790,13 +725,6 @@ R = np.zeros((NMAX,3))    # a NUSE bcom,wave,alpha,beta,gamma,psi,RAD,ER,EI,TD,R
 D = np.zeros(NMAX)         # a NUSE array of cell weights
 workfile = "Figure3.in" # @@@ needs to be an input
 [NUSE,comments,wave,alpha,beta,gamma,psi,RAD,ER,EI,TD,R,D] = read_input_file(workfile)
-# Test to see if it worked
-#print(comments)
-#print(NUSE)
-#print(wave, alpha, beta, gamma, psi, RAD)
-#print(ER, EI, TD)
-#print(R)
-#print(D)
 #
 #
 ###### Read in the K-Vectors
@@ -811,23 +739,15 @@ kph = np.zeros(KMAX)
 khatN = np.zeros((KMAX,3))              # arrat of components of the vectors
 kworkfile ="Figure3.kv"   #@@@ needs to be an input
 [NK,kth,kph, ERR, ERRlast, mcount, kcount] = read_kv(kworkfile)       # Function call to get the k-vectors
-# Test to see if it worked
-#print(NK)
-#for i in range(NK):
-#    print(kth[i],kph[i])
-#
 # find the components of the k-vectors
 khatN = kvectors3(kth,kph,NK) 
 ###### Now we have the data input, start calculations
 #
 ## Find the index of refraction, epsilon, and the suseptibility, X
 eps = complex(ER,EI)
-#print(eps)
 mm = np.sqrt(eps)
-#print(mm)
 X = complex(0.0,0.0)
 X = (eps - 1)/(4.0*np.pi)
-#print(X)
 #
 ###### Begin the incident field calculations
 #
@@ -843,7 +763,6 @@ psi = psi * DEG
 # set up the rotation matrix with a call to ROT
 #
 RRR = ROT(alpha, beta, gamma)
-#print(RRR)
 #
 # K-hat is in the z direction in the lab frame, we need to rotate it into the
 #   particle frame
@@ -858,7 +777,6 @@ V[0] = np.cos(psi)
 V[1] = np.sin(psi)
 V[2] = 0.0
 E0hat = RRR.dot(V)
-#print("E0hat ",psi, E0hat)
 #
 # Calculate the W factor    Wcalc=X/(1.+(4.*PI/3.)*X)
 W = X/(1.0+(4.*np.pi/3.)*X)
@@ -877,15 +795,11 @@ C = 0+0j
 #
 for i in range (NUSE):
     RDK = np.dot(khat, R[i])       # khat dot R
-    #print("RDK ", RDK)
     temp = 1j*k*RDK                # i times the wave number times RDK
-    #print("temp ",temp)
     C = np.exp(temp)               # take the exponential
-    #print ("C ",C)
     E0[i] = C*E0hat                # it is a plane wave, so we need the 
                                    # complex amplitude multiplied by the 
                                    # plane wave exponential
-    #print('E0',E0[i],'\n')
 #
 # We are going to calcualte the field in a big loop
 #    Set up the big loop.
@@ -900,38 +814,6 @@ aa = np.zeros((3*NK, 3*NK), dtype = complex)
 xx = np.zeros((3*NK), dtype = complex)
 E = np.zeros((NUSE,3),dtype = complex)
 #
-# Code to check the functions we will use, comment out later
-# Test CPSI ################################################
-#print('testing CPSI')
-#N=1
-#b=1
-#testCPSI = CPSI(R,khatN,k,mm,N,b)
-#print('khatN, Rb, mm, k', khatN[N],R[b],mm,k )
-#print('CPSI test = ',testCPSI)
-#print('Calculationg internal fields...')
-# Test dd ################################################
-#print('Testing dd')
-#a=0
-#i=1
-#b=0
-#j=1
-#print(a, i, b, j, 'dd= ', dd(a,i,b,j))
-# Test GAM ################################################ 
-#print('Testing GAM')
-#dtemp = 1.24
-#print('d, k, eps ',dtemp,k,eps)
-#print('GAM = ',GAM(dtemp,k,eps))
-
-# Test GG ################################################   
-#print('Testing GG')
-#a=0
-#i=1
-#b=2
-#j=0
-#dtemp = 1.24
-#tempGG = GG(R,k,dtemp,eps,a,i,b,j)
-#print(a,i,b,j,dtemp,' GG= ',tempGG)
-#print_GG_to_file(R, k, eps)
 
 while (ERR > ERR0) and (mcount < MMAX):
     print('Monte Carlo Loop mcount = ', mcount)
@@ -1014,10 +896,7 @@ print_E_to_file(E, NUSE)
 ### Now let's try for the scattering differential cross section or "phase function"
 print ("Calculating the phase function")
 [TH, PH, diff_cross_sect_H, diff_cross_sect_V,NANG] = diff_cross_sect(E, R, wave, X, D, RRR, RAD)
-#print(TH)
-#print(PH)
-#print(diff_cross_sect_H)
-#print(diff_cross_sect_V)
+
 
 for i in range (0,NANG):
     print(TH[i], PH[i], diff_cross_sect_V[i], diff_cross_sect_H[i])
