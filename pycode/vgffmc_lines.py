@@ -80,40 +80,7 @@ def read_input_file(workfile):
         factor = float(read_data) 
    return NUSE,com,wave,alpha,beta,gamma,psi,RAD,ER,EI,TD,R,D
 
-###############################################################################
-#
-###############################################################################
-def kvector_Madison():
-    NK=11
-    TH=np.zeros(NK)
-    PH=np.zeros(NK)
-    TH[0] = 0.0
-    TH[1] = 0.7853981633974483
-    TH[2] = 0.7853981633974483
-    TH[3] =    0.7853981633974483
-    TH[4] =    1.5707963267948966
-    TH[5] =    1.5707963267948966
-    TH[6] =    1.5707963267948966
-    TH[7] =    2.356194490192345
-    TH[8] =    2.356194490192345
-    TH[9] =    2.356194490192345
-    TH[10] =    3.141592653589793
-    PH[0] = 0.0
-    PH[1] =    2.0943951023931953
-    PH[2] =     4.1887902047863905
-    PH[3] =      6.283185307179586
-    PH[4] =       2.0943951023931953
-    PH[5] =        4.1887902047863905
-    PH[6] =        6.283185307179586
-    PH[7] = 2.0943951023931953
-    PH[8] =  4.1887902047863905
-    PH[9] =   6.283185307179586
-    PH[10] =    0.0
-    ERR = 9999
-    ERRlast = 9999
-    mcount = 1
-    kcount = 1
-    return NK,TH,PH, ERR, ERRlast, mcount, kcount
+
 ###############################################################################
 #
 ###############################################################################
@@ -141,7 +108,7 @@ def kvectors3(kth,kph,NK):
            khatN[N][0]=np.sin(kth[N])*np.cos(kph[N]) 
            khatN[N][1]=np.sin(kth[N])*np.sin(kph[N])
            khatN[N][2]=np.cos(kth[N])
-           print("kvectors", khatN[N])
+           #print("kvectors", khatN[N])
     return khatN
 ###############################################################################
 #
@@ -235,6 +202,41 @@ def read_kv(workfile):
 #
 # now we have the kth and kph values in arrays just like the original
 # code wanted.
+###############################################################################
+#
+###############################################################################
+def kvector_Madison():
+    NK=11
+    TH=np.zeros(NK)
+    PH=np.zeros(NK)
+    TH[0] = 0.0
+    TH[1] = 0.7853981633974483
+    TH[2] = 0.7853981633974483
+    TH[3] =    0.7853981633974483
+    TH[4] =    1.5707963267948966
+    TH[5] =    1.5707963267948966
+    TH[6] =    1.5707963267948966
+    TH[7] =    2.356194490192345
+    TH[8] =    2.356194490192345
+    TH[9] =    2.356194490192345
+    TH[10] =    3.141592653589793
+    PH[0] = 0.0
+    PH[1] =    2.0943951023931953
+    PH[2] =     4.1887902047863905
+    PH[3] =      6.283185307179586
+    PH[4] =       2.0943951023931953
+    PH[5] =        4.1887902047863905
+    PH[6] =        6.283185307179586
+    PH[7] = 2.0943951023931953
+    PH[8] =  4.1887902047863905
+    PH[9] =   6.283185307179586
+    PH[10] =    0.0
+    ERR = 0.0510130078
+    ERRlast = 99999.0
+    mcount = 1
+    kcount = 1
+    return NK,TH,PH, ERR, ERRlast, mcount, kcount
+
 ###############################################################################
 #
 ###############################################################################
@@ -773,10 +775,12 @@ kth = np.zeros(KMAX)                  # make arrays for the kvector components
 kph = np.zeros(KMAX)
 # array of k-vector cartisian components.
 khatN = np.zeros((KMAX,3))              # arrat of components of the vectors
-#kworkfile ="Figure3.kv"   #@@@ needs to be an input
-#[NK,kth,kph, ERR, ERRlast, mcount, kcount] = read_kv(kworkfile)       # Function call to get the k-vectors
+kworkfile ="Figure3.kv"   #@@@ needs to be an input
+[NK,kth,kph, ERR, ERRlast, mcount, kcount] = read_kv(kworkfile)       # Function call to get the k-vectors
+print("read_kv ", NK,kth,kph, ERR, ERRlast, mcount, kcount)
 # find the components of the k-vectors
-[NK,kth,kph, ERR, ERRlast, mcount, kcount] = kvector_Madison()
+#[NK,kth,kph, ERR, ERRlast, mcount, kcount] = kvector_Madison()
+#print("kv_Madison ", NK,kth,kph, ERR, ERRlast, mcount, kcount)
 khatN = kvectors3(kth,kph,NK) 
 ###### Now we have the data input, start calculations
 #
@@ -935,8 +939,8 @@ print ("Calculating the phase function")
 [TH, PH, diff_cross_sect_H, diff_cross_sect_V,NANG] = diff_cross_sect(E, R, wave, X, D, RRR, RAD)
 
 
-for i in range (0,NANG):
-    print(TH[i], PH[i], diff_cross_sect_V[i], diff_cross_sect_H[i])
+#for i in range (0,NANG):
+#    print(TH[i], PH[i], diff_cross_sect_V[i], diff_cross_sect_H[i])
 
 print_Phz_to_file(TH, PH, diff_cross_sect_V, diff_cross_sect_H,NANG)
 plt.plot(TH, diff_cross_sect_H)
