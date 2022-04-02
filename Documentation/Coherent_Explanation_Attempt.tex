@@ -1,0 +1,470 @@
+
+\documentclass{article}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amsfonts}
+\usepackage{amsmath}
+
+\setcounter{MaxMatrixCols}{10}
+%TCIDATA{OutputFilter=LATEX.DLL}
+%TCIDATA{Version=5.50.0.2960}
+%TCIDATA{<META NAME="SaveForMode" CONTENT="1">}
+%TCIDATA{BibliographyScheme=Manual}
+%TCIDATA{Created=Friday, April 01, 2022 17:30:26}
+%TCIDATA{LastRevised=Friday, April 01, 2022 19:27:38}
+%TCIDATA{<META NAME="GraphicsSave" CONTENT="32">}
+%TCIDATA{<META NAME="DocumentShell" CONTENT="Standard LaTeX\Standard LaTeX Article">}
+%TCIDATA{Language=American English}
+%TCIDATA{CSTFile=40 LaTeX article.cst}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+\newenvironment{proof}[1][Proof]{\noindent\textbf{#1.} }{\ \rule{0.5em}{0.5em}}
+\input{tcilatex}
+
+\begin{document}
+
+\title{Project Goal VGF Code}
+\author{Todd Lines \\
+%EndAName
+BYU-I}
+\maketitle
+
+\section{What we want to do}
+
+We want to calculate the average power scattered into a single direction
+when light hits a small particle. Let's assume a plane wave incident on a
+particle.
+
+\FRAME{dtbpF}{3.7386in}{2.6221in}{0pt}{}{}{Figure}{\special{language
+"Scientific Word";type "GRAPHIC";maintain-aspect-ratio TRUE;display
+"USEDEF";valid_file "T";width 3.7386in;height 2.6221in;depth
+0pt;original-width 4.6717in;original-height 3.2681in;cropleft "0";croptop
+"1";cropright "1";cropbottom "0";tempfilename
+'R9OSY50C.wmf';tempfile-properties "XPR";}}The light will scatter off of the
+particle in different directions.\FRAME{dtbpF}{3.7075in}{2.8971in}{0in}{}{}{%
+Figure}{\special{language "Scientific Word";type
+"GRAPHIC";maintain-aspect-ratio TRUE;display "USEDEF";valid_file "T";width
+3.7075in;height 2.8971in;depth 0in;original-width 3.6608in;original-height
+2.853in;cropleft "0";croptop "1";cropright "1";cropbottom "0";tempfilename
+'R9OSY50D.wmf';tempfile-properties "XPR";}}We want to get specific about
+this and to pick a measure of how strong the scattered field is that is sent
+off in a particular direction. Let's say we pick a plane that goes through
+the particle and has the incident wave perpendicular to the plane. We could
+pick a point on that plane and find the field or, because it is tradition,
+we could find the average power scattered into that direction.
+
+\FRAME{dtbpF}{5.7285in}{2.2701in}{0in}{}{}{Figure}{\special{language
+"Scientific Word";type "GRAPHIC";maintain-aspect-ratio TRUE;display
+"USEDEF";valid_file "T";width 5.7285in;height 2.2701in;depth
+0in;original-width 5.6697in;original-height 2.2303in;cropleft "0";croptop
+"1";cropright "1";cropbottom "0";tempfilename
+'R9OSY50E.wmf';tempfile-properties "XPR";}}And if we do this in a circle
+around the particle we get a good idea of how strong the field must be that
+is scattered from the particle. And we could graph this average power
+scattered into an angle. \FRAME{dtbpF}{5.1967in}{3.1583in}{0in}{}{}{Figure}{%
+\special{language "Scientific Word";type "GRAPHIC";maintain-aspect-ratio
+TRUE;display "USEDEF";valid_file "T";width 5.1967in;height 3.1583in;depth
+0in;original-width 5.1413in;original-height 3.1133in;cropleft "0";croptop
+"1";cropright "1";cropbottom "0";tempfilename
+'R9OSY50G.wmf';tempfile-properties "XPR";}}where the value of the graph at $%
+\phi =0\unit{%
+%TCIMACRO{\U{b0}}%
+%BeginExpansion
+{{}^\circ}%
+%EndExpansion
+}$ is the power that scatters in the same direction of the incident wave
+(the forward direction) and at $\phi =180\unit{%
+%TCIMACRO{\U{b0}}%
+%BeginExpansion
+{{}^\circ}%
+%EndExpansion
+}$ is the amount of power that scatters backward (back scatter). \FRAME{dtbpF%
+}{5.5564in}{2.9326in}{0pt}{}{}{Figure}{\special{language "Scientific
+Word";type "GRAPHIC";maintain-aspect-ratio TRUE;display "USEDEF";valid_file
+"T";width 5.5564in;height 2.9326in;depth 0pt;original-width
+5.4993in;original-height 2.8885in;cropleft "0";croptop "1";cropright
+"1";cropbottom "0";tempfilename 'R9OSY50F.wmf';tempfile-properties "XPR";}}%
+In the example, there is a lot of forward scatter and a good amount of
+backscatter, but very little scatter at $\phi =90\unit{%
+%TCIMACRO{\U{b0}}%
+%BeginExpansion
+{{}^\circ}%
+%EndExpansion
+}.$
+
+The power scattered into a specific direction is called the \emph{%
+differential scattering cross section}. This is what we will calculate.
+
+To do the calculation we need to solve for the fields. Power will be
+proportional to the field squared. So we need the fields. The fields can be
+calculated using a Green's function approach. 
+\begin{equation}
+\mathbf{E}(\mathbf{r})(1+\frac{4\pi }{3}\chi )=\mathbf{E}^{e}(\mathbf{r)+}%
+\int d^{3}\mathbf{r}^{\prime }\mathbf{G}\left( \mathbf{r},\mathbf{r}^{\prime
+}\right) \cdot \chi \mathbf{(r}^{\prime })\mathbf{E(r}^{\prime })
+\label{E-field}
+\end{equation}
+
+where the Green's function comes from Poisson's equation of electrostatics%
+\begin{equation*}
+\nabla ^{2}G\left( \mathbf{r}\right) =\frac{\rho \left( \mathbf{r}\right) }{%
+\varepsilon _{o}}
+\end{equation*}%
+This equation has solutions like 
+\begin{equation*}
+\nabla ^{2}G\left( \mathbf{r}\right) =\frac{1}{4\pi \varepsilon _{o}}\int 
+\frac{\rho \left( \mathbf{r}^{\prime }\right) }{\left\vert \mathbf{r}-%
+\mathbf{r}^{\prime }\right\vert }d\tau ^{\prime }
+\end{equation*}%
+integrated over the volume of the charge distribution. The Green's function
+must solve the point source equation.   
+\begin{equation*}
+\nabla ^{2}G\left( \mathbf{r},\mathbf{r}^{\prime }\right) =-4\pi \delta
+\left( \mathbf{r}-\mathbf{r}^{\prime }\right) 
+\end{equation*}%
+And in general it has a form like 
+\begin{equation*}
+G\left( \mathbf{r},\mathbf{r}^{\prime }\right) =\frac{1}{\left\vert \mathbf{r%
+}-\mathbf{r}^{\prime }\right\vert }+\Omega \left( \mathbf{r},\mathbf{r}%
+^{\prime }\right) 
+\end{equation*}%
+where $V$ is a function that satisfies 
+\begin{equation*}
+\nabla ^{2}\Omega \left( \mathbf{r},\mathbf{r}^{\prime }\right) =0
+\end{equation*}%
+Notice that we expect behavior kind of like $\frac{1}{\left\vert \mathbf{r}-%
+\mathbf{r}^{\prime }\right\vert }$ because electric fields have an inverse
+relationship to distance. But this is more complicated that just a field due
+to a point charge.
+
+And equation (\ref{E-field}) is hard to solve. To find a numeric solution we
+will make some approximations. First off we will split the particle up into
+pieces. Each piece we will approximate as a dipole scatterer because we know
+how to calculate scattering from dipoles. So a small spherical particle
+might look like this. \FRAME{dtbpF}{2.3782in}{2.0072in}{0in}{}{}{Figure}{%
+\special{language "Scientific Word";type "GRAPHIC";maintain-aspect-ratio
+TRUE;display "USEDEF";valid_file "T";width 2.3782in;height 2.0072in;depth
+0in;original-width 2.3385in;original-height 1.9692in;cropleft "0";croptop
+"1";cropright "1";cropbottom "0";tempfilename
+'R9OSY50H.wmf';tempfile-properties "XPR";}}We need a method of defining the
+locations and the strength of each dipole scatterer. We will call this
+discretization the particle. Our method is to place the particle into a
+square matrix. \FRAME{dtbpF}{5.1837in}{3.0908in}{0in}{}{}{Figure}{\special%
+{language "Scientific Word";type "GRAPHIC";maintain-aspect-ratio
+TRUE;display "USEDEF";valid_file "T";width 5.1837in;height 3.0908in;depth
+0in;original-width 5.1283in;original-height 3.0467in;cropleft "0";croptop
+"1";cropright "1";cropbottom "0";tempfilename
+'R9OSY50I.wmf';tempfile-properties "XPR";}}If a matrix cell has part of the
+particle in it, we will approximate it with a dipole scatterer. But we will
+weight each dipole by how much of the particle is inside the cell. So the
+cells in the corner of the matrix will be weighted less because there is
+only a little of the particle in the cell. To determine how much of the
+particle is in each cell, we divide up the cell into \textquotedblleft fine
+structure\textquotedblright\ cells. And we count the number of fine
+structure cells that have part of the particle in them. 
+
+\FRAME{dtbpF}{3.1566in}{3.371in}{0in}{}{}{Figure}{\special{language
+"Scientific Word";type "GRAPHIC";maintain-aspect-ratio TRUE;display
+"USEDEF";valid_file "T";width 3.1566in;height 3.371in;depth
+0in;original-width 3.1116in;original-height 3.3252in;cropleft "0";croptop
+"1";cropright "1";cropbottom "0";tempfilename
+'R9OSY50J.wmf';tempfile-properties "XPR";}}
+
+Once we have a digitized description of the particle we need to find the
+fields. But once again this it is hard to find the field in every direction.
+So we will calculate the field as a series expansion of plane wave fields.
+Each term will be a plane wave but each will have a different amplitude. And
+we will take a finite set of terms. These terms will can be in different
+directions. So we need to define at least a starting set of directions.
+Because plane waves are of the form. 
+\begin{equation*}
+\Psi _{\beta N}=Ae^{imk\mathbf{\hat{k}}_{N}\mathbf{\cdot r}_{\beta }}
+\end{equation*}%
+where $N$ tells us we have the $Nth$ direction and where $\beta $ tells us
+we are calculation the distance from the $\beta th$ dipole, we will refer to
+the unit vectors in each of the expansion directions as $k$-vectors. \FRAME{%
+dtbpF}{5.3177in}{1.8913in}{0pt}{}{}{Figure}{\special{language "Scientific
+Word";type "GRAPHIC";maintain-aspect-ratio TRUE;display "USEDEF";valid_file
+"T";width 5.3177in;height 1.8913in;depth 0pt;original-width
+5.2624in;original-height 1.8533in;cropleft "0";croptop "1";cropright
+"1";cropbottom "0";tempfilename 'R9OSY50K.wmf';tempfile-properties "XPR";}}
+
+To calculate the fields from the dipole representation of the particle we
+need a discredited field equation. We will assume a field with complex time
+dependence.%
+\begin{equation}
+\mathbf{E}\left( \mathbf{r},t\right) =\mathbf{E(r})\exp (-i\omega t)+c.c.
+\label{Field}
+\end{equation}%
+and as usual never write the time dependence. We want to solve%
+\begin{equation}
+\mathbf{E}(\mathbf{r})(1+\frac{4\pi }{3}\chi )=\mathbf{E}^{e}(\mathbf{r)+}%
+\int d^{3}\mathbf{r}^{\prime }\mathbf{G}\left( \mathbf{r},\mathbf{r}^{\prime
+}\right) \cdot \chi \mathbf{(r}^{\prime })\mathbf{E(r}^{\prime })
+\end{equation}%
+We define the term%
+\begin{equation}
+W\left( \mathbf{r}\right) =\frac{\chi \mathbf{(r})}{(1+\frac{4\pi }{3}\chi 
+\mathbf{(r}))}  \label{W1}
+\end{equation}%
+And for convenience define a new field that has the $W\left( \mathbf{r}%
+\right) $ as part of it because the $W\left( \mathbf{r}\right) $ is tedious
+to write in all the equations.  
+\begin{equation*}
+\mathbf{F}(\mathbf{r})=\mathbf{E}(\mathbf{r})(1+\frac{4\pi }{3}\chi )
+\end{equation*}%
+We will call this new field the $F$-field. So our field equation is now 
+\begin{equation}
+\mathbf{F}(\mathbf{r})=\mathbf{E}^{e}(\mathbf{r)+}\int d^{3}\mathbf{r}%
+^{\prime }\mathbf{G}\left( \mathbf{r},\mathbf{r}^{\prime }\right) \cdot
+W\left( \mathbf{r}^{\prime }\right) \mathbf{F(r}^{\prime })  \label{F-field}
+\end{equation}%
+And this is what we need to discretize. Since our particle is made of
+individual dipole scatterers, we can change the integral into a sum where we
+add up the field contribution for each dipole. 
+\begin{equation}
+F_{\mu i}=E_{\mu i}^{in}\mathbf{+}\sum\limits_{\nu }G_{\mu i\nu j}W_{\nu
+}F_{\nu j}  \label{AlgF}
+\end{equation}%
+where, for convenience, the cell dimension $d_{\mu }^{3}$ is included in the 
+$W$ term. 
+\begin{equation}
+W_{\nu }=Wd_{\nu }^{3}
+\end{equation}%
+Symbolically, this may be written as 
+\begin{equation}
+\mathbf{F}=\mathbf{E}^{in}+\mathbf{GWF}
+\end{equation}
+
+If we knew the F-field and the incident field and the green's function we
+could solve this. But if we knew all of this we would already have the
+solution! But let's say we do know the fields, then we could write 
+\begin{equation}
+0=\mathbf{F-E}^{in}-\mathbf{GWF}
+\end{equation}%
+which seems obvious but unhelpful. But we want a numerical solution that is
+a series expansion. So we can guess that the F-field is a series expansion
+with plane waves as the basis of the expansion. 
+\begin{equation}
+\tilde{F}_{\beta j}\mathbf{=}\sum_{N=1}^{N_{k}}a_{Nj}\Psi _{\beta N}
+\end{equation}%
+But of course this isn't exactly right and we don't know the coefficients $%
+a_{Nj}$ so $\mathbf{F-E}^{in}-\mathbf{GWF}$ won't be exactly zero. We could
+define an error term $\mathbf{\varepsilon }$ such that 
+\begin{equation}
+\mathbf{\varepsilon }=\mathbf{F}-\mathbf{E}^{in}-\mathbf{GWF}
+\end{equation}%
+Writing components yields 
+\begin{equation}
+\varepsilon _{\alpha i}\mathbf{=}\sum_{\beta }\sum_{j}\left( 1_{\alpha
+i\beta j}\mathbf{-}G_{\alpha i\beta j}W_{\beta }\right) F_{\beta j}\mathbf{-}%
+E_{\alpha i}^{in}
+\end{equation}%
+Here the factor 
+\begin{equation}
+F_{\alpha i}^{st}=-W_{\alpha }G_{\alpha i\alpha j}F_{\alpha j}  \label{AST}
+\end{equation}%
+is the specially defined self term discussed below as the \textquotedblleft
+self term.\textquotedblright\ Note that 
+\begin{equation}
+1_{\alpha i\beta j}=\delta _{\alpha \beta }\delta _{ij}
+\end{equation}
+
+So we have made some progress. If we knew the coefficients $a_{Nj}$ we could
+find out how bad our approximation is to the fields by calculating $\mathbf{%
+\varepsilon .}$ We want to make an attempt at this. 
+
+Now, because the equations are getting long, define the quantity 
+\begin{equation}
+M_{\alpha i\beta j}=\left( 1_{\alpha i\beta j}\mathbf{-}W_{\beta }G_{\alpha
+i\beta j}\right) 
+\end{equation}%
+where the $\alpha ,$ $i,$ $\beta ,$and $j$ are not summed over. Then 
+\begin{equation}
+\varepsilon _{\alpha i}\mathbf{=}\sum_{\beta }\sum_{j}\left( M_{\alpha
+i\beta j}F_{\beta j}\mathbf{-}E_{\alpha i}^{o}\right)   \label{M}
+\end{equation}%
+which looks shorter.
+
+But thinking of our notation for fields, the quantity $\varepsilon _{\alpha
+i}$ has complex components and is not a single value. It would be easier if
+we had a real number that told us how big our error in calculating the
+fields would be. So let's define a new function  
+\begin{equation*}
+\Phi =\sum_{\alpha }\sum_{i}\mathbf{\varepsilon }_{\alpha i}\mathbf{%
+\varepsilon }_{\alpha i}^{\ast }
+\end{equation*}%
+which would be real because of the conjugate multiply and would be a single
+number because of the sums. We want to minimize $\Phi .$
+
+\begin{equation}
+\Phi =\sum_{\alpha }\sum_{i}\left( \sum_{\beta }\sum_{j}\left( M_{\alpha
+i\beta j}F_{\beta j}\mathbf{-}E_{\alpha i}^{o}\right) \right) \left(
+\sum_{\gamma }\sum_{l}\left( M_{\alpha i\gamma l}F_{\gamma \lambda }\mathbf{-%
+}E_{\alpha i}^{o}\right) \right) ^{\ast }
+\end{equation}%
+or
+
+\begin{equation}
+\Phi =\sum_{\alpha }\sum_{i}\mathbf{\varepsilon }_{\alpha i}\mathbf{%
+\varepsilon }_{\alpha i}^{\ast }=\sum_{\alpha }\sum_{i}\sum_{\beta
+}\sum_{j}\sum_{\gamma }\sum_{l}\left( F_{\beta j}M_{\beta j\alpha
+i}^{T}M_{\alpha i\gamma l}^{\ast }F_{\gamma l}^{\ast }-E_{\alpha i}^{o\ast
+}M_{\alpha i\beta j}F_{\beta j}-E_{\alpha i}^{o}M_{\alpha i\beta j}^{\ast
+}F_{\beta j}^{\ast }+E_{\alpha i}^{o}E_{\alpha i}^{o\ast }\right) 
+\label{PHI}
+\end{equation}%
+Which is getting long again. Again for convenience two additional quantities
+are defined which will shorten the notation 
+\begin{eqnarray}
+K_{\gamma l\beta j} &=&M_{\gamma l\alpha i}^{\ast T}M_{\alpha i\beta j} \\
+X_{\beta j}^{\ast } &=&E_{\alpha i}^{o\ast }M_{\alpha i\beta j}
+\end{eqnarray}%
+Then equation (\ref{PHI}) can be written compactly as 
+\begin{equation}
+\Phi =\sum_{\alpha }\sum_{i}\sum_{\beta }\sum_{j}\sum_{\gamma
+}\sum_{l}\left( F_{\gamma l}^{\ast }K_{\gamma l\beta j}F_{\beta j}-\left[
+X_{\beta j}^{\ast }F_{\beta j}+X_{\beta j}F_{\beta j}^{\ast }\right]
++E_{\alpha i}^{o}E_{\alpha i}^{o\ast }\right) 
+\end{equation}%
+And now we can put in our guess for $F.$ 
+\begin{equation}
+\tilde{F}_{\beta j}\mathbf{=}\sum_{N=1}^{N_{k}}a_{Nj}\Psi _{\beta N}
+\end{equation}
+The function $\mathbf{\tilde{F}}$ is substituted for $\mathbf{F.}$ The
+functions $\Psi _{\beta N}$ we will assume to be of the form
+
+\begin{equation}
+\Psi _{\beta N}=e^{imk\mathbf{\hat{k}}_{N}\mathbf{\cdot r}_{\beta }}
+\end{equation}%
+which depend on the $\mathbf{\hat{k}}_{N}$
+
+Then equation (\ref{PHI}) is approximately given by 
+\begin{equation}
+\Phi =\sum_{\alpha }\sum_{i}\sum_{\beta }\sum_{j}\sum_{\gamma
+}\sum_{l}\sum_{N=1}^{N_{k}}\sum_{M=1}^{N_{k}}\left( \Psi _{\gamma M}^{\ast
+}a_{Ml}^{\ast }K_{\gamma l\beta j}a_{Nj}\Psi _{\beta N}-\left[ X_{\beta
+j}^{\ast }\Psi _{\beta N}a_{Nj}+X_{\beta j}\Psi _{\beta N}^{\ast
+}a_{Nj}^{\ast }\right] +E_{\alpha i}^{o}E_{\alpha i}^{o\ast }\right) 
+\end{equation}%
+Now the notation can again be simplified by defining two functions 
+\begin{eqnarray}
+H_{MlNj} &=&\sum_{\gamma }\sum_{\beta }\Psi _{\gamma M}^{\ast }K_{\gamma
+l\beta j}\Psi _{\beta N} \\
+Y_{Nj}^{\ast } &=&\sum_{\beta }\Psi _{N\beta }^{T}X_{\beta j}^{\ast }
+\end{eqnarray}%
+Then the final form of equation (\ref{PHI}) is 
+\begin{equation}
+\Phi =\sum_{\alpha
+}\sum_{i}\sum_{j}\sum_{l}\sum_{N=1}^{N_{k}}\sum_{M=1}^{N_{k}}a_{Ml}^{\ast
+}H_{MlNj}a_{Nj}-\left[ Y_{Nj}^{\ast }a_{Nj}+Y_{Nj}a_{Nj}^{\ast }\right]
++E_{\alpha i}^{o}E_{\alpha i}^{o\ast }  \label{PhiSimp}
+\end{equation}
+
+But we don't know the expansion coefficients $a_{Nj}$ and $a_{Ml}^{\ast }.$
+We need to find these. We can use a variational technique. We can find a set
+of $a_{Nj}$ and $a_{Ml}^{\ast }$ that make $\Phi $ a minimum. An d we know
+how to find a minimum in an equation, we take a derivative and set it equal
+to zero. 
+
+Let's differentiate $\Phi $ with respect to $a_{Li}^{\ast },$%
+\begin{equation*}
+\frac{\partial \Phi }{\partial a_{Li}^{\ast }}=\sum_{\alpha
+}\sum_{i}\sum_{j}\sum_{l}\sum_{N=1}^{N_{k}}\sum_{M=1}^{N_{k}}a_{Ml}^{\ast
+}H_{MlNj}a_{Nj}-\left[ Y_{Nj}^{\ast }a_{Nj}+Y_{Nj}a_{Nj}^{\ast }\right]
++E_{\alpha i}^{o}E_{\alpha i}^{o\ast }
+\end{equation*}%
+most terms drop out because $a_{Li}^{\ast }$ is just one coefficient, so    
+\begin{equation}
+\frac{\partial \Phi }{\partial a_{Li}^{\ast }}=\sum_{N=1}^{N_{k}}\sum_{j}%
+\left( H_{LiNj}a_{Nj}-Y_{Li}\right)   \label{DerPhi}
+\end{equation}%
+and if we set this equal to zero we get%
+\begin{equation}
+0=\sum_{N=1}^{N_{k}}\sum_{j}\left( H_{LiNj}a_{Nj}-Y_{Li}\right) 
+\end{equation}%
+\begin{equation}
+\sum_{N=1}^{N_{k}}\sum_{j}H_{LiNj}a_{Nj}=Y_{Li}
+\end{equation}
+
+can be written in matrix form as 
+\begin{equation}
+\left( \mathbf{H}\right) \left( \mathbf{a}\right) =\left( \mathbf{Y}\right) 
+\label{HaY}
+\end{equation}%
+The solution for $\left( \mathbf{a}\right) $ is given by 
+\begin{equation}
+\left( \mathbf{a}\right) =\left( \mathbf{H}\right) ^{-1}\left( \mathbf{Y}%
+\right)   \label{aHY1}
+\end{equation}
+
+We can use a matrix solver to find a solution for the $\left( \mathbf{a}%
+\right) $ values. Then we can put them back ion  
+\begin{equation}
+\tilde{F}_{\beta j}\mathbf{=}\sum_{N=1}^{N_{k}}a_{Nj}e^{imk\mathbf{\hat{k}}%
+_{N}\mathbf{\cdot r}_{\beta }}  \label{Ftilde}
+\end{equation}%
+to find the fields.  The $\mathbf{\hat{k}}_{N}$ or \textquotedblleft $k$%
+-vectors\textquotedblright\ must be chosen to represent the internal wave
+well. A \textquotedblleft goodness of choice\textquotedblright\ criterion
+for the number and direction of the $\mathbf{\hat{k}}_{N}$ vectors results
+from evaluating $\Phi $ explicitly. Observing the values of the $a_{Nj}$ can
+determine which of the $k$-vectors are not contributing well. If the
+magnitude of an $a_{N}$ is small, then the $\mathbf{\hat{k}}_{N}$ is not
+well placed or may not be needed.
+
+For the sake of computation, a temporary variable is employed in the
+calculations that follow. 
+\begin{equation}
+T_{\alpha iNj}=\sum_{\beta }\left( 1_{\alpha i\beta j}\mathbf{-}G_{\alpha
+i\beta j}W_{\beta }\right) \Psi _{\beta N}
+\end{equation}
+Using $T_{\alpha iNj},$ $H_{MlNj}$ and $Y_{Nj}$ can be expressed as
+
+\begin{eqnarray}
+H_{MlNj} &=&\sum_{\alpha }\sum_{i}T_{\alpha iMl}^{\ast }T_{\alpha iNj} \\
+Y_{Nj} &=&\sum_{\alpha }\sum_{i}T_{\alpha iNj}^{\ast }E_{\alpha i}^{o} 
+\notag
+\end{eqnarray}%
+This is the form of the quantities used in the actual algorithms.
+
+Then since we found the $a_{Nj}$ with the matrix inversion we can calculate
+the 
+\begin{equation}
+\tilde{F}_{\beta j}\mathbf{=}\sum_{N=1}^{N_{k}}a_{Nj}e^{imk\mathbf{\hat{k}}%
+_{N}\mathbf{\cdot r}_{\beta }}
+\end{equation}%
+and these are related to the electric field like this
+
+\begin{equation*}
+\mathbf{F}(\mathbf{r})=\mathbf{E}(\mathbf{r})(1+\frac{4\pi }{3}\chi ) 
+\end{equation*}%
+so 
+\begin{equation*}
+\frac{\mathbf{F}(\mathbf{r})}{(1+\frac{4\pi }{3}\chi )}=\mathbf{E}(\mathbf{r}%
+) 
+\end{equation*}%
+and we have our electric field.
+
+This is what the code is supposed to do.
+
+\end{document}
