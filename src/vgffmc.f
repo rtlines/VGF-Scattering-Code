@@ -159,8 +159,8 @@ C     test subroutines here
       b=1
       j=1
       dtemp=1.24
-      print *, "dtemp,k, EPS, a,i, b,j", dtemp,k, EPS, a, i, b, j
-      print *,"GG = ", GG(R,k,dtemp, EPS,a,i,b,j)      
+C      print *, "dtemp,k, EPS, a,i, b,j", dtemp,k, EPS, a, i, b, j
+C      print *,"GG = ", GG(R,k,dtemp, EPS,a,i,b,j)      
 C      print *,"GAM = ", GAM(dtemp,k,EPS) 
 C**** HERE WE START THE MONTE CARLO LOOP                             ***
       open(50, file = 'ERRlist', STATUS="UNKNOWN")
@@ -184,7 +184,7 @@ C               write(43,22) KhatN(N,1),KhatN(N,2),KhatN(N,3)
      &               (dd(a,i,b,j)-d(b)**3*W*GG(R,k,dtemp,EPS,a,i,b,j))
      &               *CPSI(R,KhatN,k,mm,N,b)
                   end do 
-                  print *, a,i,N,j,T1(a,i,N,j)
+C                  print *, a,i,N,j,T1(a,i,N,j)
                end do   
             end do
          end do
@@ -226,8 +226,8 @@ C *** reform H into a N*3 by N*3 complex matrix *****
                   mp=3*(np-1)+j
                   aa(m,mp)=H(n,i,np,j)
                   if (aa(m,mp).eq.(0.0,0.0)) then
-                      print *, m,mp,aa(m,mp)
-                      print *, n,np,i,j,H(n,np,i,j)
+C                      print *, m,mp,aa(m,mp)
+C                      print *, n,np,i,j,H(n,np,i,j)
                   end if    
                end do
             end do
