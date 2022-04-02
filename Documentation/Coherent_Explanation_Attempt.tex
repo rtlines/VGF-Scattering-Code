@@ -1,6 +1,7 @@
 
 \documentclass{article}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amssymb}
 \usepackage{amsfonts}
 \usepackage{amsmath}
 
@@ -8,9 +9,9 @@
 %TCIDATA{OutputFilter=LATEX.DLL}
 %TCIDATA{Version=5.50.0.2960}
 %TCIDATA{<META NAME="SaveForMode" CONTENT="1">}
-%TCIDATA{BibliographyScheme=Manual}
+%TCIDATA{BibliographyScheme=BibTeX}
 %TCIDATA{Created=Friday, April 01, 2022 17:30:26}
-%TCIDATA{LastRevised=Friday, April 01, 2022 19:27:38}
+%TCIDATA{LastRevised=Saturday, April 02, 2022 10:54:29}
 %TCIDATA{<META NAME="GraphicsSave" CONTENT="32">}
 %TCIDATA{<META NAME="DocumentShell" CONTENT="Standard LaTeX\Standard LaTeX Article">}
 %TCIDATA{Language=American English}
@@ -39,7 +40,6 @@
 \newtheorem{summary}[theorem]{Summary}
 \newenvironment{proof}[1][Proof]{\noindent\textbf{#1.} }{\ \rule{0.5em}{0.5em}}
 \input{tcilatex}
-
 \begin{document}
 
 \title{Project Goal VGF Code}
@@ -136,16 +136,16 @@ This equation has solutions like
 \mathbf{r}^{\prime }\right\vert }d\tau ^{\prime }
 \end{equation*}%
 integrated over the volume of the charge distribution. The Green's function
-must solve the point source equation.   
+must solve the point source equation. 
 \begin{equation*}
 \nabla ^{2}G\left( \mathbf{r},\mathbf{r}^{\prime }\right) =-4\pi \delta
-\left( \mathbf{r}-\mathbf{r}^{\prime }\right) 
+\left( \mathbf{r}-\mathbf{r}^{\prime }\right)
 \end{equation*}%
 And in general it has a form like 
 \begin{equation*}
 G\left( \mathbf{r},\mathbf{r}^{\prime }\right) =\frac{1}{\left\vert \mathbf{r%
 }-\mathbf{r}^{\prime }\right\vert }+\Omega \left( \mathbf{r},\mathbf{r}%
-^{\prime }\right) 
+^{\prime }\right)
 \end{equation*}%
 where $V$ is a function that satisfies 
 \begin{equation*}
@@ -180,7 +180,7 @@ cells in the corner of the matrix will be weighted less because there is
 only a little of the particle in the cell. To determine how much of the
 particle is in each cell, we divide up the cell into \textquotedblleft fine
 structure\textquotedblright\ cells. And we count the number of fine
-structure cells that have part of the particle in them. 
+structure cells that have part of the particle in them.
 
 \FRAME{dtbpF}{3.1566in}{3.371in}{0in}{}{}{Figure}{\special{language
 "Scientific Word";type "GRAPHIC";maintain-aspect-ratio TRUE;display
@@ -228,7 +228,7 @@ W\left( \mathbf{r}\right) =\frac{\chi \mathbf{(r})}{(1+\frac{4\pi }{3}\chi
 \end{equation}%
 And for convenience define a new field that has the $W\left( \mathbf{r}%
 \right) $ as part of it because the $W\left( \mathbf{r}\right) $ is tedious
-to write in all the equations.  
+to write in all the equations. 
 \begin{equation*}
 \mathbf{F}(\mathbf{r})=\mathbf{E}(\mathbf{r})(1+\frac{4\pi }{3}\chi )
 \end{equation*}%
@@ -291,24 +291,24 @@ self term.\textquotedblright\ Note that
 
 So we have made some progress. If we knew the coefficients $a_{Nj}$ we could
 find out how bad our approximation is to the fields by calculating $\mathbf{%
-\varepsilon .}$ We want to make an attempt at this. 
+\varepsilon .}$ We want to make an attempt at this.
 
 Now, because the equations are getting long, define the quantity 
 \begin{equation}
 M_{\alpha i\beta j}=\left( 1_{\alpha i\beta j}\mathbf{-}W_{\beta }G_{\alpha
-i\beta j}\right) 
+i\beta j}\right)
 \end{equation}%
 where the $\alpha ,$ $i,$ $\beta ,$and $j$ are not summed over. Then 
 \begin{equation}
 \varepsilon _{\alpha i}\mathbf{=}\sum_{\beta }\sum_{j}\left( M_{\alpha
-i\beta j}F_{\beta j}\mathbf{-}E_{\alpha i}^{o}\right)   \label{M}
+i\beta j}F_{\beta j}\mathbf{-}E_{\alpha i}^{o}\right)  \label{M}
 \end{equation}%
 which looks shorter.
 
 But thinking of our notation for fields, the quantity $\varepsilon _{\alpha
 i}$ has complex components and is not a single value. It would be easier if
 we had a real number that told us how big our error in calculating the
-fields would be. So let's define a new function  
+fields would be. So let's define a new function 
 \begin{equation*}
 \Phi =\sum_{\alpha }\sum_{i}\mathbf{\varepsilon }_{\alpha i}\mathbf{%
 \varepsilon }_{\alpha i}^{\ast }
@@ -330,7 +330,7 @@ or
 }\sum_{j}\sum_{\gamma }\sum_{l}\left( F_{\beta j}M_{\beta j\alpha
 i}^{T}M_{\alpha i\gamma l}^{\ast }F_{\gamma l}^{\ast }-E_{\alpha i}^{o\ast
 }M_{\alpha i\beta j}F_{\beta j}-E_{\alpha i}^{o}M_{\alpha i\beta j}^{\ast
-}F_{\beta j}^{\ast }+E_{\alpha i}^{o}E_{\alpha i}^{o\ast }\right) 
+}F_{\beta j}^{\ast }+E_{\alpha i}^{o}E_{\alpha i}^{o\ast }\right)
 \label{PHI}
 \end{equation}%
 Which is getting long again. Again for convenience two additional quantities
@@ -344,7 +344,7 @@ Then equation (\ref{PHI}) can be written compactly as
 \Phi =\sum_{\alpha }\sum_{i}\sum_{\beta }\sum_{j}\sum_{\gamma
 }\sum_{l}\left( F_{\gamma l}^{\ast }K_{\gamma l\beta j}F_{\beta j}-\left[
 X_{\beta j}^{\ast }F_{\beta j}+X_{\beta j}F_{\beta j}^{\ast }\right]
-+E_{\alpha i}^{o}E_{\alpha i}^{o\ast }\right) 
++E_{\alpha i}^{o}E_{\alpha i}^{o\ast }\right)
 \end{equation}%
 And now we can put in our guess for $F.$ 
 \begin{equation}
@@ -364,7 +364,7 @@ Then equation (\ref{PHI}) is approximately given by
 }\sum_{l}\sum_{N=1}^{N_{k}}\sum_{M=1}^{N_{k}}\left( \Psi _{\gamma M}^{\ast
 }a_{Ml}^{\ast }K_{\gamma l\beta j}a_{Nj}\Psi _{\beta N}-\left[ X_{\beta
 j}^{\ast }\Psi _{\beta N}a_{Nj}+X_{\beta j}\Psi _{\beta N}^{\ast
-}a_{Nj}^{\ast }\right] +E_{\alpha i}^{o}E_{\alpha i}^{o\ast }\right) 
+}a_{Nj}^{\ast }\right] +E_{\alpha i}^{o}E_{\alpha i}^{o\ast }\right)
 \end{equation}%
 Now the notation can again be simplified by defining two functions 
 \begin{eqnarray}
@@ -384,7 +384,7 @@ But we don't know the expansion coefficients $a_{Nj}$ and $a_{Ml}^{\ast }.$
 We need to find these. We can use a variational technique. We can find a set
 of $a_{Nj}$ and $a_{Ml}^{\ast }$ that make $\Phi $ a minimum. An d we know
 how to find a minimum in an equation, we take a derivative and set it equal
-to zero. 
+to zero.
 
 Let's differentiate $\Phi $ with respect to $a_{Li}^{\ast },$%
 \begin{equation*}
@@ -393,14 +393,14 @@ Let's differentiate $\Phi $ with respect to $a_{Li}^{\ast },$%
 }H_{MlNj}a_{Nj}-\left[ Y_{Nj}^{\ast }a_{Nj}+Y_{Nj}a_{Nj}^{\ast }\right]
 +E_{\alpha i}^{o}E_{\alpha i}^{o\ast }
 \end{equation*}%
-most terms drop out because $a_{Li}^{\ast }$ is just one coefficient, so    
+most terms drop out because $a_{Li}^{\ast }$ is just one coefficient, so 
 \begin{equation}
 \frac{\partial \Phi }{\partial a_{Li}^{\ast }}=\sum_{N=1}^{N_{k}}\sum_{j}%
-\left( H_{LiNj}a_{Nj}-Y_{Li}\right)   \label{DerPhi}
+\left( H_{LiNj}a_{Nj}-Y_{Li}\right)  \label{DerPhi}
 \end{equation}%
 and if we set this equal to zero we get%
 \begin{equation}
-0=\sum_{N=1}^{N_{k}}\sum_{j}\left( H_{LiNj}a_{Nj}-Y_{Li}\right) 
+0=\sum_{N=1}^{N_{k}}\sum_{j}\left( H_{LiNj}a_{Nj}-Y_{Li}\right)
 \end{equation}%
 \begin{equation}
 \sum_{N=1}^{N_{k}}\sum_{j}H_{LiNj}a_{Nj}=Y_{Li}
@@ -408,22 +408,22 @@ and if we set this equal to zero we get%
 
 can be written in matrix form as 
 \begin{equation}
-\left( \mathbf{H}\right) \left( \mathbf{a}\right) =\left( \mathbf{Y}\right) 
+\left( \mathbf{H}\right) \left( \mathbf{a}\right) =\left( \mathbf{Y}\right)
 \label{HaY}
 \end{equation}%
 The solution for $\left( \mathbf{a}\right) $ is given by 
 \begin{equation}
 \left( \mathbf{a}\right) =\left( \mathbf{H}\right) ^{-1}\left( \mathbf{Y}%
-\right)   \label{aHY1}
+\right)  \label{aHY1}
 \end{equation}
 
 We can use a matrix solver to find a solution for the $\left( \mathbf{a}%
-\right) $ values. Then we can put them back ion  
+\right) $ values. Then we can put them back ion 
 \begin{equation}
 \tilde{F}_{\beta j}\mathbf{=}\sum_{N=1}^{N_{k}}a_{Nj}e^{imk\mathbf{\hat{k}}%
 _{N}\mathbf{\cdot r}_{\beta }}  \label{Ftilde}
 \end{equation}%
-to find the fields.  The $\mathbf{\hat{k}}_{N}$ or \textquotedblleft $k$%
+to find the fields. The $\mathbf{\hat{k}}_{N}$ or \textquotedblleft $k$%
 -vectors\textquotedblright\ must be chosen to represent the internal wave
 well. A \textquotedblleft goodness of choice\textquotedblright\ criterion
 for the number and direction of the $\mathbf{\hat{k}}_{N}$ vectors results
@@ -456,15 +456,158 @@ _{N}\mathbf{\cdot r}_{\beta }}
 and these are related to the electric field like this
 
 \begin{equation*}
-\mathbf{F}(\mathbf{r})=\mathbf{E}(\mathbf{r})(1+\frac{4\pi }{3}\chi ) 
+\mathbf{F}(\mathbf{r})=\mathbf{E}(\mathbf{r})(1+\frac{4\pi }{3}\chi )
 \end{equation*}%
 so 
 \begin{equation*}
 \frac{\mathbf{F}(\mathbf{r})}{(1+\frac{4\pi }{3}\chi )}=\mathbf{E}(\mathbf{r}%
-) 
+)
 \end{equation*}%
 and we have our electric field.
 
 This is what the code is supposed to do.
+
+\section{Green's Functions}
+
+Let's return to the Green's function. The Green's function has the job of
+providing the field due to the scattering from one dipole to another.
+
+\begin{eqnarray}
+F_{i}(\mathbf{r}_{\mu }) &=&E_{i}^{in}\left( \mathbf{r}_{\mu }\right) 
+\mathbf{+}\sum\limits_{\nu \neq \mu }d_{\nu }^{3}G_{ij}\left( \mathbf{r}%
+_{\mu \nu }\right) WF_{j}\mathbf{(r}_{\nu }^{\prime })+I_{i}(\mathbf{r}_{\mu
+})  \label{F1} \\
+&=&E_{\mu ,i}^{in}\mathbf{+}W\sum\limits_{\nu \neq \mu }d_{\nu }^{3}G_{\mu
+i\nu j}F_{\nu j}+I_{\mu i}  \notag
+\end{eqnarray}%
+Notice that the digitized form of the Green's function is summed over the
+number of dipoles. The index $i$ is a specific vector component (say, the $x$%
+-component) of the field scattered from a specific dipole, $\mu $. The sum
+is over every dipole except dipole $\mu $. So this equation gives the
+components of the field at a location due to the scattering from every
+dipole's own scattereing of the incident wave and the sattering from that
+dipole of the scattered waves from all the other dipoles. In the equation
+the sum does not include the particular dipole $\mu .$ So the sum gives us
+the field due to the dipole scattering the other dipoles scattered fields.
+The scattering of the incident field by dipole $\mu $ is separated out as a
+separate term $I_{\mu i}.$ This scattering from dipole itself, is known as
+the \textquotedblleft self term.\textquotedblright\ 
+
+Recall that in the self therm $I_{\mu i},$ the Greek index tells the
+particular dipole, and the index $i$ is the vector component. Of course,
+this only works well if $d_{\mu }^{3}$ is small. Experience shows that $%
+\left\vert m\right\vert kd<1$ should be used, where $m$ is the complex
+refractive index of the homogenous particle.
+
+Let's now look at the form for the Green's function. The Green's function is
+discretized as 
+\begin{equation}
+G_{\mu i\nu j}=\exp (ikR_{\mu \nu })\left[ \frac{k^{2}}{R_{\mu \nu }}\left(
+\delta _{ij}-\widehat{R_{\mu \nu i}}\widehat{R_{\mu \nu j}}\right) +\left( 
+\frac{ik}{R_{\mu \nu }^{2}}-\frac{1}{R_{\mu \nu }^{3}}\right) \left( \delta
+_{ij}-3\widehat{R_{\mu \nu i}}\widehat{R_{\mu \nu j}}\right) \right]
+\end{equation}%
+where $\mathbf{R}_{\mu \nu }=\mathbf{r}_{\mu }-\mathbf{r}_{\nu }.$ This
+equation is very similar to that used by Goedecke and O'Brien.\cite%
+{Goedecke88}
+
+But a problem occurs when the summation index $\nu $ is equal to $\mu :$
+Terms with $R_{\mu \mu }$ in the denominator would diverge (blow up to
+infinity). Thus in equation (\ref{F1}) these terms have been separated.
+Because such a term results from the action of the cell field on itself, it
+is known as the self-term. This is not as easy a term is it might apear. We
+can bordrow from Goodeke et. al\cite{Goedecke88} and others. The self-term
+results from letting $\mathbf{r}=\mathbf{r}_{\mu },$ and $\mathbf{r}^{\prime
+}=\mathbf{r}_{\mu }+\mathbf{\xi }$, in equation (\ref{F-field}) , and taking 
+$\chi \left( \mathbf{r}^{\prime }\right) \mathbf{F}_{j}\left( \mathbf{r}%
+^{\prime }\right) =\chi \left( \mathbf{r}_{\mu }\right) \mathbf{F}_{j}\left( 
+\mathbf{r}_{\mu }\right) .$ One gets 
+\begin{equation}
+I_{\mu ,i}=\left[ \int_{\Box }d^{3}\xi G_{ij}\left( \mathbf{\xi }\right) %
+\right] WF_{j}\mathbf{(r}_{\mu })
+\end{equation}
+
+The $\Box $ indicates that the integral is over the small dipole cell, of
+volume $d_{\mu }^{3}.$ The integral in brackets in equation (\ref{SelfTerm})
+can be written as 
+\begin{equation}
+\int_{\Box }d^{3}\xi G_{ij}\left( \mathbf{\xi }\right) =\int_{\Box }d^{3}\xi
+e^{ik\xi }\left[ \frac{k^{2}}{\xi }\left( \delta _{ij}-\hat{\xi}_{i}\hat{\xi}%
+_{j}\right) +\left( \frac{ik}{\xi ^{2}}-\frac{1}{\xi ^{3}}\right) \left(
+\delta _{ij}-3\hat{\xi}_{i}\hat{\xi}_{j}\right) \right]
+\end{equation}
+Employing the identity 
+\begin{equation}
+\int_{\Box }d\Omega _{\xi }\hat{\xi}_{i}\hat{\xi}_{j}=\delta _{ij}\frac{1}{3}%
+\int_{\Box }d\Omega _{\xi }
+\end{equation}
+the last term vanishes due to symmetry of cubical cells. Also, the remaining
+terms can be combined to yield 
+\begin{equation}
+\int_{\Box }d^{3}\xi G_{ij}\left( \mathbf{\xi }\right) =\delta _{ij}\frac{%
+2k^{2}}{3}\int_{\Box }d^{3}\xi \frac{k^{2}e^{ik\xi }}{\xi }
+\end{equation}
+
+A series expansion of the integrand on the right hand side yields
+
+\begin{equation}
+\frac{\exp (ikx)}{x}=\left[ \frac{1}{x}+ik-\frac{1}{2}k^{2}x-\frac{1}{6}%
+ik^{3}x^{2}+\frac{1}{24}k^{4}x^{3}+Ox^{4}\right]
+\end{equation}%
+which can be substituted into the previous expression to yield 
+\begin{eqnarray}
+\int_{\Box }d^{3}\xi G_{ij}\left( \mathbf{\xi }\right) &=&\delta _{ij}\frac{%
+2k^{2}}{3}\int_{\Box }d^{3}\xi \left( \frac{1}{\xi }+ik-\frac{1}{2}k^{2}\xi -%
+\frac{1}{6}ik^{3}\xi ^{2}+\frac{1}{24}k^{4}\xi ^{3}+O\left( \xi ^{4}\right)
+\right)  \notag \\
+&\equiv &\delta _{ij}\frac{4\pi }{3}\Gamma
+\end{eqnarray}%
+where this equation defines $\Gamma $ as 
+\begin{equation}
+\Gamma =\left( \left( ka\right) ^{2}+\allowbreak \frac{2}{3}\allowbreak
+i\left( ka\right) ^{3}-\frac{1}{4}\left( ka\right) ^{4}-\frac{1}{15}i\left(
+ka\right) ^{5}+O\left( ka\right) ^{6}\right)
+\end{equation}%
+and the integral has been done by using an equivalent volume sphere with
+radius $a_{\mu }$ 
+\begin{equation}
+a_{\mu }=d_{\mu }\left( \frac{3}{4\pi }\right) ^{\frac{1}{3}}
+\end{equation}%
+thus 
+\begin{eqnarray}
+\Gamma _{\mu } &=&\left( \frac{3}{4\pi }\right) ^{\frac{2}{3}}\left( kd_{\mu
+}\right) ^{2}+\allowbreak \allowbreak \left( \frac{\allowbreak \allowbreak i%
+}{2\pi }\right) \left( kd_{\mu }\right) ^{3}-\frac{1}{4}\left( \frac{3}{4\pi 
+}\right) ^{\frac{4}{3}}\left( kd_{\mu }\right) ^{4}  \label{Gamma1} \\
+&&-\frac{1}{15}i\left( \frac{3}{4\pi }\right) ^{\frac{5}{3}}\left( kd_{\mu
+}\right) ^{5}+O\left( \left( kd_{\mu }\right) ^{6}\right)  \notag
+\end{eqnarray}%
+The expression for $I_{\mu i}$ can then be written as
+
+\begin{equation}
+I_{\mu i}=\delta _{ij}\frac{4\pi }{3}W\Gamma _{\mu }F_{\mu j}=\frac{4\pi }{3}%
+W\Gamma _{\mu }F_{\mu i}  \label{ST1}
+\end{equation}
+
+The first two terms in $\Gamma _{\mu }$ were used by Goedecke and O'Brien in
+their formulation of the DGF scattering code \cite{Goedecke88}. Draine and
+Goodman obtained a somewhat different expression for $\Gamma _{\mu }$ for
+placement of the dipole cells on a cubic lattice\cite{Draine93}, i.e. the
+coefficients of the various powers of $kd_{\mu }$ are different than in
+equation(\ref{Gamma}). However, for ease in comparison with the DGF method,
+the form given by Goedecke and O'Brien is used here. The corrections of
+order $\left( kd_{\mu }\right) ^{4}$and higher are insignificant; and even
+the term in $\left( kd_{\mu }\right) ^{2}$ is not important if $kd_{\mu }\ll
+1.$ But, as shown by Goedecke and O'Brien, the lowest order imaginary term
+proportional to $\left( kd_{\mu }\right) ^{3}$ is essential for agreement
+with the optical theorem, and this term is the same in the Draine and
+Goodman expression.
+
+Putting this approximation for the Green's function into our equation for
+the $F$-field (Equation \ref{AlgF}) gives us the mathematical representation
+used in the VGF code.
+
+\bibliographystyle{IEEEtran}
+\bibliography{SCAT}
 
 \end{document}
