@@ -80,7 +80,20 @@ def read_input_file(workfile):
         factor = float(read_data) 
    return NUSE,com,wave,alpha,beta,gamma,psi,RAD,ER,EI,TD,R,D
 
-
+###############################################################################
+#
+###############################################################################
+# Read a fortran .phz file (output from vgfphz)
+def read_PHZ_file(workfile):
+    phz_phi=np.zeros(180)
+    phz = np.zeros(180)
+    for iang in range(180):
+          
+        phz_phi[iang] = np.loadtxt(workfile, skiprows = iang, usecols = (0), max_rows = 1)
+        phz[iang] = np.loadtxt(workfile, skiprows = iang, usecols = (3), max_rows = 1)
+        #print(phz_phi[iang], phz[iang])
+    #print("phz",phz)
+    return phz_phi, phz    
 ###############################################################################
 #
 ###############################################################################
@@ -938,12 +951,22 @@ print_E_to_file(E, NUSE)
 print ("Calculating the phase function")
 [TH, PH, diff_cross_sect_H, diff_cross_sect_V,NANG] = diff_cross_sect(E, R, wave, X, D, RRR, RAD)
 
+### Now let's add the data from a fortran run so we can plot our results and 
+#    the fortran results together
+fphz_phi = np.zeros(180)
+fphz = np.zeros(180)
+fphzfile = "Figure3phz.out"
+[fphz_phi,fphz] = read_PHZ_file(fphzfile)
 
 #for i in range (0,NANG):
 #    print(TH[i], PH[i], diff_cross_sect_V[i], diff_cross_sect_H[i])
 
 print_Phz_to_file(TH, PH, diff_cross_sect_V, diff_cross_sect_H,NANG)
-plt.plot(TH, diff_cross_sect_H)
+plt.plot(TH, diff_cross_sect_H,'r-')     # Plot our answer
+plt.plot(fphz_phi, fphz,'g-')            # Plot the fortran answer
+plt.xlabel("Scattering angle phi (deg)")
+plt.ylabel("Diff. Scattering X-Section")
+plt.legend(["Python","Fortran"], loc ="upper right")
 plt.show()
 # And that is the end of the program
 
