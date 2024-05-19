@@ -1,18 +1,27 @@
-#!/bin/env python3
+#!/bin/env python3 
+import logging
 import os
+import sys
 
 import numpy as np
+import numpy.typing as npt
 
 from libs import calculation
 from libs import input
 from libs import output
-from libs import logs
+from libs import utils
+
+
+PATH: str = os.path.abspath(os.path.dirname(__file__))
+logger: logging.Logger = logging.getLogger(__name__)
 
 def main() -> None:
-    PATH: str = os.path.abspath(os.path.join(os.path.dirname(__file__), "logs"))
-    logger = logs.Logger(PATH)
-    # Main function goes here
-    #
+    # Retrieve command line arguments
+    args:list[str] = sys.argv[1:]
+    
+    logging.basicConfig(filename = os.path.join(PATH, "logs/vgf-scattering.log"), level = logging.DEBUG)
+    logger.info(f"[{utils.get_time()}]")
+    logger.info(f"Opening logfile")
     # Test reading in the k-vectors
     #
     # array of theta and pi values to read in.  These are the direction angles
@@ -21,115 +30,128 @@ def main() -> None:
     # Define Variables
     #
     # Array Limits:  First let's set limits on how big the arrays can be
-    KMAX = 2000     # maximum number of k-vectors
-    NMAX =2000      # maximum number of dipoles
-    MMAX = 2        # maximum number of Monte Carlo itterations (starts at 1?)
-    #
-    # Convinient consDEG=PI/180.0tants
-    DEG=np.pi/180.0     # conversion from degress to radians
+    KMAX: int = 2000     # maximum number of k-vectors
+    NMAX: int = 2000      # maximum number of dipoles
+    MMAX: int = 2        # maximum number of Monte Carlo itterations (starts at 1?)
     #
     ####### read in the dipole locatons and data from the input file
     #
     # The code needsto input some things.  I will hard code them here for now @@@@@
-    ERR0 = 0.05
-    divd = 100
+    ERR0: float = 0.05
+    divd: int = 100
     #
     # Now read the input file.  The file name should be an input, but hard code
     #    for now @@@@@
     #
     
-    comments = "Not Set"          #is the coment string from vgfin
-    NUSE = 0.0              # the number of dipoles to use
-    wave = 0.0              # the wavelength in relative uints (as long as all lenght units 
+    comments: str = "Not Set"          #is the coment string from vgfin
+    NUSE: int = 0              # the number of dipoles to use
+    wave: float = 0.              # the wavelength in relative uints (as long as all lenght units 
                        #    are the same it doesn't matter, but use microns)
-    alpha = 0.0            # The tree Euler angles describing the particle orientation
-    beta = 0.0
-    gamma = 0.0 
-    psi = 0.0                # the polarization angle (I think)
-    RAD = 0.0                # is the particle semimajor axis (use microns)
-    ER = 0.0                 # the complext components of the particle permitivity
-    EI = 0.0
-    TD = 0.0                 # the dipole size
-    R = np.zeros((NMAX,3))    # a NUSE bcom,wave,alpha,beta,gamma,psi,RAD,ER,EI,TD,R,Dy 3 array of cell locations
-    D = np.zeros(NMAX)         # a NUSE array of cell weights
-    workfile = "Figure3.in" # @@@ needs to be an input
-    logger.log(f"Opening {workfile}")
-    NUSE,comments,wave,alpha,beta,gamma,psi,RAD,ER,EI,TD,R,D = input.read_input_file(workfile)
-    logger.log(f"Closed {workfile}")
+    alpha: float = 0.            # The three Euler angles describing the particle orientation
+    beta : float = 0.
+    gamma: float = 0. 
     
+    psi: float = 0.                # the polarization angle (I think)
+    
+    RAD: float = 0.                # is the particle semimajor axis (use microns)
+    
+    ER: float = 0.                 # the complex components of the particle permitivity
+    EI: float = 0.
+    
+    TD: float = 0.                 # the dipole size
+    
+    R: npt.NDArray[np.double] = np.zeros((NMAX,3), dtype=np.double)    # a NUSE by 3 array of cell locations
+    D: npt.NDArray[np.double] = np.zeros(NMAX, dtype=np.double)        # a NUSE array of cell weights
+    
+    workfile: str = "Figure3.in" # @@@ needs to be an input
+    if args:
+        workfile = args[0]
+    
+    logger.info(f"[{utils.get_time()}]")
+    logger.debug(f"Reading input file")
+    NUSE,comments,wave,alpha,beta,gamma,psi,RAD,ER,EI,TD,R,D = input.read_input_file(workfile)
+    logger.debug(f"Done with inputs file")
+    logger.info(f"Comments from file:\n\t\"{comments}\"")
     ###### Read in the K-Vectors
-    NK = 0                                # number of k-vectors
-    ERR = 0                               # Monte Carlo Loop Test Value (MCTV)
-    ERRlast = ERR                         # Last value of MCTV to see if we are 
+    NK: int = 0                                # number of k-vectors
+    ERR: float = 0.                            # Monte Carlo Loop Test Value (MCTV)
+    ERRlast: float = ERR                       # Last value of MCTV to see if we are 
                                           #   converging to a better answer
-    kth = np.zeros(KMAX)                  # make arrays for the kvector components
-    kph = np.zeros(KMAX)
+    kth: npt.NDArray[np.double] = np.zeros(KMAX, dtype=np.double)                  # make arrays for the kvector components
+    kph: npt.NDArray[np.double] = np.zeros(KMAX, dtype=np.double)
     # array of k-vector cartisian components.
-    khatN = np.zeros((KMAX,3))              # arrat of components of the vectors
-    kworkfile ="Figure3.kv"   #@@@ needs to be an input
+    khatN: npt.NDArray[np.double] = np.zeros((KMAX,3), dtype=np.double)              # array of components of the vectors
 
-    logger.log(f"Opening {kworkfile}")
-    NK,kth,kph, ERR, ERRlast, mcount, kcount = input.read_kv(kworkfile)       # Function call to get the k-vectors
-    logger.log(f"Closed {kworkfile}")
+    kworkfile: str ="Figure3.kv"   #@@@ needs to be an input
+    
+    logger.info(f"[{utils.get_time()}]")
+    logger.debug(f"Reading k-vector input file")
+    NK, kth, kph, ERR, ERRlast, mcount, kcount = input.read_kv(kworkfile)       # Function call to get the k-vectors
+    logger.debug(f"Done with k-vector input")
     
     # find the components of the k-vectors
-    logger.log(f"Calculating k-vectors...")
-    khatN = calculation.kvectors3(kth,kph,NK) 
-    logger.log(f"k-vectors calculated")
+    logger.info(f"[{utils.get_time()}]")
+    logger.debug(f"Calculating k-vetors")
+    khatN = calculation.kvectors3(kth,kph,NK)
+    logger.debug(f"Done calculating k-vectors")
     ###### Now we have the data input, start calculations
     #
     ## Find the index of refraction, epsilon, and the suseptibility, X
-    eps = complex(ER,EI)
+    eps: complex = complex(ER,EI)
     #print(eps)
-    mm = np.sqrt(eps)
+    mm: complex = np.sqrt(eps)
     #print(mm)
-    X = complex(0.0,0.0)
+    X: complex = complex(0.0,0.0)
     X = (eps - 1)/(4.0*np.pi)
     #print(X)
     #
     ###### Begin the incident field calculations
     #
-    k=2.0*np.pi/wave         # wave number
+    k: float = 2.0*np.pi/wave         # wave number
     #
-    print('rotate the input field into particle frame, calc field at each dipole')
+    # print('rotate the input field into particle frame, calc field at each dipole')
     # covert angles from degrees to radians
-    alpha = alpha * DEG
-    beta = beta * DEG
-    gamma = gamma * DEG
-    psi = psi * DEG
+    alpha = np.deg2rad(alpha)
+    beta  = np.deg2rad(beta)
+    gamma = np.deg2rad(gamma)
+    psi   = np.deg2rad(psi)
     #
     # set up the rotation matrix with a call to ROT
     #
-    RRR = calculation.ROT(alpha, beta, gamma)
+    logger.info(f"[{utils.get_time()}]")
+    logger.debug(f"Rotating input field into particle frame")
+    RRR: npt.NDArray[np.double] = calculation.ROT(alpha, beta, gamma)
+    logger.debug(f"Rotation matrix established")
     #print(RRR)
     #
     # K-hat is in the z direction in the lab frame, we need to rotate it into the
     #   particle frame
-    V=np.zeros(3)                                 # temporary storage
-    V[0] = 0.0                                    
-    V[1] = 0.0
-    V[2] = 1.0
+    V: npt.NDArray[np.double]=np.zeros(3, dtype=np.double)                                 # temporary storage
+    V[0] = 0.
+    V[1] = 0.
+    V[2] = 1.
     khat = RRR.dot(V)
     # Thus E0hat must be in the x-y plane in the lab. Rotate it into the particle
     #   frame     
     V[0] = np.cos(psi)
     V[1] = np.sin(psi)
     V[2] = 0.0
-    E0hat = RRR.dot(V)
+    E0hat: npt.NDArray[np.double] = RRR.dot(V)
     print("E0hat ",psi, E0hat)
     #
     # Calculate the W factor    Wcalc=X/(1.+(4.*PI/3.)*X)
-    W = X/(1.0+(4.*np.pi/3.)*X)
+    W: complex = X/(1.0+(4.*np.pi/3.)*X)
     #
     ###### Calcuate inital and incident field
     #
     # We need a place to put the calcualted electric field at each dipole location
     #
-    E0 = np.zeros((NUSE,3), dtype=complex)
+    E0: npt.NDArray[np.cdouble] = np.zeros((NUSE,3), dtype=np.cdouble)
     #
     # we need some complex temporary varuables
-    temp = 0+0j
-    C = 0+0j
+    temp: complex = 0+0j
+    C: complex = 0+0j
     #
     # first calcualte the r dot khat part of the exponential
     #

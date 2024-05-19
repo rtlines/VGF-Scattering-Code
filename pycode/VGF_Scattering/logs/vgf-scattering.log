@@ -1,6 +1,24 @@
-17-May-2024: 23:58:12 [OPEN LOG]: Log opened
-17-May-2024: 23:58:12 [DEBUG]: Opening Figure3.in
-17-May-2024: 23:58:12 [DEBUG]: Closed Figure3.in
-17-May-2024: 23:58:12 [DEBUG]: Opening Figure3.kv
-17-May-2024: 23:58:12 [DEBUG]: Closed Figure3.kv
-17-May-2024: 23:58:12 [DEBUG]: Calculating k-vectors...
+INFO:__main__:[18-May-2024; 22:50:44]
+INFO:__main__:Opening logfile
+INFO:__main__:[18-May-2024; 22:50:44]
+DEBUG:__main__:Reading input file
+DEBUG:libs.input:Opening Figure3.in...
+DEBUG:libs.input:Reading in 117 cell locations and weights
+DEBUG:libs.input:Loaded cell locations and weights.
+DEBUG:libs.input:Figure3.in closed.
+DEBUG:__main__:Done with inputs file
+INFO:__main__:Comments from file:
+	"This is Figure 3"
+INFO:__main__:[18-May-2024; 22:50:44]
+DEBUG:__main__:Reading k-vector input file
+DEBUG:libs.input:Opening Figure3.kv...
+DEBUG:libs.input:Loading in 11 k-vectors...
+DEBUG:libs.input:k-vectors loaded.
+DEBUG:libs.input:Figure3.kv closed.
+DEBUG:__main__:Done with k-vector input
+INFO:__main__:[18-May-2024; 22:50:44]
+DEBUG:__main__:Calculating k-vetors
+DEBUG:__main__:Done calculating k-vectors
+INFO:__main__:[18-May-2024; 22:50:44]
+DEBUG:__main__:Rotating input field into particle frame
+DEBUG:__main__:Rotation matrix established

@@ -1,5 +1,9 @@
+import logging
+
 import numpy as np
 import numpy.typing as npt
+
+logger = logging.getLogger(__name__)
 
 def read_input_file(workfile: str = "") -> tuple[int, str, float, float, float, float, float, float, float, float, float, npt.NDArray[np.double], npt.NDArray[np.double]]:
     # comments is the coment string from vgfin
@@ -41,56 +45,59 @@ def read_input_file(workfile: str = "") -> tuple[int, str, float, float, float, 
     cell_weights  : npt.NDArray[np.double] = np.zeros(number_of_dipoles, dtype=np.double)
     
     # Rudimentary error handling, so the function still runs if no workfile is found
-    if not workfile:
-        return number_of_dipoles, comments, wavelength, alpha, beta, gamma, psi, semimajor_axis, permitivity_real, permitivity_complex, dipole_size, cell_locations, cell_weights
-    
-    # Open the file and begin reading in values
-    with open(workfile) as f:
-        print("read comment")
-        comments = f.readline()            # read a whole line
-        print(comments)
+    try:    
+        # Open the file and begin reading in values
+        logger.debug(f"Opening {workfile}...")
+        with open(workfile, "r") as f:
+            comments = f.readline().strip()            # read a whole line
+            
+            # Second line is how many dipoles the particle will be broken into
+            number_of_dipoles = int(f.readline())
+            # print("number_of_dipoles",number_of_dipoles)
+            
+            # Next line contains orientation information
+            read_data: str = f.readline()
+            split_string: list[str] = read_data.strip().split(" ")  # parse the line
+            values: list[float] = [float(value) for value in split_string if value] # List comprehension to remove empty items from the list
+            wavelength, alpha, beta, gamma, psi, semimajor_axis = values # Unpacks the values to their respective variables
+     
+            read_data: str = f.readline()
+            split_string: list[str] = read_data.strip().split(" ")  # parse the line
+            values: list[float] = [float(value) for value in split_string if value] # Convert non-empty strings to floats
+            permitivity_real, permitivity_complex, dipole_size = values # Unpack the values into three variables
+            
+            # Replace placeholder arrays with real values
+            logger.debug(f"Reading in {number_of_dipoles} cell locations and weights")
+            cell_locations = np.zeros((number_of_dipoles,3))
+            cell_weights = np.zeros(number_of_dipoles)
+            for i in range(number_of_dipoles):             # loop to input all the theta and phi values
+                read_data = f.readline()       # read in a whole line
+                while "  " in read_data:
+                    read_data = read_data.replace("  "," ")
+                read_data.lstrip()           # remove leading space
+                read_data.lstrip()           # remove leading space
+                split_string = read_data.strip().split(" ") #parse the line splitting where
+                                                    #there are spaces
+                                                    #Each line starts with a space
+                                                    #then a number, then a space
+                                                    #then a vector and then a weight.
+                                                    # So we will get
+                                                    # several parts to our split
+                                                    #a space, a string that is a 
+                                                    #number, then a second string 
+                                                    #that is a number, etc.
+                values = [float(value) for value in split_string if value] # Convert non-empty strings to floats
+                cell_locations[i][0] = values[0]
+                cell_locations[i][1] = values[1]
+                cell_locations[i][2] = values[2]
+                cell_weights[i]      = values[3]
+            logger.debug(f"Loaded cell locations and weights.")
+        logger.debug(f"{workfile} closed.")
         
-        # Second line is how many dipoles the particle will be broken into
-        number_of_dipoles = int(f.readline())
-        print("number_of_dipoles",number_of_dipoles)
-        
-        # Next line contains orientation information
-        read_data: str = f.readline()
-        split_string: list[str] = read_data.strip().split(" ")  # parse the line
-        values: list[float] = [float(value) for value in split_string if value] # List comprehension to remove empty items from the list
-        wavelength, alpha, beta, gamma, psi, semimajor_axis = values # Unpacks the values to their respective variables
- 
-        read_data: str = f.readline()
-        split_string: list[str] = read_data.strip().split(" ")  # parse the line
-        values: list[float] = [float(value) for value in split_string if value] # Convert non-empty strings to floats
-        permitivity_real, permitivity_complex, dipole_size = values # Unpack the values into three variables
-        
-        # Replace placeholder arrays with real values
-        cell_locations = np.zeros((number_of_dipoles,3))  
-        cell_weights = np.zeros(number_of_dipoles)
-        for i in range(number_of_dipoles):             # loop to input all the theta and phi values
-            read_data = f.readline()       # read in a whole line
-            while "  " in read_data:
-                read_data = read_data.replace("  "," ")
-            read_data.lstrip()           # remove leading space
-            read_data.lstrip()           # remove leading space
-            split_string = read_data.strip().split(" ") #parse the line splitting where
-                                                #there are spaces
-                                                #Each line starts with a space
-                                                #then a number, then a space
-                                                #then a vector and then a weight.
-                                                # So we will get
-                                                # several parts to our split
-                                                #a space, a string that is a 
-                                                #number, then a second string 
-                                                #that is a number, etc.
-            values = [float(value) for value in split_string if value] # Convert non-empty strings to floats
-            cell_locations[i][0] = values[0]
-            cell_locations[i][1] = values[1]
-            cell_locations[i][2] = values[2]
-            cell_weights[i]      = values[3]
-        
-        return number_of_dipoles, comments, wavelength, alpha, beta, gamma, psi, semimajor_axis, permitivity_real, permitivity_complex, dipole_size, cell_locations, cell_weights
+    except FileNotFoundError:
+        logger.warning(f"File {workfile} not found! Using default values instead.")
+
+    return number_of_dipoles, comments, wavelength, alpha, beta, gamma, psi, semimajor_axis, permitivity_real, permitivity_complex, dipole_size, cell_locations, cell_weights
 
 def read_kv(workfile: str = "") -> tuple[int, npt.NDArray[np.double], npt.NDArray[np.double], float, float, int, int]:
     # Initialize all variables and provide type hints
@@ -107,34 +114,42 @@ def read_kv(workfile: str = "") -> tuple[int, npt.NDArray[np.double], npt.NDArra
     k_count: int = 0
 
     # workfile ="Test_2_5_5.kv"
-    with open(workfile) as f:
-        read_data = f.readline()
-        number_of_k_vectors = int(read_data)
+    try:
+        logger.debug(f"Opening {workfile}...")
+        with open(workfile, "r") as f:
+            read_data: str = f.readline()
+            number_of_k_vectors = int(read_data)
 
-        k_thetas = np.zeros(number_of_k_vectors, dtype = np.double)
-        k_phis   = np.zeros(number_of_k_vectors, dtype = np.double)
+            k_thetas = np.zeros(number_of_k_vectors, dtype = np.double)
+            k_phis   = np.zeros(number_of_k_vectors, dtype = np.double)
 
-        # loop to input all the theta and phi values
-        for i in range(number_of_k_vectors):             
-            read_data = f.readline()
-            # Parse string, removing newline character and converting non-empty strings to floats
-            split_string = [float(value) for value in read_data.strip().split(" ") if value] 
-                                                           
-            theta=split_string[0]
-            phi=split_string[1]
+            # loop to input all the theta and phi values
+            logger.debug(f"Loading in {number_of_k_vectors} k-vectors...")
+            for i in range(number_of_k_vectors):             
+                read_data = f.readline()
+                # Parse string, removing newline character and converting non-empty strings to floats
+                split_string = [float(value) for value in read_data.strip().split(" ") if value] 
+                                                               
+                theta=split_string[0]
+                phi=split_string[1]
 
-            k_thetas[i] = theta
-            k_phis[i] = phi
+                k_thetas[i] = theta
+                k_phis[i] = phi
+            logger.debug(f"k-vectors loaded.")
 
-        read_data = f.readline()       # The last line has dummy strings
-                                       # for kth and kph but has at the end 
-        split_string = read_data.strip().split(" ")
-        values: list[str] = [value for value in split_string if value]
-        error      = float(values[0])
-        error_last = float(values[1])
+            read_data = f.readline()       # The last line has dummy strings
+                                           # for kth and kph but has at the end 
+            split_string = read_data.strip().split(" ")
+            values: list[str] = [value for value in split_string if value]
+            error      = float(values[0])
+            error_last = float(values[1])
 
-        m_count = int(values[2])
-        k_count = int(values[3])
+            m_count = int(values[2])
+            k_count = int(values[3])
+        logger.debug(f"{workfile} closed.")
+
+    except FileNotFoundError:
+        logger.warning(f"File {workfile} not found! Using default values instead.")
 
     return number_of_k_vectors, k_thetas, k_phis, error, error_last, m_count, k_count
 
